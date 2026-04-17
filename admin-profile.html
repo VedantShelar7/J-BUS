@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity - Admin Profile</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="theme-admin">
+
+<div id="app">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon" style="background: var(--admin-primary);">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div class="brand-text" style="color: var(--admin-primary);">Velocity</div>
+            </div>
+            
+            <div class="user-card">
+                <div class="user-card-avatar" style="background: var(--admin-primary);">AU</div>
+                <div class="user-card-info">
+                    <h4 id="sidebar-user-name">Admin User</h4>
+                    <p>System Manager</p>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-live-tracking.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> Live Tracking
+                </div>
+                <div class="nav-item active" onclick="switchNav(this, 'admin-profile.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Profile
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-settings.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Settings
+                </div>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <div class="system-health">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--tertiary);"></div>
+                    <div>
+                        <div class="label" style="color: var(--primary);">SYSTEM STATUS</div>
+                        <span>All nodes active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Area -->
+        <div class="main-content" style="background: var(--neutral); overflow-y: auto;">
+            <div class="topbar">
+                <div style="display:flex; align-items:center; gap: 16px;">
+                    <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px; background: var(--admin-primary);" onclick="toggleSidebar()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </div>
+                    <h2 style="color: var(--admin-primary);">System Overview</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="dropdown">
+                        <div class="avatar" onclick="toggleDropdown('admin-dropdown')">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0F172A&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                        </div>
+                        <div class="dropdown-menu" id="admin-dropdown">
+                            <div class="dropdown-item" onclick="signOut()">Sign Out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 40px 64px;">
+                <!-- Profile Header -->
+                <div style="position: relative; margin-bottom: 80px;">
+                    <div class="profile-banner" style="background: #991B1B;"></div>
+                    <div style="position: absolute; bottom: -40px; left: 40px; display: flex; align-items: flex-end; gap: 24px;">
+                        <div class="profile-avatar-large" style="position: static; width: 120px; height: 120px;">
+                            <img src="https://ui-avatars.com/api/?name=James+Admin&background=DC2626&color=fff" alt="" style="width:100%; height:100%;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h1 style="font-size: 32px; margin-bottom: 4px;">James T. Admin</h1>
+                            <div style="display:flex; align-items:center; gap:12px; color: var(--text-muted); font-weight: 500;">
+                                <svg class="icon" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                Senior Systems Coordinator • velocity_ops_01
+                            </div>
+                        </div>
+                    </div>
+                    <div style="position: absolute; bottom: -20px; right: 0;">
+                        <button class="btn btn-primary" style="background: var(--admin-primary); border-radius: var(--radius-pill); height: 44px; padding: 0 24px;">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:18px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+                    <!-- Stats & Main Cards -->
+                    <div>
+                        <div class="stats-grid" style="margin-bottom: 32px;">
+                            <div class="card" style="padding: 32px;">
+                                <div style="display:flex; align-items:center; gap:12px; margin-bottom: 24px;">
+                                    <div style="width:32px; height:32px; background: #FEF2F2; color: var(--admin-primary); border-radius: 8px; display:flex; align-items:center; justify-content:center;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:16px;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                                    </div>
+                                    <span class="label" style="font-size: 10px; color: var(--text-muted);">Tenure</span>
+                                </div>
+                                <h1 style="margin-bottom: 4px;">4.2 Yrs</h1>
+                                <p style="font-size: 12px; color: var(--text-muted); margin:0;">Operational Oversight</p>
+                            </div>
+                            <div class="card" style="padding: 32px;">
+                                <div style="display:flex; align-items:center; gap:12px; margin-bottom: 24px;">
+                                    <div style="width:32px; height:32px; background: #EFF6FF; color: var(--primary); border-radius: 8px; display:flex; align-items:center; justify-content:center;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:16px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    </div>
+                                    <span class="label" style="font-size: 10px; color: var(--text-muted);">Performance</span>
+                                </div>
+                                <h1 style="margin-bottom: 4px;">98.4%</h1>
+                                <p style="font-size: 12px; color: var(--text-muted); margin:0;">System Efficiency Rating</p>
+                            </div>
+                        </div>
+
+                        <div class="card" style="padding: 32px;">
+                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                                <h2 style="font-size: 20px;">System Reliability Snapshot</h2>
+                                <svg class="icon" style="color: var(--text-muted); cursor: pointer;" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px;">Active routes under management</p>
+                            
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+                                <div style="display:flex; gap: 32px;">
+                                    <div>
+                                        <h1 style="margin:0;">142</h1>
+                                        <span class="label" style="font-size: 10px; color: var(--text-muted);">Daily Trips</span>
+                                    </div>
+                                    <div>
+                                        <h1 style="margin:0;">12</h1>
+                                        <span class="label" style="font-size: 10px; color: var(--text-muted);">Operators</span>
+                                    </div>
+                                </div>
+                                <div class="progress-bar" style="height: 8px;">
+                                    <div class="progress-fill" style="width: 75%; background: var(--admin-primary);"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 32px;">
+                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                <h2 style="font-size: 20px;">Recent System Actions</h2>
+                                <a href="#" style="font-size: 12px; font-weight: 600; color: var(--primary);">View Security Logs</a>
+                            </div>
+                            <div class="card" style="padding: 0; overflow: hidden;">
+                                <div style="padding: 24px; border-bottom: 1px solid var(--border); display:flex; align-items:center; gap:16px;">
+                                    <div style="width:10px; height:10px; border-radius:50%; border: 2px solid var(--primary);"></div>
+                                    <div style="flex:1;">
+                                        <div style="font-weight: 600; font-size: 14px;">Optimized Morning Hub-Alpha Route</div>
+                                        <div style="font-size: 12px; color: var(--text-muted);">2 hours ago • Automated Efficiency Protocol</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Info -->
+                    <div>
+                        <div class="card" style="padding: 32px;">
+                            <h3 style="margin-bottom: 24px;">Contact Channels</h3>
+                            
+                            <div style="display:flex; flex-direction: column; gap: 24px;">
+                                <div style="display:flex; gap: 16px;">
+                                    <div style="width:40px; height:40px; background: #EFF6FF; color: var(--primary); border-radius: 10px; display:flex; align-items:center; justify-content:center; flex-shrink: 0;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:20px;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="label" style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">Work Email</div>
+                                        <div style="font-weight: 600; font-size: 13px;">admin.ops@velocity.transit</div>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap: 16px;">
+                                    <div style="width:40px; height:40px; background: #EFF6FF; color: var(--primary); border-radius: 10px; display:flex; align-items:center; justify-content:center; flex-shrink: 0;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:20px;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="label" style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">Direct Line</div>
+                                        <div style="font-weight: 600; font-size: 13px;">+1 (555) 012-3456</div>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap: 16px;">
+                                    <div style="width:40px; height:40px; background: #EFF6FF; color: var(--primary); border-radius: 10px; display:flex; align-items:center; justify-content:center; flex-shrink: 0;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:20px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="label" style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">Office Hub</div>
+                                        <div style="font-weight: 600; font-size: 13px;">Sector 7 Central Terminal</div>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; gap: 16px;">
+                                    <div style="width:40px; height:40px; background: #EFF6FF; color: var(--primary); border-radius: 10px; display:flex; align-items:center; justify-content:center; flex-shrink: 0;">
+                                        <svg class="icon" viewBox="0 0 24 24" style="width:20px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="label" style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">Employee ID</div>
+                                        <div style="font-weight: 600; font-size: 13px;">VA-099422-X</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-secondary btn-full" style="margin-top: 48px; border-radius: var(--radius-md); font-size: 12px;">
+                                <svg class="icon" style="width:16px;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Export Credentials
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<script>
+    const user_profile = JSON.parse(sessionStorage.getItem('velocity_user')) || { name: 'Admin User' };
+    document.getElementById('sidebar-user-name').innerText = user_profile.name;
+    document.querySelector('h1').innerText = user_profile.name;
+    document.querySelector('.topbar h2').innerText = 'System Overview';
+    document.querySelectorAll('.avatar img, .profile-avatar-large img').forEach(img => {
+        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user_profile.name)}&background=0F172A&color=fff`;
+    });
+</script>
+<!-- Floating btn when sidebar is collapsed -->
+<div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
+    <svg class="icon" viewBox="0 0 24 24" style="color: var(--admin-primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</div>
+</body>
+</html>

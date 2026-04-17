@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity - Student Routes</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="app">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div class="brand-text">Velocity</div>
+            </div>
+            
+            <div class="user-card">
+                <div class="user-card-avatar" id="user-avatar-initials">AR</div>
+                <div class="user-card-info">
+                    <h4 id="user-name-display">Alex Rivers</h4>
+                    <p id="user-role-display">Student</p>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item" onclick="switchNav(this, 'student-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+                </div>
+                <div class="nav-item active" onclick="switchNav(this, 'student-routes.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'student-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> Live Tracking
+                </div>
+                <div class="nav-item" onclick="toggleDropdown('student-dropdown')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Profile
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'student-settings.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Settings
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" style="background: var(--neutral); overflow-y: auto;">
+            <!-- Header with Toggle -->
+            <div style="padding: 24px 60px; display: flex; align-items: center; justify-content: space-between; background: var(--white); border-bottom: 1px solid var(--border-refined); margin-bottom: 40px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </div>
+                    <div>
+                        <div class="label" style="color: var(--primary); margin-bottom: 2px;">ACTIVE NETWORK</div>
+                        <h1 style="font-size: 24px;">Student <span style="color: var(--primary);">Routes</span></h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right" style="display: flex; align-items: center; gap: 16px;">
+                    <div class="dropdown">
+                        <div class="avatar" onclick="toggleDropdown('student-dropdown')">
+                            <img src="https://ui-avatars.com/api/?name=Alex+Rivers&background=0F172A&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                        </div>
+                        <div class="dropdown-menu" id="student-dropdown">
+                            <div class="dropdown-item" onclick="signOut()">Sign Out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto; padding: 0 60px 60px;">
+
+                <div class="card" style="margin-bottom: 32px; padding: 24px;">
+                    <div class="label" style="color: var(--text-muted); margin-bottom: 12px;">Select your destination</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: var(--border); padding: 16px 24px; border-radius: var(--radius-lg); cursor: pointer;">
+                        <select id="route-picker" style="border: none; background: transparent; font-weight: 600; font-size: 16px; width: 100%; outline: none; cursor: pointer;">
+                            <!-- Options filled by JS -->
+                        </select>
+                        <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-bottom: 48px;">
+                    <div class="card" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; border: 1px solid var(--border-refined);">
+                        <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #EFF6FF; color: var(--primary); border-radius: 12px;">
+                            <svg class="icon" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 24px; margin-bottom: 4px;">12 Min</h2>
+                            <div class="label" style="color: var(--text-muted);">Next Bus</div>
+                        </div>
+                    </div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; background: var(--primary); color: var(--white); border: none;">
+                        <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: rgba(255,255,255,0.2); color: var(--white); border-radius: 12px;">
+                            <svg class="icon" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 24px; margin-bottom: 4px;" id="total-stops-count">08</h2>
+                            <div class="label" style="opacity: 0.8;">Total Stops</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                    <h2 style="font-size: 20px;">Route Timeline</h2>
+                    <a href="student-dashboard.html" style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> View Map
+                    </a>
+                </div>
+
+                <div class="timeline" id="route-timeline">
+                    <!-- Timeline items filled by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<script>
+    const timelineEl = document.getElementById('route-timeline');
+    const picker = document.getElementById('route-picker');
+    const stopsCountEl = document.getElementById('total-stops-count');
+
+    // Load user data
+    const user = JSON.parse(sessionStorage.getItem('velocity_user'));
+    if (user) {
+        document.getElementById('user-name-display').innerText = user.name;
+        document.getElementById('user-avatar-initials').innerText = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+
+    // Fetch routes
+    MockAPI.getRoutes().then(res => {
+        if (!res.success) return;
+        const routes = res.data;
+        
+        // Populate picker
+        routes.forEach((route, idx) => {
+            const opt = document.createElement('option');
+            opt.value = route.id;
+            opt.innerText = route.routeName;
+            picker.appendChild(opt);
+        });
+
+        // Handle selection
+        picker.addEventListener('change', () => {
+            renderRoute(routes.find(r => r.id === picker.value));
+        });
+
+        // Render first route by default
+        if (routes.length > 0) {
+            renderRoute(routes[0]);
+        }
+    });
+
+    function renderRoute(route) {
+        if (!route) return;
+        stopsCountEl.innerText = route.stops.length < 10 ? '0' + route.stops.length : route.stops.length;
+        
+        timelineEl.innerHTML = '';
+        route.stops.forEach((stop, idx) => {
+            const item = document.createElement('div');
+            item.className = 'timeline-item' + (idx === 1 ? ' active' : (idx === 0 ? ' completed' : ''));
+            
+            // Mock arrival times based on estimatedDuration
+            const timeOffset = idx * (route.estimatedDuration / route.stops.length);
+            const arrivalTime = new Date();
+            arrivalTime.setMinutes(arrivalTime.getMinutes() + timeOffset);
+            const timeStr = arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            item.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="timeline-info">
+                    <div>
+                        <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">${stop.name}</div>
+                        <div class="timeline-time">Arrival: ${timeStr}</div>
+                    </div>
+                    ${idx === 1 ? '<span class="pill pill-tertiary" style="font-size: 10px;">CURRENT</span>' : ''}
+                </div>
+            `;
+            timelineEl.appendChild(item);
+        });
+    }
+</script>
+<!-- Floating btn when sidebar is collapsed -->
+<div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
+    <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "bustrack-super-final",
+  "version": "1.0.0",
+  "description": "Bus tracking system project entry point",
+  "scripts": {
+    "start": "start http://localhost:5001 && cd backend && npm start",
+    "dev": "start http://localhost:5001 && cd backend && npm run dev",
+    "install-all": "cd backend && npm install"
+  },
+  "author": "",
+  "license": "ISC"
+}

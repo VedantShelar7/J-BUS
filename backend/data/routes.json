@@ -1,0 +1,44 @@
+[
+  {
+    "id": "route-1",
+    "routeName": "Vadgaon Route",
+    "routeCode": "Route 14A",
+    "type": "express",
+    "isActive": true,
+    "estimatedDuration": 35,
+    "stops": [
+      { "name": "Ganeshpur", "order": 1, "lat": 15.8520, "lng": 73.9950 },
+      { "name": "RTO", "order": 2, "lat": 15.8497, "lng": 74.0044 },
+      { "name": "Vadgaon", "order": 3, "lat": 15.8440, "lng": 74.0120 },
+      { "name": "Main Campus Gate", "order": 4, "lat": 15.8380, "lng": 74.0200 }
+    ]
+  },
+  {
+    "id": "route-2",
+    "routeName": "North Campus Express",
+    "routeCode": "Route 07B",
+    "type": "express",
+    "isActive": true,
+    "estimatedDuration": 25,
+    "stops": [
+      { "name": "Main University Gate", "order": 1, "lat": 15.8380, "lng": 74.0200 },
+      { "name": "Student Residence West", "order": 2, "lat": 15.8420, "lng": 74.0150 },
+      { "name": "Central Library Square", "order": 3, "lat": 15.8460, "lng": 74.0100 },
+      { "name": "Downtown Tech Hub", "order": 4, "lat": 15.8550, "lng": 74.0050 }
+    ]
+  },
+  {
+    "id": "route-3",
+    "routeName": "West Side Shuttle",
+    "routeCode": "Route 22C",
+    "type": "regular",
+    "isActive": true,
+    "estimatedDuration": 40,
+    "stops": [
+      { "name": "West Gate", "order": 1, "lat": 15.8500, "lng": 73.9900 },
+      { "name": "Market Square", "order": 2, "lat": 15.8470, "lng": 73.9950 },
+      { "name": "Hospital Junction", "order": 3, "lat": 15.8430, "lng": 74.0000 },
+      { "name": "Main Campus Gate", "order": 4, "lat": 15.8380, "lng": 74.0200 }
+    ]
+  }
+]

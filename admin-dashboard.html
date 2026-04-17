@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity - Admin Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="app">
+    <!-- ============== ADMIN CONSOLE ============== -->
+    <div id="page-admin" class="page dashboard-layout active">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div class="brand-text">Velocity</div>
+            </div>
+            
+            <div class="user-card">
+                <div class="user-card-avatar" style="background: var(--secondary);">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0F172A&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                </div>
+                <div class="user-card-info">
+                    <h4>Admin User</h4>
+                    <p>System Administrator</p>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchNav(this, 'admin-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-live-tracking.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> Live Tracking
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-profile.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Profile
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-settings.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Settings
+                </div>
+            </div>
+            
+            <div class="sidebar-bottom">
+                <button class="btn btn-primary btn-full" style="background: var(--danger); border-radius: var(--radius-lg); margin-bottom: 16px;" onclick="signOut()">
+                    <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Logout
+                </button>
+                <div class="system-health">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--tertiary);"></div>
+                    <div style="flex:1;">
+                        <div class="label" style="color: var(--primary);">SYSTEM HEALTH</div>
+                        <span>All Systems Nominal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" style="background: var(--neutral); overflow-y: auto;">
+            <div class="topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </div>
+                    <h1 style="color: var(--primary); font-size: 24px;">Admin Console</h1>
+                </div>
+                <div class="topbar-right" style="flex: 1; justify-content: flex-end;">
+                    <div class="input-group" style="margin: 0; width: 300px;">
+                        <svg class="input-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" class="form-input" placeholder="Search routes or buses..." style="border-radius: var(--radius-pill); background: var(--border); border-color: transparent;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-left: 16px; cursor: pointer;">
+                        <span style="font-weight: 500; color: var(--text-muted); font-size: 16px;">notifications</span>
+                        <div style="position: relative;">
+                            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted);"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <div style="position: absolute; top: 0; right: 2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px var(--white);"></div>
+                        </div>
+                    </div>
+                    <div class="dropdown" style="margin-left: 16px;">
+                        <div class="avatar" onclick="toggleDropdown('admin-dropdown')">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0F172A&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                        </div>
+                        <div class="dropdown-menu" id="admin-dropdown">
+                            <div class="dropdown-item" onclick="signOut()">Sign Out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
+                <!-- Stats Row -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+                    <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 24px; color: var(--primary); font-weight: 500;">directions_bus</div>
+                        <div class="label" style="color: var(--text-muted);">TOTAL BUSES</div>
+                        <h1 style="font-size: 32px;">20</h1>
+                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +2 this month</div>
+                    </div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 24px; color: var(--primary); font-weight: 500;">alt_route</div>
+                        <div class="label" style="color: var(--text-muted);">ACTIVE ROUTES</div>
+                        <h1 style="font-size: 32px;">05</h1>
+                        <div style="font-size: 12px; color: var(--text-muted);">Operating normally</div>
+                    </div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 24px; color: var(--primary); font-weight: 500;">group</div>
+                        <div class="label" style="color: var(--text-muted);">STUDENTS</div>
+                        <h1 style="font-size: 32px;">1,500</h1>
+                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +12% growth</div>
+                    </div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 24px; color: var(--primary); font-weight: 500;">badge</div>
+                        <div class="label" style="color: var(--text-muted);">DRIVERS</div>
+                        <h1 style="font-size: 32px;">25</h1>
+                        <div style="font-size: 12px; color: var(--warning); font-weight: 500;">warning 3 On Leave</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+                    <!-- Fleet Management -->
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
+                            <h2>Fleet Management</h2>
+                            <button class="btn btn-primary" style="border-radius: var(--radius-pill);" onclick="showAddRouteModal()">add_circle Add Route</button>
+                            <button class="btn btn-outlined" style="border-radius: var(--radius-pill); border-color: transparent; background: var(--white); box-shadow: var(--shadow-sm);">person_add</button>
+                        </div>
+                        
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead style="background: var(--white); border-bottom: 1px solid var(--border-refined);">
+                                    <tr>
+                                        <th style="padding: 16px 24px;" class="label">BUS ID</th>
+                                        <th style="padding: 16px 24px;" class="label">ROUTE</th>
+                                        <th style="padding: 16px 24px;" class="label">DRIVER</th>
+                                        <th style="padding: 16px 24px;" class="label">STATUS</th>
+                                        <th style="padding: 16px 24px; text-align: right;" class="label">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border-refined);">
+                                        <td style="padding: 16px 24px; font-weight: 600;">V-102</td>
+                                        <td style="padding: 16px 24px; width: 150px;">North Campus Express</td>
+                                        <td style="padding: 16px 24px;">
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">JD</div>
+                                                <span style="font-weight: 500;">John Doe</span>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px 24px;"><span class="pill pill-tertiary">ACTIVE</span></td>
+                                        <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-refined);">
+                                        <td style="padding: 16px 24px; font-weight: 600;">V-108</td>
+                                        <td style="padding: 16px 24px; width: 150px;">West Side Shuttle</td>
+                                        <td style="padding: 16px 24px;">
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">SM</div>
+                                                <span style="font-weight: 500;">Sara Miller</span>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 16px 24px;"><span class="pill pill-tertiary">ACTIVE</span></td>
+                                        <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 16px 24px; font-weight: 600;">V-115</td>
+                                        <td style="padding: 16px 24px; width: 150px;">Downtown Connector</td>
+                                        <td style="padding: 16px 24px; color: var(--text-muted); font-style: italic;">Unassigned</td>
+                                        <td style="padding: 16px 24px;"><span class="pill pill-neutral">IDLE</span></td>
+                                        <td style="padding: 16px 24px; text-align: right;"><a href="#" style="font-weight: 500;">Assign Driver</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted);">
+                                <span>Showing 3 of 20 buses</span>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span style="cursor: pointer;">chevron_left</span>
+                                    <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center;">1</span>
+                                    <span style="cursor: pointer;">2</span>
+                                    <span style="cursor: pointer;">chevron_right</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trends -->
+                        <div class="card" style="margin-top: 32px; padding: 32px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                <h2>Ridership Trends</h2>
+                                <select style="border: none; background: var(--neutral); padding: 8px 16px; border-radius: var(--radius-pill); outline: none; font-weight: 500;">
+                                    <option>Last 7 Days</option>
+                                    <option>Last 30 Days</option>
+                                </select>
+                            </div>
+                            <div style="height: 200px; width: 100%; position: relative;">
+                                <!-- SVG Chart mimic -->
+                                <svg width="100%" height="100%" viewBox="0 0 500 200" preserveAspectRatio="none">
+                                    <!-- Grid -->
+                                    <line x1="0" y1="50" x2="500" y2="50" stroke="#E2E8F0" stroke-width="1"/>
+                                    <line x1="0" y1="100" x2="500" y2="100" stroke="#E2E8F0" stroke-width="1"/>
+                                    <line x1="0" y1="150" x2="500" y2="150" stroke="#E2E8F0" stroke-width="1"/>
+                                    <line x1="0" y1="200" x2="500" y2="200" stroke="#E2E8F0" stroke-width="1"/>
+                                    
+                                    <!-- Line -->
+                                    <polyline points="0,150 80,120 160,180 240,90 320,110 400,60 500,40" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="240" cy="90" r="4" fill="#3B82F6" stroke="#fff" stroke-width="2"/>
+                                    <text x="240" y="80" fill="#3B82F6" font-size="10" font-weight="600" text-anchor="middle">1.8k</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column (Map + Driver of Month) -->
+                    <div style="display: flex; flex-direction: column; gap: 32px;">
+                        <div style="flex: 1; display:flex; flex-direction:column;">
+                            <h2 style="margin-bottom: 24px;">Live Tracking</h2>
+                            <div class="card" style="padding: 0; overflow: hidden; border-radius: var(--radius-xl); flex: 1; position: relative; min-height: 300px;">
+                                <div id="admin-map" style="width: 100%; height: 100%; min-height: 300px; z-index: 1;"></div>
+                                <div style="position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 1000;">
+                                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); cursor: pointer;">+</div>
+                                    <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); cursor: pointer;">−</div>
+                                </div>
+                                <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;">
+                                    <div class="label" style="display: flex; gap: 12px;">
+                                        <span style="display:flex; align-items:center; gap:4px; color: var(--secondary);"><span style="color:var(--primary); font-size: 16px;">●</span> MOVING</span>
+                                        <span style="display:flex; align-items:center; gap:4px; color: var(--text-muted);"><span style="color:var(--border); font-size: 16px;">○</span> STOPPED</span>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--primary); font-weight: 500; background: white; padding: 4px 12px; border-radius: 20px; box-shadow: var(--shadow-sm);">Refreshed: 2s ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="background: #1A56DB; color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-radius: var(--radius-xl);">
+                            <div>
+                                <h2 style="margin-bottom: 4px;">Driver of the Month</h2>
+                                <p style="font-size: 14px; opacity: 0.9; margin-bottom: 0;">98% On-time Performance</p>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=fff&color=1A56DB" alt="Driver" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid white;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Extra overlays / Modals -->
+<div id="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: 0.2s;">
+    <!-- Add Route Modal -->
+    <div id="modal-add-route" style="display: none; background: var(--white); border-radius: var(--radius-xl); padding: 32px; width: 480px; box-shadow: var(--shadow-float);">
+        <h2 style="margin-bottom: 24px;">Add New Route</h2>
+        <div class="input-group">
+            <span class="input-label">Route Name</span>
+            <input type="text" class="form-input" style="padding-left:16px;" placeholder="e.g. West Side Express">
+        </div>
+        <div class="input-group">
+            <span class="input-label">Bus ID</span>
+            <input type="text" class="form-input" style="padding-left:16px;" placeholder="e.g. V-120">
+        </div>
+        <div class="input-group">
+            <span class="input-label">Assigned Driver</span>
+            <select class="form-input" style="padding-left:16px;">
+                <option>Select Driver</option>
+                <option>John Doe</option>
+                <option>Sara Miller</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 16px; margin-top: 32px;">
+            <button class="btn btn-secondary btn-full" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary btn-full" onclick="closeModal()">Save Route</button>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+    const mapEl = document.getElementById('admin-map');
+    if (!mapEl) return;
+
+    const map = L.map('admin-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    function makeBusIcon(busId, status) {
+        const color = status === 'active' ? '#3B82F6' : '#94A3B8';
+        return L.divIcon({
+            className: '',
+            html: '<div style="display:flex;flex-direction:column;align-items:center;">' +
+                  '<div style="width:32px;height:32px;background:' + color + ';border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">' +
+                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>' +
+                  '</div>' +
+                  '<div style="background:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.15);margin-top:4px;white-space:nowrap;">' + busId + ': ' + (status === 'active' ? 'Active' : 'Idle') + '</div>' +
+                  '</div>',
+            iconSize: [80, 50],
+            iconAnchor: [40, 25]
+        });
+    }
+
+    const fleetTableBody = document.querySelector('tbody');
+    const searchInput = document.querySelector('.form-input');
+
+    function loadFleetData() {
+        MockAPI.getBuses().then(res => {
+            const buses = res.data;
+            renderFleetTable(buses);
+            renderFleetMap(buses);
+            updateStats(buses);
+        });
+    }
+
+    function renderFleetTable(buses) {
+        fleetTableBody.innerHTML = '';
+        buses.forEach(bus => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid var(--border-refined)';
+            row.innerHTML = `
+                <td style="padding: 16px 24px; font-weight: 600;">${bus.busId}</td>
+                <td style="padding: 16px 24px; width: 150px;">${bus.assignedRoute.replace(/-/g, ' ')}</td>
+                <td style="padding: 16px 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${bus.assignedDriver.split(' ').map(n=>n[0]).join('')}</div>
+                        <span style="font-weight: 500;">${bus.assignedDriver}</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 24px;"><span class="pill pill-${bus.status === 'active' ? 'tertiary' : 'neutral'}">${bus.status.toUpperCase()}</span></td>
+                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
+            `;
+            fleetTableBody.appendChild(row);
+        });
+    }
+
+    function renderFleetMap(buses) {
+        const bounds = [];
+        buses.forEach(bus => {
+            if (bus.lastLocation) {
+                const latlng = [bus.lastLocation.lat, bus.lastLocation.lng];
+                bounds.push(latlng);
+                const marker = L.marker(latlng, { icon: makeBusIcon(bus.busId, bus.status) })
+                    .bindPopup('<b>' + bus.busId + '</b><br>Driver: ' + bus.assignedDriver + '<br>Route: ' + bus.assignedRoute + '<br>Occupancy: ' + bus.currentOccupancy + '/' + bus.capacity)
+                    .addTo(map);
+                
+                if (bus.status === 'active') {
+                    let angle = Math.random() * Math.PI * 2;
+                    setInterval(() => {
+                        angle += 0.025;
+                        const lat = bus.lastLocation.lat + Math.sin(angle) * 0.001;
+                        const lng = bus.lastLocation.lng + Math.cos(angle) * 0.001;
+                        marker.setLatLng([lat, lng]);
+                    }, 2000);
+                }
+            }
+        });
+        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+
+        MockAPI.getRoutes().then(res => {
+            const colors = ['#3B82F6', '#F59E0B', '#10B981'];
+            res.data.forEach((route, i) => {
+                const latlngs = route.stops.map(s => [s.lat, s.lng]);
+                L.polyline(latlngs, { color: colors[i % colors.length], weight: 3, dashArray: '8, 6', opacity: 0.6 }).addTo(map);
+            });
+        });
+    }
+
+    function updateStats(buses) {
+        document.querySelector('h1').innerText = buses.length;
+        document.querySelectorAll('h1')[1].innerText = '0' + window.MockData.routes.length;
+        document.querySelectorAll('h1')[2].innerText = '1,500';
+        document.querySelectorAll('h1')[3].innerText = buses.filter(b => b.assignedDriver).length;
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        MockAPI.getBuses().then(res => {
+            const filtered = res.data.filter(b => b.busId.toLowerCase().includes(q) || b.assignedRoute.toLowerCase().includes(q) || b.assignedDriver.toLowerCase().includes(q));
+            renderFleetTable(filtered);
+        });
+    });
+
+    loadFleetData();
+
+    // Sync admin info
+    if (state.user) {
+        document.querySelectorAll('h4').forEach(h => {
+             if (h.innerText === 'Admin User') h.innerText = state.user.name;
+        });
+        document.querySelectorAll('.avatar img, .user-card-avatar img').forEach(img => {
+            img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(state.user.name)}&background=0F172A&color=fff`;
+        });
+    }
+})();
+</script>
+<!-- Floating btn when sidebar is collapsed -->
+<div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
+    <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</div>
+</body>
+</html>
+

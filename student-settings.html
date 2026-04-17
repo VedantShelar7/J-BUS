@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity - Student Settings</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="app">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div class="brand-text">Velocity</div>
+            </div>
+            
+            <div class="user-card">
+                <div class="user-card-avatar" id="user-avatar-initials">AR</div>
+                <div class="user-card-info">
+                    <h4 id="user-name-display">Alex Rivers</h4>
+                    <p id="user-role-display">Student</p>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item" onclick="switchNav(this, 'student-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'student-routes.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'student-dashboard.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> Live Tracking
+                </div>
+                <div class="nav-item" onclick="toggleDropdown('student-dropdown')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Profile
+                </div>
+                <div class="nav-item active" onclick="switchNav(this, 'student-settings.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Settings
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" style="background: var(--neutral); overflow-y: auto;">
+            <!-- Header with Toggle -->
+            <div style="padding: 24px 64px; display: flex; align-items: center; justify-content: space-between; background: var(--white); border-bottom: 1px solid var(--border); margin-bottom: 40px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </div>
+                    <div>
+                        <h1 style="font-size: 24px;">Settings</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="dropdown">
+                        <div class="avatar" onclick="toggleDropdown('student-dropdown')">
+                            <img src="https://ui-avatars.com/api/?name=Alex+Rivers&background=0F172A&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                        </div>
+                        <div class="dropdown-menu" id="student-dropdown">
+                            <div class="dropdown-item" onclick="signOut()">Sign Out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 0 64px 64px; max-width: 900px; margin: 0 auto;">
+                <!-- Search -->
+                <div class="input-group" style="margin-bottom: 48px;">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" class="form-input" placeholder="Search settings or help articles..." style="border-radius: var(--radius-lg); background: var(--border); border-color: transparent; height: 56px;">
+                </div>
+
+                <!-- Profile Card -->
+                <div class="card" style="text-align: center; padding: 48px; border-radius: var(--radius-xl); margin-bottom: 48px;">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); margin: 0 auto 24px; padding: 4px;">
+                        <img src="https://ui-avatars.com/api/?name=Alex+Rivers&background=0F172A&color=fff" alt="" style="width: 100%; height: 100%; border-radius: 50%;">
+                    </div>
+                    <h2 style="font-size: 28px; margin-bottom: 8px;" id="profile-name">Alex Rivers</h2>
+                    <p style="color: var(--text-muted); font-weight: 500; margin-bottom: 32px;">Premium Student Pass • Active since 2023</p>
+                    <div style="display: flex; gap: 16px; justify-content: center;">
+                        <button class="btn btn-primary" style="padding: 0 32px; border-radius: var(--radius-pill);">Edit Profile</button>
+                        <button class="btn btn-secondary" style="padding: 0 32px; border-radius: var(--radius-pill);">Account</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="settings-tabs">
+                    <div class="settings-tab active">Preferences</div>
+                    <div class="settings-tab">Notifications</div>
+                    <div class="settings-tab">Privacy</div>
+                </div>
+
+                <div class="settings-section">
+                    <h3 style="margin-bottom: 16px;">Transit Preferences</h3>
+                    
+                    <div class="preference-item">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 40px; height: 40px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Default Transit Modes</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Bus, Campus Shuttle, Light Rail</div>
+                            </div>
+                        </div>
+                        <svg class="icon" style="color: var(--text-muted); width: 16px;" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </div>
+
+                    <div class="preference-item">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 40px; height: 40px; background: #ECFDF5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--tertiary);">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Saved Locations</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Home, Main Library, Engineering Hall</div>
+                            </div>
+                        </div>
+                        <svg class="icon" style="color: var(--text-muted); width: 16px;" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </div>
+
+                    <div class="preference-item">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 40px; height: 40px; background: #EEF2FF; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #4F46E5;">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.41 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Dark Appearance</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="dark-mode-toggle" data-type="dark-mode" onclick="toggleDarkMode()">
+                            <div class="toggle-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<script>
+    // Load user data
+    const user = JSON.parse(sessionStorage.getItem('velocity_user'));
+    if (user) {
+        document.getElementById('profile-name').innerText = user.name;
+        document.getElementById('user-name-display').innerText = user.name;
+        document.getElementById('user-avatar-initials').innerText = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+
+    // Sync dark mode toggle state on load
+    const isDark = localStorage.getItem('velocity_dark_mode') === 'true';
+    if (isDark) {
+        document.getElementById('dark-mode-toggle').classList.add('active');
+    }
+</script>
+<!-- Floating btn when sidebar is collapsed -->
+<div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
+    <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+</div>
+</body>
+</html>

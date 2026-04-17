@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+dist/
+build/
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environment / Secret
+.env
+*.local
+*.log
+
+# Project Specific
+.gemini/
+.antigravity/
+.system_generated/
+artifacts/
+scratch/
+
+# Backend Data (Keeping structure but ignoring changes to local JSON data if desired)
+# If you want to push the structure but not the records, you can keep the .json files and just ignore the content,
+# but usually it's better to just include them for a demo. 
+# However, the user cleared them, so I will include them so the app works for others.
+# backend/data/
