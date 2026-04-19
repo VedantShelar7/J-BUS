@@ -299,17 +299,40 @@
     }
 
     function startBusSim(bus) {
-        const marker = L.marker([bus.lastLocation.lat, bus.lastLocation.lng], { icon: busIcon }).addTo(map);
-        let angle = Math.random() * Math.PI * 2;
-        setInterval(() => {
-            angle += 0.03;
-            const lat = bus.lastLocation.lat + Math.sin(angle) * 0.0008;
-            const lng = bus.lastLocation.lng + Math.cos(angle) * 0.0008;
-            marker.setLatLng([lat, lng]);
+        MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
+            const route = rRes.data;
+            if (!route || !route.stops.length) return;
             
-            // Sync with "server"
-            MockAPI.updateBusLocation(bus.busId, lat, lng, 30 + Math.floor(Math.random() * 10));
-        }, 3000);
+            const marker = L.marker([route.stops[0].lat, route.stops[0].lng], { icon: busIcon }).addTo(map);
+            
+            let currentStopIdx = 0;
+            let progress = 0;
+
+            setInterval(() => {
+                if (currentStopIdx >= route.stops.length - 1) {
+                    currentStopIdx = 0;
+                    progress = 0;
+                }
+                
+                const startStop = route.stops[currentStopIdx];
+                const endStop = route.stops[currentStopIdx + 1];
+                
+                progress += 0.05;
+                if (progress >= 1) {
+                    progress = 0;
+                    currentStopIdx++;
+                }
+                
+                if (currentStopIdx < route.stops.length - 1) {
+                    const lat = startStop.lat + (endStop.lat - startStop.lat) * progress;
+                    const lng = startStop.lng + (endStop.lng - startStop.lng) * progress;
+                    marker.setLatLng([lat, lng]);
+                    
+                    // Sync with "server"
+                    MockAPI.updateBusLocation(bus.busId, lat, lng, 30 + Math.floor(Math.random() * 10));
+                }
+            }, 500);
+        });
     }
 })();
 </script>

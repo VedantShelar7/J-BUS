@@ -19,7 +19,7 @@ const DEFAULT_MOCK_DATA = {
             "email": "sumit@gmail.com",
             "password": "123456",
             "role": "driver",
-            "busId": "V-102"
+            "busId": "V-101"
         },
         {
             "id": 3,
@@ -32,90 +32,168 @@ const DEFAULT_MOCK_DATA = {
     routes: [
         {
             "id": "route-1",
-            "routeName": "Vadgaon Route",
-            "routeCode": "Route 14A",
+            "routeName": "Mahantesh Nagar → JCER",
+            "routeCode": "Route 1",
             "type": "express",
+            "color": "#E63946",
             "isActive": true,
             "estimatedDuration": 35,
             "stops": [
-                { "name": "Ganeshpur", "order": 1, "lat": 15.8856, "lng": 74.4969 },
-                { "name": "RTO Belgaum", "order": 2, "lat": 15.8617, "lng": 74.5126 },
-                { "name": "Vadgaon", "order": 3, "lat": 15.8390, "lng": 74.4975 },
-                { "name": "Main Campus Gate", "order": 4, "lat": 15.8427, "lng": 74.5025 }
+                { "name": "Mahantesh Nagar", "order": 1, "lat": 15.8652, "lng": 74.5021 },
+                { "name": "Subhash Nagar", "order": 2, "lat": 15.8610, "lng": 74.5028 },
+                { "name": "Ramteerth Nagar", "order": 3, "lat": 15.8580, "lng": 74.5024 },
+                { "name": "Tilakwadi", "order": 4, "lat": 15.8545, "lng": 74.5020 },
+                { "name": "KLE Campus", "order": 5, "lat": 15.8510, "lng": 74.5016 },
+                { "name": "Angol Cross", "order": 6, "lat": 15.8475, "lng": 74.5013 },
+                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
             "id": "route-2",
-            "routeName": "North Campus Express",
-            "routeCode": "Route 07B",
-            "type": "express",
+            "routeName": "Vadgaon → JCER",
+            "routeCode": "Route 2",
+            "type": "regular",
+            "color": "#2196F3",
             "isActive": true,
             "estimatedDuration": 25,
             "stops": [
-                { "name": "Main University Gate", "order": 1, "lat": 15.8427, "lng": 74.5025 },
-                { "name": "Civil Hospital Junction", "order": 2, "lat": 15.8550, "lng": 74.5080 },
-                { "name": "Chennamma Circle", "order": 3, "lat": 15.8590, "lng": 74.5110 },
-                { "name": "Technical Hub", "order": 4, "lat": 15.8750, "lng": 74.5050 }
+                { "name": "Vadgaon", "order": 1, "lat": 15.8780, "lng": 74.5210 },
+                { "name": "Udyamnagar", "order": 2, "lat": 15.8740, "lng": 74.5180 },
+                { "name": "Shivaji Nagar", "order": 3, "lat": 15.8700, "lng": 74.5150 },
+                { "name": "Khade Bazar", "order": 4, "lat": 15.8660, "lng": 74.5120 },
+                { "name": "Camp Road", "order": 5, "lat": 15.8610, "lng": 74.5085 },
+                { "name": "Angol Road", "order": 6, "lat": 15.8520, "lng": 74.5040 },
+                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
             "id": "route-3",
-            "routeName": "West Side Shuttle",
-            "routeCode": "Route 22C",
+            "routeName": "RTO → JCER",
+            "routeCode": "Route 3",
             "type": "regular",
+            "color": "#4CAF50",
+            "isActive": true,
+            "estimatedDuration": 30,
+            "stops": [
+                { "name": "RTO Office", "order": 1, "lat": 15.8558, "lng": 74.5198 },
+                { "name": "Goaves", "order": 2, "lat": 15.8540, "lng": 74.5165 },
+                { "name": "Gandhi Nagar", "order": 3, "lat": 15.8520, "lng": 74.5135 },
+                { "name": "Hindwadi", "order": 4, "lat": 15.8500, "lng": 74.5100 },
+                { "name": "Angol Junction", "order": 5, "lat": 15.8472, "lng": 74.5058 },
+                { "name": "Udyambag Cross", "order": 6, "lat": 15.8452, "lng": 74.5030 },
+                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+            ]
+        },
+        {
+            "id": "route-4",
+            "routeName": "Sambra → JCER",
+            "routeCode": "Route 4",
+            "type": "express",
+            "color": "#FF9800",
             "isActive": true,
             "estimatedDuration": 40,
             "stops": [
-                { "name": "Angadi College", "order": 1, "lat": 15.8200, "lng": 74.4800 },
-                { "name": "Peeraanwaadi", "order": 2, "lat": 15.8250, "lng": 74.4900 },
-                { "name": "Congress Road", "order": 3, "lat": 15.8380, "lng": 74.5050 },
-                { "name": "Main Campus Gate", "order": 4, "lat": 15.8427, "lng": 74.5025 }
+                { "name": "Sambra", "order": 1, "lat": 15.8629, "lng": 74.6111 },
+                { "name": "Hindalga", "order": 2, "lat": 15.8605, "lng": 74.5820 },
+                { "name": "Nehru Nagar", "order": 3, "lat": 15.8580, "lng": 74.5580 },
+                { "name": "Udyambag", "order": 4, "lat": 15.8545, "lng": 74.5320 },
+                { "name": "Angol Bridge", "order": 5, "lat": 15.8500, "lng": 74.5120 },
+                { "name": "Angol Road", "order": 6, "lat": 15.8465, "lng": 74.5060 },
+                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+            ]
+        },
+        {
+            "id": "route-5",
+            "routeName": "Hanuman Nagar → JCER",
+            "routeCode": "Route 5",
+            "type": "express",
+            "color": "#9C27B0",
+            "isActive": true,
+            "estimatedDuration": 35,
+            "stops": [
+                { "name": "Hanuman Nagar", "order": 1, "lat": 15.8720, "lng": 74.4890 },
+                { "name": "Khasbag", "order": 2, "lat": 15.8668, "lng": 74.4920 },
+                { "name": "Saptapur", "order": 3, "lat": 15.8610, "lng": 74.4955 },
+                { "name": "Shahapur", "order": 4, "lat": 15.8565, "lng": 74.4980 },
+                { "name": "Fort Area", "order": 5, "lat": 15.8520, "lng": 74.4998 },
+                { "name": "Angol Road", "order": 6, "lat": 15.8472, "lng": 74.5005 },
+                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
             ]
         }
     ],
     buses: [
         {
-            "busId": "V-102",
+            "busId": "V-101",
             "capacity": 50,
             "currentOccupancy": 45,
             "status": "active",
             "assignedDriver": "Ravi Kumar",
-            "driverId": "DR-402",
+            "driverId": "DR-401",
             "assignedRoute": "route-1",
             "lastLocation": {
-                "lat": 15.8617,
-                "lng": 74.5126,
+                "lat": 15.8652,
+                "lng": 74.5021,
                 "speed": 24,
                 "updatedAt": null
             }
         },
         {
-            "busId": "V-108",
+            "busId": "V-102",
             "capacity": 50,
             "currentOccupancy": 32,
             "status": "active",
             "assignedDriver": "John Doe",
-            "driverId": "DR-403",
+            "driverId": "DR-402",
             "assignedRoute": "route-2",
             "lastLocation": {
-                "lat": 15.8590,
-                "lng": 74.5110,
+                "lat": 15.8780,
+                "lng": 74.5210,
                 "speed": 32,
                 "updatedAt": null
             }
         },
         {
-            "busId": "V-115",
+            "busId": "V-103",
             "capacity": 50,
-            "currentOccupancy": 0,
-            "status": "idle",
+            "currentOccupancy": 15,
+            "status": "active",
             "assignedDriver": "Sara Miller",
-            "driverId": "DR-404",
+            "driverId": "DR-403",
             "assignedRoute": "route-3",
             "lastLocation": {
-                "lat": 15.8250,
-                "lng": 74.4900,
-                "speed": 0,
+                "lat": 15.8558,
+                "lng": 74.5198,
+                "speed": 25,
+                "updatedAt": null
+            }
+        },
+        {
+            "busId": "V-104",
+            "capacity": 50,
+            "currentOccupancy": 40,
+            "status": "active",
+            "assignedDriver": "Vikram Singh",
+            "driverId": "DR-404",
+            "assignedRoute": "route-4",
+            "lastLocation": {
+                "lat": 15.8629,
+                "lng": 74.6111,
+                "speed": 40,
+                "updatedAt": null
+            }
+        },
+        {
+            "busId": "V-105",
+            "capacity": 50,
+            "currentOccupancy": 50,
+            "status": "active",
+            "assignedDriver": "Amit Patel",
+            "driverId": "DR-405",
+            "assignedRoute": "route-5",
+            "lastLocation": {
+                "lat": 15.8720,
+                "lng": 74.4890,
+                "speed": 30,
                 "updatedAt": null
             }
         }
@@ -124,6 +202,13 @@ const DEFAULT_MOCK_DATA = {
 
 // Persistence Logic
 function getVelocityData() {
+    // Force clear for new routes
+    if (!localStorage.getItem('velocity_routes_v2')) {
+        localStorage.removeItem('velocity_full_data');
+        localStorage.removeItem('velocity_fleet');
+        localStorage.setItem('velocity_routes_v2', 'true');
+    }
+
     const saved = localStorage.getItem('velocity_full_data');
     if (saved) {
         return JSON.parse(saved);
@@ -141,3 +226,4 @@ function saveVelocityData(data) {
 // Global exposure
 window.MockData = getVelocityData();
 window.saveVelocityData = saveVelocityData;
+

@@ -8,62 +8,82 @@ const state = {
 
 // Mock API Layer
 const MockAPI = {
-    login: (email, password, role) => {
-        return new Promise((resolve) => {
+    login: async (email, password, role) => {
+        try {
             const trimmedEmail = email.trim().toLowerCase();
-            const user = window.MockData.users.find(u => u.email.toLowerCase() === trimmedEmail);
-            
-            if (!user) {
-                resolve({ success: false, message: 'Account not found. Please register first.' });
-            } else if (user.password !== password) {
-                resolve({ success: false, message: 'Incorrect password.' });
-            } else if (user.role !== role) {
-                resolve({ success: false, message: `This account is registered as a ${user.role.toUpperCase()}. Please switch the tab above.` });
-            } else {
-                resolve({ success: true, data: user });
-            }
-        });
-    },
-    register: (userData) => {
-        return new Promise((resolve) => {
-            const exists = window.MockData.users.find(u => u.email === userData.email);
-            if (exists) {
-                resolve({ success: false, message: 'User already exists' });
-            } else {
-                const newUser = {
-                    id: window.MockData.users.length + 1,
-                    ...userData
-                };
-                window.MockData.users.push(newUser);
-                window.saveVelocityData(window.MockData);
-                resolve({ success: true, data: newUser });
-            }
-        });
-    },
-    getRoutes: () => {
-        return Promise.resolve({ success: true, data: window.MockData.routes });
-    },
-    getRouteById: (id) => {
-        const route = window.MockData.routes.find(r => r.id === id);
-        return Promise.resolve({ success: !!route, data: route });
-    },
-    getBuses: () => {
-        return Promise.resolve({ success: true, data: state.fleet });
-    },
-    getBusById: (id) => {
-        const bus = state.fleet.find(b => b.busId === id);
-        return Promise.resolve({ success: !!bus, data: bus });
-    },
-    updateBusLocation: (busId, lat, lng, speed) => {
-        const busIndex = state.fleet.findIndex(b => b.busId === busId);
-        if (busIndex !== -1) {
-            state.fleet[busIndex].lastLocation = { lat, lng, speed, updatedAt: new Date() };
-            // Sync fleet back to MockData users if needed, or just keep fleet in global MockData
-            window.MockData.buses = state.fleet;
-            window.saveVelocityData(window.MockData);
-            return Promise.resolve({ success: true });
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: trimmedEmail, password, role })
+            });
+            return await res.json();
+        } catch (e) {
+            console.error('Login fetch error:', e);
+            return { success: false, message: 'Server connection failed.' };
         }
-        return Promise.resolve({ success: false });
+    },
+    register: async (userData) => {
+        try {
+            const trimmedEmail = userData.email.trim().toLowerCase();
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...userData, email: trimmedEmail })
+            });
+            return await res.json();
+        } catch (e) {
+            console.error('Register fetch error:', e);
+            return { success: false, message: 'Server connection failed.' };
+        }
+    },
+    getRoutes: async () => {
+        try {
+            const res = await fetch('/api/routes');
+            return await res.json();
+        } catch (e) {
+            console.error('getRoutes error:', e);
+            return { success: false, data: [] };
+        }
+    },
+    getRouteById: async (id) => {
+        try {
+            const res = await fetch(`/api/routes/${id}`);
+            return await res.json();
+        } catch (e) {
+            console.error('getRouteById error:', e);
+            return { success: false, data: null };
+        }
+    },
+    getBuses: async () => {
+        try {
+            const res = await fetch('/api/buses');
+            return await res.json();
+        } catch (e) {
+            console.error('getBuses error:', e);
+            return { success: false, data: [] };
+        }
+    },
+    getBusById: async (id) => {
+        try {
+            const res = await fetch(`/api/buses/${id}`);
+            return await res.json();
+        } catch (e) {
+            console.error('getBusById error:', e);
+            return { success: false, data: null };
+        }
+    },
+    updateBusLocation: async (busId, lat, lng, speed) => {
+        try {
+            const res = await fetch(`/api/buses/${busId}/location`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat, lng, speed })
+            });
+            return await res.json();
+        } catch (e) {
+            console.error('updateBusLocation error:', e);
+            return { success: false };
+        }
     }
 };
 

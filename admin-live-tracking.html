@@ -259,20 +259,53 @@
     }
 
     function renderLiveMap(buses) {
+        window.busSimulators = window.busSimulators || [];
+        window.busSimulators.forEach(clearInterval);
+        window.busSimulators = [];
+
+        // Clear existing map layers if we re-render, though this basic setup might not track them perfectly.
+        // For standard purposes we'll keep adding or track if needed.
+        
         buses.forEach(bus => {
             if (bus.status === 'active') {
-                const marker = L.marker([bus.lastLocation.lat, bus.lastLocation.lng], { 
-                    icon: busIcon(bus.assignedRoute === 'route-1' ? 'var(--admin-primary)' : 'var(--primary)') 
-                }).addTo(map)
-                  .bindPopup(`<b>${bus.busId}</b><br>Occupancy: ${Math.round((bus.currentOccupancy / bus.capacity) * 100)}%`);
+                MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
+                    const route = rRes.data;
+                    if (!route || !route.stops.length) return;
+                    
+                    const marker = L.marker([route.stops[0].lat, route.stops[0].lng], { 
+                        icon: busIcon(bus.assignedRoute === 'route-1' ? 'var(--admin-primary)' : 'var(--primary)') 
+                    }).addTo(map)
+                      .bindPopup(`<b>${bus.busId}</b><br>Occupancy: ${Math.round((bus.currentOccupancy / bus.capacity) * 100)}%`);
 
-                let angle = Math.random() * Math.PI * 2;
-                setInterval(() => {
-                    angle += 0.02;
-                    const lat = bus.lastLocation.lat + Math.sin(angle) * 0.0006;
-                    const lng = bus.lastLocation.lng + Math.cos(angle) * 0.0006;
-                    marker.setLatLng([lat, lng]);
-                }, 2000);
+                    const latlngs = route.stops.map(s => [s.lat, s.lng]);
+                    L.polyline(latlngs, { color: bus.assignedRoute === 'route-1' ? 'var(--admin-primary)' : 'var(--primary)', weight: 3, opacity: 0.6, dashArray: '5,5' }).addTo(map);
+
+                    let currentStopIdx = 0;
+                    let progress = 0;
+
+                    const sim = setInterval(() => {
+                        if (currentStopIdx >= route.stops.length - 1) {
+                            currentStopIdx = 0;
+                            progress = 0;
+                        }
+                        
+                        const startStop = route.stops[currentStopIdx];
+                        const endStop = route.stops[currentStopIdx + 1];
+                        
+                        progress += 0.05;
+                        if (progress >= 1) {
+                            progress = 0;
+                            currentStopIdx++;
+                        }
+                        
+                        if (currentStopIdx < route.stops.length - 1) {
+                            const lat = startStop.lat + (endStop.lat - startStop.lat) * progress;
+                            const lng = startStop.lng + (endStop.lng - startStop.lng) * progress;
+                            marker.setLatLng([lat, lng]);
+                        }
+                    }, 500);
+                    window.busSimulators.push(sim);
+                });
             }
         });
     }
