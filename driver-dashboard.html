@@ -94,8 +94,8 @@
                                 <div style="font-size: 12px; color: var(--text-muted);">Visible to students</div>
                             </div>
                         </div>
-                        <div style="width: 48px; height: 24px; background: var(--primary); border-radius: 12px; position: relative; cursor: pointer;" onclick="toggleLocation(this)">
-                            <div style="width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; top: 2px; right: 2px; transition: 0.2s;"></div>
+                        <div id="driver-location-toggle" style="width: 48px; height: 24px; background: var(--border); border-radius: 12px; position: relative; cursor: pointer;" onclick="toggleDriverLocation(this)">
+                            <div style="width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s;"></div>
                         </div>
                     </div>
 
@@ -207,7 +207,7 @@
         <p style="color: var(--text-muted); margin-bottom: 24px;">Are you sure you want to end your current trip? Student live tracking will be stopped.</p>
         <div style="display: flex; gap: 16px;">
             <button class="btn btn-secondary btn-full" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-primary btn-full" onclick="closeModal()">End Trip</button>
+            <button class="btn btn-primary btn-full" onclick="closeModal(); endDriverTrip();">End Trip</button>
         </div>
     </div>
 </div>
@@ -227,12 +227,43 @@
         maxZoom: 19
     }).addTo(map);
 
-    const busIcon = L.divIcon({
-        className: '',
-        html: '<div style="width:36px;height:36px;background:#F59E0B;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg></div>',
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
-    });
+    const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
+  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#E8960A"/>
+  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#D4820A"/>
+  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
+  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
+  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="3" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-10" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="7" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="-10" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="7" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="none" stroke="#C87A00" stroke-width="1"/>
+  <rect x="-5" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
+  <rect x="1" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
+  <rect x="-5" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
+  <rect x="1" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
+  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
+  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
+</svg>`;
+
+    function getBusIcon(zoom) {
+        const size = zoom >= 15 ? [60, 100] : zoom >= 13 ? [36, 60] : [20, 34];
+        return L.divIcon({
+            html: `<div style="width:${size[0]}px; height:${size[1]}px; transform-origin: center center;">${topViewBusSVG}</div>`,
+            className: '',
+            iconSize: size,
+            iconAnchor: [size[0]/2, size[1]/2]
+        });
+    }
 
     function stopIcon(color) {
         return L.divIcon({
@@ -240,6 +271,37 @@
             html: '<div style="width:14px;height:14px;background:' + color + ';border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>',
             iconSize: [14, 14],
             iconAnchor: [7, 7]
+        });
+    }
+
+    function loadAndSelectRoute(bus) {
+        document.getElementById('route-modal').style.display = 'flex';
+        MockAPI.getRoutes().then(res => {
+            const routes = res.data.filter(r => r.isActive);
+            const listObj = document.getElementById('route-modal-list');
+            listObj.innerHTML = '';
+            routes.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'route-choice-card';
+                div.onclick = () => {
+                    document.getElementById('route-modal').style.display = 'none';
+                    bus.assignedRoute = r.id; 
+                    renderRoute(r.id);
+                    initDriverMap(bus);
+                    MockAPI.updateBusLocation(bus.busId, 0, 0, 0, null, r.id);
+                    
+                    const labelH3 = document.querySelector('.label[style*="color: var(--primary)"]').nextElementSibling;
+                    if (labelH3) labelH3.innerText = r.routeName;
+                };
+                div.innerHTML = `
+                    <div style="width: 6px; height: 40px; background: ${r.color || '#3B82F6'}; border-radius: 4px;"></div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px; color: var(--text);">${r.routeName}</div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Select to assign this route</div>
+                    </div>
+                `;
+                listObj.appendChild(div);
+            });
         });
     }
 
@@ -256,12 +318,12 @@
         MockAPI.getBuses().then(res => {
             const bus = res.data.find(b => b.assignedDriver === user.name || b.busId === user.busId);
             if (bus) {
+                window.currentBusId = bus.busId;
                 document.querySelector('.user-card-info p').innerText = 'Bus ID: ' + bus.busId;
                 document.querySelector('h1').innerText = bus.currentOccupancy + '/' + bus.capacity;
                 document.querySelector('h1').nextElementSibling.nextElementSibling.firstElementChild.style.width = (bus.currentOccupancy / bus.capacity * 100) + '%';
                 
-                renderRoute(bus.assignedRoute);
-                startBusSim(bus);
+                loadAndSelectRoute(bus);
             }
         });
     }
@@ -298,47 +360,117 @@
         });
     }
 
-    function startBusSim(bus) {
+    let watchId = null;
+    let driverMarker = null;
+
+    function initDriverMap(bus) {
         MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
             const route = rRes.data;
             if (!route || !route.stops.length) return;
+            driverMarker = L.marker([route.stops[0].lat, route.stops[0].lng], { icon: getBusIcon(map.getZoom()) }).addTo(map);
             
-            const marker = L.marker([route.stops[0].lat, route.stops[0].lng], { icon: busIcon }).addTo(map);
-            
-            let currentStopIdx = 0;
-            let progress = 0;
-
-            setInterval(() => {
-                if (currentStopIdx >= route.stops.length - 1) {
-                    currentStopIdx = 0;
-                    progress = 0;
-                }
-                
-                const startStop = route.stops[currentStopIdx];
-                const endStop = route.stops[currentStopIdx + 1];
-                
-                progress += 0.05;
-                if (progress >= 1) {
-                    progress = 0;
-                    currentStopIdx++;
-                }
-                
-                if (currentStopIdx < route.stops.length - 1) {
-                    const lat = startStop.lat + (endStop.lat - startStop.lat) * progress;
-                    const lng = startStop.lng + (endStop.lng - startStop.lng) * progress;
-                    marker.setLatLng([lat, lng]);
-                    
-                    // Sync with "server"
-                    MockAPI.updateBusLocation(bus.busId, lat, lng, 30 + Math.floor(Math.random() * 10));
-                }
-            }, 500);
+            map.on('zoomend', () => {
+                if (driverMarker) driverMarker.setIcon(getBusIcon(map.getZoom()));
+            });
         });
     }
+
+    window.toggleDriverLocation = function(element) {
+        const toggleBg = element;
+        const toggleDot = element.firstElementChild;
+        const isTurningOn = toggleBg.style.background === 'var(--border)' || !toggleBg.style.background;
+        
+        if (isTurningOn) {
+            if (!user.mobileNo) {
+                const num = prompt("Please enter your registered mobile number for tracking alerts:");
+                if (!num) return;
+                user.mobileNo = num;
+                sessionStorage.setItem('velocity_user', JSON.stringify(user));
+            }
+            
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                return;
+            }
+
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const speed = position.coords.speed ? (position.coords.speed * 3.6).toFixed(1) : 30;
+                    
+                    if (driverMarker) {
+                        driverMarker.setLatLng([lat, lng]);
+                        map.panTo([lat, lng]);
+                    }
+                    if (window.currentBusId) {
+                        MockAPI.updateBusLocation(window.currentBusId, lat, lng, speed, true);
+                    }
+                },
+                (error) => {
+                    alert("Error getting location. Ensure location permissions are granted.");
+                    console.error(error);
+                },
+                { enableHighAccuracy: false, maximumAge: 10000, timeout: 15000 }
+            );
+
+            toggleBg.style.background = 'var(--primary)';
+            toggleDot.style.right = '2px';
+            toggleDot.style.left = 'auto';
+            showToast("Location Tracking", "Live location is now broadcasting to students.");
+        } else {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            if (window.currentBusId) {
+                MockAPI.updateBusLocation(window.currentBusId, driverMarker ? driverMarker.getLatLng().lat : 0, driverMarker ? driverMarker.getLatLng().lng : 0, 0, false);
+            }
+            
+            toggleBg.style.background = 'var(--border)';
+            toggleDot.style.left = '2px';
+            toggleDot.style.right = 'auto';
+            showToast("Location Tracking", "Live broadcasting stopped.");
+        }
+    };
+
+    window.endDriverTrip = function() {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+        }
+        if (window.currentBusId) {
+            MockAPI.updateBusLocation(window.currentBusId, driverMarker ? driverMarker.getLatLng().lat : 0, driverMarker ? driverMarker.getLatLng().lng : 0, 0, false);
+        }
+        const el = document.getElementById('driver-location-toggle');
+        if (el) {
+            el.style.background = 'var(--border)';
+            el.firstElementChild.style.left = '2px';
+            el.firstElementChild.style.right = 'auto';
+        }
+        showToast("Trip Ended", "Trip marked as complete. Students notified.");
+    };
 })();
 </script>
 <!-- Floating btn when sidebar is collapsed -->
 <div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
     <svg class="icon" viewBox="0 0 24 24" style="color: var(--tertiary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
 </div>
+<!-- Route Selection Modal -->
+<div id="route-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+    <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px;">Select Your Route for this Trip</h2>
+        </div>
+        <div id="route-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+            <!-- Rendered via JS -->
+        </div>
+    </div>
+</div>
+<style>
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
+.route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+</style>
 </body>
 </html>

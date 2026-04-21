@@ -60,7 +60,7 @@ app.post('/api/auth/login', (req, res) => {
 
 // POST /api/auth/register
 app.post('/api/auth/register', (req, res) => {
-    const { name, email, password, role, usn } = req.body;
+    const { name, email, password, role, usn, mobileNo } = req.body;
     const users = readJSON('users.json');
 
     // Check if email already exists
@@ -79,7 +79,8 @@ app.post('/api/auth/register', (req, res) => {
         email,
         password,
         role: role || 'student',
-        usn: usn || null
+        usn: usn || null,
+        mobileNo: mobileNo || null
     };
 
     users.push(newUser);
@@ -120,11 +121,17 @@ app.get('/api/buses/:busId', (req, res) => {
 
 // PATCH /api/buses/:busId/location
 app.patch('/api/buses/:busId/location', (req, res) => {
-    const { lat, lng, speed } = req.body;
+    const { lat, lng, speed, isLive, assignedRoute } = req.body;
     const buses = readJSON('buses.json');
     const bus = buses.find(b => b.busId === req.params.busId);
     if (!bus) {
         return res.status(404).json({ success: false, message: 'Bus not found' });
+    }
+    if (typeof isLive !== 'undefined' && isLive !== null) {
+        bus.isLive = isLive;
+    }
+    if (assignedRoute) {
+        bus.assignedRoute = assignedRoute;
     }
     bus.lastLocation = { lat, lng, speed: speed || 0, updatedAt: new Date().toISOString() };
     writeJSON('buses.json', buses);

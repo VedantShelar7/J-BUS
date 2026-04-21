@@ -6,5 +6,31 @@
     "password": "123456",
     "role": "student",
     "usn": null
+  },
+  {
+    "id": 2,
+    "name": "driver",
+    "email": "driver@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": null,
+    "mobileNo": "7795868592"
+  },
+  {
+    "id": 3,
+    "name": "student",
+    "email": "student@gmail.com",
+    "password": "123456",
+    "role": "student",
+    "usn": null,
+    "mobileNo": null
+  },
+  {
+    "id": 4,
+    "name": "student",
+    "email": "student@velocity.com",
+    "password": "password123password123",
+    "role": "student",
+    "usn": "USN-9643"
   }
 ]

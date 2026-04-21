@@ -215,7 +215,6 @@
     });
 
     const searchInput = document.querySelector('.form-input');
-
     function loadLiveFleet() {
         MockAPI.getBuses().then(res => {
             const buses = res.data;
@@ -233,80 +232,77 @@
                 card.className = 'bus-card-detailed';
                 const occPerc = Math.round((bus.currentOccupancy / bus.capacity) * 100);
                 const occColor = occPerc > 80 ? 'danger' : (occPerc > 50 ? 'warning' : '');
+                const isLiveBadge = bus.isLive
+                    ? `<span class="pill pill-tertiary" style="font-size:9px; padding: 2px 8px;">● LIVE</span>`
+                    : `<span class="pill" style="font-size:9px; padding: 2px 8px; background:var(--neutral); color:var(--text-muted);">IDLE</span>`;
 
                 card.innerHTML = `
-                    <div style="display:flex; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="display:flex; justify-content: space-between; margin-bottom: 12px; align-items:center;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <div style="width:40px;height:40px;background:var(--neutral);border-radius:10px;display:flex;align-items:center;justify-content:center;">
                                 <svg class="icon" style="color:var(--admin-primary);" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
                             </div>
                             <div>
-                                <div style="font-weight: 600;">${bus.busId} Express</div>
+                                <div style="font-weight: 600;">${bus.busId}</div>
                                 <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">${bus.assignedRoute.replace(/-/g, ' ')}</div>
                             </div>
                         </div>
-                        <div style="display:flex; justify-content: space-between; font-size:10px; font-weight:600; margin-bottom: 8px;">
-                            <div style="color: var(--text-muted);">SPEED <span style="color:var(--text-primary); margin-left:8px;">${bus.lastLocation.speed} km/h</span></div>
-                            <div style="color: var(--text-muted);">OCCUPANCY <span style="color:var(--text-primary); margin-left:8px;">${occPerc}%</span></div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${occColor}" style="width: ${occPerc}%;"></div>
-                        </div>
-                    `;
+                        ${isLiveBadge}
+                    </div>
+                    <div style="display:flex; justify-content: space-between; font-size:10px; font-weight:600; margin-bottom: 8px;">
+                        <div style="color: var(--text-muted);">DRIVER <span style="color:var(--text-primary); margin-left:8px;">${bus.assignedDriver}</span></div>
+                        <div style="color: var(--text-muted);">SPEED <span style="color:var(--text-primary); margin-left:8px;">${bus.lastLocation ? bus.lastLocation.speed : 0} km/h</span></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-weight:600; margin-bottom: 6px;">
+                        <span>OCCUPANCY</span><span style="color:var(--text-primary);">${bus.currentOccupancy}/${bus.capacity} (${occPerc}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${occColor}" style="width: ${occPerc}%;"></div>
+                    </div>
+                `;
                 fleetListEl.appendChild(card);
             }
         });
     }
 
+    const busMarkers = {};
+    const routePolylines = {};
+
     function renderLiveMap(buses) {
-        window.busSimulators = window.busSimulators || [];
-        window.busSimulators.forEach(clearInterval);
-        window.busSimulators = [];
-
-        // Clear existing map layers if we re-render, though this basic setup might not track them perfectly.
-        // For standard purposes we'll keep adding or track if needed.
-        
         buses.forEach(bus => {
-            if (bus.status === 'active') {
-                MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
-                    const route = rRes.data;
-                    if (!route || !route.stops.length) return;
-                    
-                    const marker = L.marker([route.stops[0].lat, route.stops[0].lng], { 
-                        icon: busIcon(bus.assignedRoute === 'route-1' ? 'var(--admin-primary)' : 'var(--primary)') 
-                    }).addTo(map)
-                      .bindPopup(`<b>${bus.busId}</b><br>Occupancy: ${Math.round((bus.currentOccupancy / bus.capacity) * 100)}%`);
+            if (bus.status !== 'active') return;
 
+            MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
+                const route = rRes.data;
+                if (!route || !route.stops.length) return;
+
+                const routeColor = route.color || '#3B82F6';
+
+                // Draw route polyline once per bus
+                if (!routePolylines[bus.busId]) {
                     const latlngs = route.stops.map(s => [s.lat, s.lng]);
-                    L.polyline(latlngs, { color: bus.assignedRoute === 'route-1' ? 'var(--admin-primary)' : 'var(--primary)', weight: 3, opacity: 0.6, dashArray: '5,5' }).addTo(map);
+                    routePolylines[bus.busId] = L.polyline(latlngs, {
+                        color: routeColor,
+                        weight: 3,
+                        opacity: 0.6,
+                        dashArray: '6,6'
+                    }).addTo(map);
+                }
 
-                    let currentStopIdx = 0;
-                    let progress = 0;
-
-                    const sim = setInterval(() => {
-                        if (currentStopIdx >= route.stops.length - 1) {
-                            currentStopIdx = 0;
-                            progress = 0;
-                        }
-                        
-                        const startStop = route.stops[currentStopIdx];
-                        const endStop = route.stops[currentStopIdx + 1];
-                        
-                        progress += 0.05;
-                        if (progress >= 1) {
-                            progress = 0;
-                            currentStopIdx++;
-                        }
-                        
-                        if (currentStopIdx < route.stops.length - 1) {
-                            const lat = startStop.lat + (endStop.lat - startStop.lat) * progress;
-                            const lng = startStop.lng + (endStop.lng - startStop.lng) * progress;
-                            marker.setLatLng([lat, lng]);
-                        }
-                    }, 500);
-                    window.busSimulators.push(sim);
-                });
-            }
+                // Place/update bus marker at real last-known location
+                const loc = (bus.lastLocation && bus.lastLocation.lat) ? bus.lastLocation : route.stops[0];
+                if (!busMarkers[bus.busId]) {
+                    busMarkers[bus.busId] = L.marker([loc.lat, loc.lng], {
+                        icon: busIcon(routeColor)
+                    }).addTo(map)
+                      .bindPopup(`<b>${bus.busId}</b><br>Driver: ${bus.assignedDriver}<br>Occupancy: ${bus.currentOccupancy}/${bus.capacity}`);
+                } else {
+                    busMarkers[bus.busId].setLatLng([loc.lat, loc.lng]);
+                    busMarkers[bus.busId].setPopupContent(
+                        `<b>${bus.busId}</b><br>Driver: ${bus.assignedDriver}<br>Occupancy: ${bus.currentOccupancy}/${bus.capacity}<br>${bus.isLive ? '🟢 Live' : '⚫ Idle'}`
+                    );
+                }
+            });
         });
     }
 
@@ -319,6 +315,17 @@
     });
 
     loadLiveFleet();
+
+    // Poll every 4 seconds for real-time updates
+    setInterval(() => {
+        MockAPI.getBuses().then(res => {
+            const buses = res.data;
+            renderFleetList(buses);
+            renderLiveMap(buses);
+            document.getElementById('active-units-count').innerText =
+                buses.filter(b => b.status === 'active').length + ' Active Units';
+        });
+    }, 4000);
 
     // Sync admin info
     if (state.user) {

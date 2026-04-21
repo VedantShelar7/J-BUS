@@ -367,8 +367,14 @@
 
             const chipsContainer = document.querySelector('.route-chips');
 
+            let routeSelected = false;
+
             function openRouteModal() {
-                document.getElementById('route-modal').style.display = 'flex';
+                const modal = document.getElementById('route-modal');
+                modal.style.display = 'flex';
+                // Hide close button if no route has been selected yet
+                const closeBtn = document.getElementById('route-modal-close-btn');
+                if (closeBtn) closeBtn.style.display = routeSelected ? 'block' : 'none';
             }
             function closeRouteModal() {
                 document.getElementById('route-modal').style.display = 'none';
@@ -398,6 +404,7 @@
                             div.className = 'route-choice-card';
                             div.onclick = () => {
                                 document.getElementById('active-route-label').innerText = r.routeName;
+                                routeSelected = true;
                                 closeRouteModal();
                                 renderRoute(r.id);
                             };
@@ -423,8 +430,8 @@
                         }
                         showLoader(false);
 
-                        document.getElementById('active-route-label').innerText = routes[0].routeName;
-                        renderRoute(routes[0].id);
+                        // Force the student to select a route — do NOT auto-load routes[0]
+                        openRouteModal();
                     }
                 });
             }
@@ -491,12 +498,11 @@
                 });
             }
 
-            // Global store for the running setTimeout animate loop
-            let busSimTimeout = null;
+            let busPollInterval = null;
+            let lastKnownLiveStatus = false;
 
             function startSim(busId) {
-                if (simulator) cancelAnimationFrame(simulator);
-                if (busSimTimeout) clearTimeout(busSimTimeout);
+                if (busPollInterval) clearInterval(busPollInterval);
                 
                 MockAPI.getBusById(busId).then(res => {
                     const bus = res.data;
@@ -508,83 +514,91 @@
 
                         if (busMarkers[busId]) map.removeLayer(busMarkers[busId]);
                         
-                        const roadPoints = await getRoadRoute(route.id, route.stops);
-
-                        const marker = L.marker([roadPoints[0][0], roadPoints[0][1]], { icon: getBusIcon(map.getZoom()) }).addTo(map);
+                        const startPoint = bus.lastLocation || { lat: route.stops[0].lat, lng: route.stops[0].lng };
+                        const marker = L.marker([startPoint.lat, startPoint.lng], { icon: getBusIcon(map.getZoom()) }).addTo(map);
                         
+                        // Let Leaflet inject the marker DOM, then add CSS transitions for smooth interpolation
+                        setTimeout(() => {
+                            const iconEl = marker.getElement();
+                            if (iconEl) {
+                                iconEl.style.transition = 'transform 3s linear';
+                                const svgDiv = iconEl.querySelector('div');
+                                if (svgDiv) svgDiv.style.transition = 'transform 0.5s ease';
+                            }
+                        }, 100);
+
                         map.on('zoomend', () => {
-                            if(marker) marker.setIcon(getBusIcon(map.getZoom()));
+                            if(marker) {
+                                marker.setIcon(getBusIcon(map.getZoom()));
+                                setTimeout(() => {
+                                    const iconEl = marker.getElement();
+                                    if (iconEl) iconEl.style.transition = 'transform 3s linear';
+                                }, 50);
+                            }
                         });
                         
                         busMarkers[busId] = marker;
+                        lastKnownLiveStatus = !!bus.isLive;
 
-                        let idx = 0;
-                        let currentStopIdx = 0;
-                        
-                        function updateHighlight(activeIdx) {
-                            stopMarkers.forEach((m, i) => {
-                                const isCurrent = (i === activeIdx);
-                                const color = (i === 0 || i === route.stops.length - 1) ? bColor : (isCurrent ? bColor : '#E2E8F0');
-                                m.setIcon(stopIcon(color, isCurrent));
-                            });
-                        }
-                        
-                        function animate() {
-                            if (idx >= roadPoints.length - 1) {
-                                // Completed route
-                                idx = 0;
-                                currentStopIdx = 0;
-                                updateHighlight(-1);
-                            }
+                        let prevLat = startPoint.lat;
+                        let prevLng = startPoint.lng;
 
-                            const cur = roadPoints[idx];
-                            const nxt = roadPoints[idx + 1];
+                        busPollInterval = setInterval(() => {
+                            MockAPI.getBusById(busId).then(bRes => {
+                                const currentBus = bRes.data;
+                                if (!currentBus) return;
 
-                            // OSRM [lat, lng], leaflet requires Math.atan2 with dy, dx across map
-                            const dy = nxt[0] - cur[0];
-                            const dx = nxt[1] - cur[1];
-                            const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
-
-                            const latlng = L.latLng(cur[0], cur[1]);
-                            marker.setLatLng(latlng);
-                            
-                            const el = marker.getElement();
-                            if (el) {
-                                const iconContainer = el.querySelector('div');
-                                if (iconContainer) iconContainer.style.transform = `rotate(${angle}deg)`;
-                            }
-
-                            idx++;
-                            
-                            // Check if bus is passing through a designated stop
-                            let isAtStop = false;
-                            if (currentStopIdx < route.stops.length) {
-                                const targetStop = route.stops[currentStopIdx];
-                                const dist = getDist(cur[0], cur[1], targetStop.lat, targetStop.lng);
-                                // if within 30 meters to the raw stop point, we count it as arrived
-                                if (dist < 30) {
-                                    isAtStop = true;
-                                    updateHighlight(currentStopIdx);
-                                    currentStopIdx++;
+                                // Notification trigger
+                                if (!lastKnownLiveStatus && currentBus.isLive) {
+                                    showToast("Live Tracking Started", "The driver is now broadcasting real-time location!");
                                 }
-                            }
-                            
-                            if (isAtStop) {
-                                busSimTimeout = setTimeout(animate, 2000); // Wait 2s at stop
-                            } else {
-                                busSimTimeout = setTimeout(animate, 80);
-                            }
+                                lastKnownLiveStatus = !!currentBus.isLive;
 
-                            // Update Speed UI occasionally
-                            if (Math.random() > 0.9) {
-                                const speed = Math.floor(20 + Math.random() * 10);
+                                if (currentBus.lastLocation) {
+                                    const lat = currentBus.lastLocation.lat;
+                                    const lng = currentBus.lastLocation.lng;
+                                    
+                                    if (lat !== prevLat || lng !== prevLng) {
+                                        // Calculate angle based on vector from last point
+                                        const dy = lat - prevLat;
+                                        const dx = lng - prevLng;
+                                        const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                                        
+                                        marker.setLatLng([lat, lng]);
+                                        
+                                        const el = marker.getElement();
+                                        if (el) {
+                                            const iconContainer = el.querySelector('div');
+                                            if (iconContainer) iconContainer.style.transform = `rotate(${angle}deg)`;
+                                        }
+
+                                        prevLat = lat;
+                                        prevLng = lng;
+                                        
+                                        // Highlight nearest stop if they are close
+                                        let nearestIdx = -1;
+                                        let minDist = 100;
+                                        route.stops.forEach((s, idx) => {
+                                            const d = getDist(lat, lng, s.lat, s.lng);
+                                            if (d < minDist) { minDist = d; nearestIdx = idx; }
+                                        });
+
+                                        const rColor = route.color || '#3B82F6';
+                                        stopMarkers.forEach((m, i) => {
+                                            const isCurrent = (i === nearestIdx && minDist < 50);
+                                            const color = (i === 0 || i === route.stops.length - 1) ? rColor : (isCurrent ? rColor : '#E2E8F0');
+                                            m.setIcon(stopIcon(color, isCurrent));
+                                        });
+                                    }
+                                }
+
+                                // Update Speed UI occasionally based on real speed
+                                const speedInfo = Math.floor((currentBus.lastLocation && currentBus.lastLocation.speed) || 0);
                                 const speedEl = document.querySelector('.next-arrival-card div:last-child div:first-child');
-                                if (speedEl) speedEl.innerText = speed + ' km/h';
-                            }
-                        }
-                        
-                        updateHighlight(0);
-                        animate();
+                                if (speedEl) speedEl.innerText = speedInfo + ' km/h';
+
+                            });
+                        }, 3000); // Poll every 3 sections
                     });
                 });
             }
@@ -613,7 +627,9 @@
         <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 20px;">Select Transit Route</h2>
-                <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                <div id="route-modal-close-btn">
+                    <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
             </div>
             <div id="route-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
                 <!-- Rendered via JS -->

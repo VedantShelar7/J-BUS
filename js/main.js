@@ -72,12 +72,15 @@ const MockAPI = {
             return { success: false, data: null };
         }
     },
-    updateBusLocation: async (busId, lat, lng, speed) => {
+    updateBusLocation: async (busId, lat, lng, speed, isLive = null, assignedRoute = null) => {
         try {
+            const body = { lat, lng, speed };
+            if (isLive !== null) body.isLive = isLive;
+            if (assignedRoute !== null) body.assignedRoute = assignedRoute;
             const res = await fetch(`/api/buses/${busId}/location`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lat, lng, speed })
+                body: JSON.stringify(body)
             });
             return await res.json();
         } catch (e) {
@@ -145,7 +148,8 @@ function handleLogin(event) {
 
     if (isRegister) {
         const name = document.getElementById('reg-name').value;
-        MockAPI.register({ name, email, password, role: state.role }).then(res => {
+        const mobileNo = document.getElementById('reg-mobile').value || null;
+        MockAPI.register({ name, email, password, role: state.role, mobileNo }).then(res => {
             if (res.success) {
                 showToast('Registration Successful!', 'Sign in with your new account');
                 toggleLoginMode();
@@ -182,6 +186,7 @@ function toggleLoginMode() {
     const btn = document.querySelector('form button[type="submit"]');
     const footerText = document.querySelector('.login-footer');
     const regNameGroup = document.getElementById('reg-name-group');
+    const regMobileGroup = document.getElementById('reg-mobile-group');
 
     if (document.body.classList.contains('mode-register')) {
         title.innerText = 'Create Account';
@@ -189,12 +194,14 @@ function toggleLoginMode() {
         btn.innerText = 'Register for Velocity';
         footerText.innerHTML = 'Already have an account? <a href="#" onclick="toggleLoginMode()" style="color:var(--primary); font-weight:600;">Sign In</a>';
         if(regNameGroup) regNameGroup.style.display = 'block';
+        if(regMobileGroup) regMobileGroup.style.display = 'block';
     } else {
         title.innerText = 'Welcome back';
         subtitle.innerText = 'Please enter your details to sign in.';
         btn.innerText = 'Sign In to Velocity';
         footerText.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleLoginMode()" style="color:var(--primary); font-weight:600;">Create Account</a>';
         if(regNameGroup) regNameGroup.style.display = 'none';
+        if(regMobileGroup) regMobileGroup.style.display = 'none';
     }
 }
 
