@@ -15,6 +15,17 @@
 </head>
 <body>
 
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+        </div>
+        <div class="loading-text">Velocity</div>
+        <div class="loading-spinner"></div>
+    </div>
+</div>
+
 <div id="app">
     <!-- ============== DRIVER DASHBOARD ============== -->
     <div id="page-driver" class="page dashboard-layout active">
@@ -29,11 +40,11 @@
             
             <div class="user-card">
                 <div class="user-card-avatar" style="background: var(--tertiary);">
-                    <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=10B981&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
+                    <img src="https://ui-avatars.com/api/?name=Driver&background=10B981&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
                 </div>
                 <div class="user-card-info">
-                    <h4>Ravi Kumar</h4>
-                    <p>Driver ID: DR-402</p>
+                    <h4>Driver Loading...</h4>
+                    <p>Driver ID: ...</p>
                 </div>
             </div>
             
@@ -282,7 +293,7 @@
         });
     }
 
-    function loadAndSelectRoute(bus) {
+    function loadAndSelectRoute() {
         document.getElementById('route-modal').style.display = 'flex';
         MockAPI.getRoutes().then(res => {
             const routes = res.data.filter(r => r.isActive);
@@ -293,13 +304,9 @@
                 div.className = 'route-choice-card';
                 div.onclick = () => {
                     document.getElementById('route-modal').style.display = 'none';
-                    bus.assignedRoute = r.id; 
-                    renderRoute(r.id);
-                    initDriverMap(bus);
-                    MockAPI.updateBusLocation(bus.busId, 0, 0, 0, null, r.id);
-                    
-                    const labelH3 = document.querySelector('.label[style*="color: var(--primary)"]').nextElementSibling;
-                    if (labelH3) labelH3.innerText = r.routeName;
+                    window.pendingRouteId = r.id;
+                    window.pendingRouteName = r.routeName;
+                    showBusModal();
                 };
                 div.innerHTML = `
                     <div style="width: 6px; height: 40px; background: ${r.color || '#3B82F6'}; border-radius: 4px;"></div>
@@ -313,27 +320,60 @@
         });
     }
 
+    function showBusModal() {
+        document.getElementById('bus-modal').style.display = 'flex';
+        MockAPI.getBuses().then(res => {
+            const listObj = document.getElementById('bus-modal-list');
+            listObj.innerHTML = '';
+            res.data.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'route-choice-card';
+                div.onclick = () => {
+                    document.getElementById('bus-modal').style.display = 'none';
+                    
+                    const rId = window.pendingRouteId;
+                    const rName = window.pendingRouteName;
+                    
+                    window.currentBusId = b.busId;
+                    
+                    // Update UI stats
+                    document.querySelector('.user-card-info p').innerText = 'Bus #' + b.busId.split('-')[1];
+                    document.querySelector('h1').innerText = b.currentOccupancy + '/' + b.capacity;
+                    const progressBar = document.querySelector('.dash-left .card:nth-of-type(2) > div:nth-of-type(3) > div');
+                    if (progressBar) {
+                        progressBar.style.width = (b.currentOccupancy / b.capacity * 100) + '%';
+                    }
+
+                    renderRoute(rId);
+                    initDriverMap(b);
+                    
+                    // Assign driver info to the bus
+                    MockAPI.updateBusLocation(b.busId, 0, 0, 0, false, rId, user.name, user.mobileNo || '+91 00000 00000');
+                    
+                    const labelH3 = document.querySelector('.label[style*="color: var(--primary)"]').nextElementSibling;
+                    if (labelH3) labelH3.innerText = rName;
+                };
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 16px; color: var(--text);">Bus ${b.busId}</div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Capacity: ${b.capacity} &nbsp;|&nbsp; ${b.assignedDriver ? 'Assigned to ' + b.assignedDriver : '<span style="color:var(--tertiary);">Unassigned</span>'}</div>
+                    </div>
+                `;
+                listObj.appendChild(div);
+            });
+        });
+    }
+
     // Sync user data
     if (user) {
         document.querySelectorAll('h4').forEach(h => {
-             if (h.innerText === 'Ravi Kumar') h.innerText = user.name;
+             if (h.innerText === 'Driver Loading...') h.innerText = user.name;
         });
         document.querySelectorAll('.avatar img, .user-card-avatar img').forEach(img => {
             img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=10B981&color=fff`;
         });
         
-        // Load bus and route for this driver
-        MockAPI.getBuses().then(res => {
-            const bus = res.data.find(b => b.assignedDriver === user.name || b.busId === user.busId);
-            if (bus) {
-                window.currentBusId = bus.busId;
-                document.querySelector('.user-card-info p').innerText = 'Bus ID: ' + bus.busId;
-                document.querySelector('h1').innerText = bus.currentOccupancy + '/' + bus.capacity;
-                document.querySelector('h1').nextElementSibling.nextElementSibling.firstElementChild.style.width = (bus.currentOccupancy / bus.capacity * 100) + '%';
-                
-                loadAndSelectRoute(bus);
-            }
-        });
+        loadAndSelectRoute();
     }
 
     function renderRoute(routeId) {
@@ -491,10 +531,30 @@
         </div>
     </div>
 </div>
+
+<!-- Bus Selection Modal -->
+<div id="bus-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+    <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px;">Select Your Bus</h2>
+        </div>
+        <div id="bus-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+            <!-- Rendered via JS -->
+        </div>
+    </div>
+</div>
 <style>
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
 .route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 </style>
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const ls = document.getElementById('loading-screen');
+            if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+        }, 600);
+    });
+</script>
 </body>
 </html>

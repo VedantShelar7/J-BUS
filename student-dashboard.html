@@ -19,6 +19,17 @@
 
 <body>
 
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+        </div>
+        <div class="loading-text">Velocity</div>
+        <div class="loading-spinner"></div>
+    </div>
+</div>
+
     <div id="app">
         <!-- ============== STUDENT DASHBOARD ============== -->
         <div id="page-student" class="page dashboard-layout active">
@@ -146,7 +157,7 @@
                                 style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                                 <div>
                                     <span class="pill pill-tertiary">ARRIVING</span>
-                                    <h1 style="margin-top: 8px;">Bus #42</h1>
+                                    <h1 id="arrived-bus-id" style="margin-top: 8px;">Bus #--</h1>
                                 </div>
                                 <div class="brand-icon" style="border-radius: var(--radius-md);">
                                     <svg class="icon" viewBox="0 0 24 24">
@@ -159,27 +170,29 @@
                             <div
                                 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: var(--neutral); border-radius: var(--radius-md);">
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=3B82F6&color=fff"
+                                    <img id="arrived-driver-avatar" src="https://ui-avatars.com/api/?name=Waiting+for+Driver&background=3B82F6&color=fff"
                                         alt="" style="width: 36px; height: 36px; border-radius: 50%;">
                                     <div>
                                         <div class="label"
                                             style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">
                                             DRIVER</div>
-                                        <div style="font-weight: 600; font-size: 14px;">Ravi Kumar</div>
+                                        <div id="arrived-driver-name" style="font-weight: 600; font-size: 14px;">Waiting for Driver...</div>
                                     </div>
                                 </div>
-                                <svg class="icon" style="color: var(--primary); width: 16px; height: 16px;"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                                </svg>
+                                <a href="#" id="driver-call-btn" style="display: flex; align-items: center; justify-content: center; transition: 0.2s;">
+                                    <svg class="icon" style="color: var(--primary); width: 16px; height: 16px;"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                                    </svg>
+                                </a>
                             </div>
 
-                            <p
+                            <p  id="arrived-route-desc"
                                 style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                                 <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
                                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
-                                </svg> Heading to Main Campus Gate...
+                                </svg> Waiting for bus assignment...
                             </p>
 
                             <button class="btn btn-primary btn-full">Track Bus <svg class="icon" viewBox="0 0 24 24">
@@ -495,10 +508,25 @@
                     const bus = res.data.find(b => b.assignedRoute === routeId);
                     
                     if (bus) {
-                        document.querySelector('h1').innerText = 'Bus #' + bus.busId.split('-')[1];
-                        document.querySelector('.label + div + div').nextElementSibling.innerText = ' Heading to ' + bus.assignedRoute.replace(/-/g, ' ') + '...';
-                        document.querySelector('img[alt=""]').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bus.assignedDriver)}&background=3B82F6&color=fff`;
-                        document.querySelector('.label + div + div div:last-child').innerText = bus.assignedDriver;
+                        document.getElementById('arrived-bus-id').innerText = 'Bus #' + bus.busId.split('-')[1];
+                        document.getElementById('arrived-route-desc').innerHTML = `<svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg> Heading to ${bus.assignedRoute.replace(/-/g, ' ')}...`;
+                        
+                        const driverName = bus.assignedDriver || "Unknown Driver";
+                        document.getElementById('arrived-driver-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(driverName)}&background=3B82F6&color=fff`;
+                        document.getElementById('arrived-driver-name').innerText = driverName;
+                        
+                        const callBtn = document.getElementById('driver-call-btn');
+                        if (callBtn) {
+                            if (bus.driverPhone) {
+                                callBtn.href = 'tel:' + bus.driverPhone;
+                                callBtn.style.opacity = '1';
+                                callBtn.style.pointerEvents = 'auto';
+                            } else {
+                                callBtn.removeAttribute('href');
+                                callBtn.style.opacity = '0.3';
+                                callBtn.style.pointerEvents = 'none';
+                            }
+                        }
                         
                         startSim(bus.busId);
                     }
@@ -648,5 +676,13 @@
     .route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
     .route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     </style>
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const ls = document.getElementById('loading-screen');
+            if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+        }, 600);
+    });
+</script>
 </body>
 </html>

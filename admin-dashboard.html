@@ -15,6 +15,17 @@
 </head>
 <body>
 
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+        </div>
+        <div class="loading-text">Velocity</div>
+        <div class="loading-spinner"></div>
+    </div>
+</div>
+
 <div id="app">
     <!-- ============== ADMIN CONSOLE ============== -->
     <div id="page-admin" class="page dashboard-layout active">
@@ -109,25 +120,25 @@
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">directions_bus</div>
                         <div class="label" style="color: var(--text-muted);">TOTAL BUSES</div>
-                        <h1 style="font-size: 32px;">20</h1>
+                        <h1 id="stat-total-buses" style="font-size: 32px;">0</h1>
                         <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +2 this month</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">alt_route</div>
                         <div class="label" style="color: var(--text-muted);">ACTIVE ROUTES</div>
-                        <h1 style="font-size: 32px;">05</h1>
+                        <h1 id="stat-active-routes" style="font-size: 32px;">0</h1>
                         <div style="font-size: 12px; color: var(--text-muted);">Operating normally</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">group</div>
                         <div class="label" style="color: var(--text-muted);">STUDENTS</div>
-                        <h1 style="font-size: 32px;">1,500</h1>
+                        <h1 id="stat-students" style="font-size: 32px;">1,500</h1>
                         <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +12% growth</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">badge</div>
                         <div class="label" style="color: var(--text-muted);">DRIVERS</div>
-                        <h1 style="font-size: 32px;">25</h1>
+                        <h1 id="stat-drivers" style="font-size: 32px;">0</h1>
                         <div style="font-size: 12px; color: var(--warning); font-weight: 500;">warning 3 On Leave</div>
                     </div>
                 </div>
@@ -152,38 +163,8 @@
                                         <th style="padding: 16px 24px; text-align: right;" class="label">ACTIONS</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr style="border-bottom: 1px solid var(--border-refined);">
-                                        <td style="padding: 16px 24px; font-weight: 600;">V-102</td>
-                                        <td style="padding: 16px 24px; width: 150px;">North Campus Express</td>
-                                        <td style="padding: 16px 24px;">
-                                            <div style="display: flex; align-items: center; gap: 12px;">
-                                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">JD</div>
-                                                <span style="font-weight: 500;">John Doe</span>
-                                            </div>
-                                        </td>
-                                        <td style="padding: 16px 24px;"><span class="pill pill-tertiary">ACTIVE</span></td>
-                                        <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border-refined);">
-                                        <td style="padding: 16px 24px; font-weight: 600;">V-108</td>
-                                        <td style="padding: 16px 24px; width: 150px;">West Side Shuttle</td>
-                                        <td style="padding: 16px 24px;">
-                                            <div style="display: flex; align-items: center; gap: 12px;">
-                                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">SM</div>
-                                                <span style="font-weight: 500;">Sara Miller</span>
-                                            </div>
-                                        </td>
-                                        <td style="padding: 16px 24px;"><span class="pill pill-tertiary">ACTIVE</span></td>
-                                        <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 16px 24px; font-weight: 600;">V-115</td>
-                                        <td style="padding: 16px 24px; width: 150px;">Downtown Connector</td>
-                                        <td style="padding: 16px 24px; color: var(--text-muted); font-style: italic;">Unassigned</td>
-                                        <td style="padding: 16px 24px;"><span class="pill pill-neutral">IDLE</span></td>
-                                        <td style="padding: 16px 24px; text-align: right;"><a href="#" style="font-weight: 500;">Assign Driver</a></td>
-                                    </tr>
+                                <tbody id="fleet-table-body">
+                                    <!-- Rendered dynamically -->
                                 </tbody>
                             </table>
                             <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted);">
@@ -420,28 +401,104 @@
     searchInput.addEventListener('input', (e) => {
         const q = e.target.value.toLowerCase();
         MockAPI.getBuses().then(res => {
-            const filtered = res.data.filter(b => b.busId.toLowerCase().includes(q) || b.assignedRoute.toLowerCase().includes(q) || b.assignedDriver.toLowerCase().includes(q));
-            renderFleetTable(filtered);
-        });
-    });
-
-    loadFleetData();
-
-    // Sync admin info
-    if (state.user) {
-        document.querySelectorAll('h4').forEach(h => {
-             if (h.innerText === 'Admin User') h.innerText = state.user.name;
-        });
-        document.querySelectorAll('.avatar img, .user-card-avatar img').forEach(img => {
-            img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(state.user.name)}&background=0F172A&color=fff`;
+            iconAnchor: [size[0]/2, size[1]/2]
         });
     }
+
+    async function fetchAndRenderData() {
+        const resBuses = await MockAPI.getBuses();
+        const resRoutes = await MockAPI.getRoutes();
+        
+        if (resBuses.success && resRoutes.success) {
+            const buses = resBuses.data;
+            const routes = resRoutes.data;
+            
+            // --- Stats ---
+            let activeRoutes = new Set();
+            let uniqueDrivers = 0;
+            
+            buses.forEach(b => {
+                if (b.assignedDriver) uniqueDrivers++;
+                if (b.isLive && b.assignedRoute) activeRoutes.add(b.assignedRoute);
+            });
+            
+            document.getElementById('stat-total-buses').innerText = buses.length;
+            document.getElementById('stat-active-routes').innerText = activeRoutes.size;
+            document.getElementById('stat-drivers').innerText = uniqueDrivers;
+            
+            // --- Fleet Table ---
+            const tbody = document.getElementById('fleet-table-body');
+            tbody.innerHTML = '';
+            
+            buses.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-refined)';
+                
+                const routeName = b.assignedRoute ? (routes.find(r => r.id === b.assignedRoute)?.routeName || 'Unknown') : '-';
+                
+                let driverCol = `<td style="padding: 16px 24px; color: var(--text-muted); font-style: italic;">Unassigned</td>`;
+                if (b.assignedDriver) {
+                    const initials = b.assignedDriver.split(' ').map(n=>n[0]).join('').substring(0,2) || 'XX';
+                    driverCol = `
+                        <td style="padding: 16px 24px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${initials}</div>
+                                <span style="font-weight: 500;">${b.assignedDriver}</span>
+                            </div>
+                        </td>`;
+                }
+                
+                let statusBadge = `<span class="pill pill-neutral">IDLE</span>`;
+                if (b.isLive) {
+                    statusBadge = `<span class="pill pill-tertiary">ACTIVE</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="padding: 16px 24px; font-weight: 600;">${b.busId}</td>
+                    <td style="padding: 16px 24px; width: 150px;">${routeName}</td>
+                    ${driverCol}
+                    <td style="padding: 16px 24px;">${statusBadge}</td>
+                    <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // --- Map Tracking ---
+            buses.filter(b => b.isLive && b.lastLocation).forEach(bus => {
+                const loc = bus.lastLocation;
+                if (!busMarkers[bus.busId]) {
+                    busMarkers[bus.busId] = L.marker([loc.lat, loc.lng], { icon: getBusIcon(map.getZoom()) }).addTo(map);
+                    busMarkers[bus.busId].bindTooltip(`Bus ${bus.busId.split('-')[1]} (${bus.assignedDriver})`, { permanent: true, direction: 'top', offset: [0, -10] });
+                } else {
+                    busMarkers[bus.busId].setLatLng([loc.lat, loc.lng]);
+                }
+            });
+            
+            // Remove offline buses
+            Object.keys(busMarkers).forEach(id => {
+                const busData = buses.find(b => b.busId === id);
+                if (!busData || !busData.isLive) {
+                    map.removeLayer(busMarkers[id]);
+                    delete busMarkers[id];
+                }
+            });
+            
+            map.on('zoomend', () => {
+                Object.values(busMarkers).forEach(m => m.setIcon(getBusIcon(map.getZoom())));
+            });
+        }
+    }
+    
+    // Initial fetch
+    fetchAndRenderData();
+    // Poll every 5s
+    setInterval(fetchAndRenderData, 5000);
 })();
 </script>
 <!-- Floating btn when sidebar is collapsed -->
 <div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
     <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
 </div>
+</div>
 </body>
 </html>
-

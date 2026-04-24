@@ -121,7 +121,7 @@ app.get('/api/buses/:busId', (req, res) => {
 
 // PATCH /api/buses/:busId/location
 app.patch('/api/buses/:busId/location', (req, res) => {
-    const { lat, lng, speed, isLive, assignedRoute } = req.body;
+    const { lat, lng, speed, isLive, assignedRoute, assignedDriver, driverPhone } = req.body;
     const buses = readJSON('buses.json');
     const bus = buses.find(b => b.busId === req.params.busId);
     if (!bus) {
@@ -132,6 +132,12 @@ app.patch('/api/buses/:busId/location', (req, res) => {
     }
     if (assignedRoute) {
         bus.assignedRoute = assignedRoute;
+    }
+    if (assignedDriver) {
+        bus.assignedDriver = assignedDriver;
+    }
+    if (driverPhone) {
+        bus.driverPhone = driverPhone;
     }
     bus.lastLocation = { lat, lng, speed: speed || 0, updatedAt: new Date().toISOString() };
     writeJSON('buses.json', buses);

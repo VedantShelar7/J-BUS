@@ -13,6 +13,17 @@
 </head>
 <body>
 
+<!-- Loading Screen -->
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+        </div>
+        <div class="loading-text">Velocity</div>
+        <div class="loading-spinner"></div>
+    </div>
+</div>
+
 <div id="app">
     <!-- ============== LOGIN PAGE ============== -->
     <div id="page-login" class="page active">
@@ -71,6 +82,12 @@
                             <input type="text" class="form-input" placeholder="Enter your full name" id="reg-name">
                         </div>
 
+                        <div class="input-group" id="reg-usn-group" style="display: none;">
+                            <label class="input-label" style="display:none;" for="reg-usn">USN</label>
+                            <svg class="input-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            <input type="text" class="form-input" placeholder="Enter your USN (e.g. 2GI22CS001)" id="reg-usn">
+                        </div>
+
                         <div class="input-group" id="reg-mobile-group" style="display: none;">
                             <label class="input-label" style="display:none;" for="reg-mobile">Mobile Number</label>
                             <svg class="input-icon" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
@@ -98,7 +115,6 @@
                     <div class="divider"><span>OR</span></div>
 
                     <button type="button" class="btn btn-outlined btn-full" style="border-radius: var(--radius-pill); border-color: var(--border);">
-                        <!-- Adding width/height here explicitly just in case -->
                         <svg style="width:20px; height:20px;" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.94l3.68-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.06l3.68 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
                         Sign in with Google
                     </button>
@@ -121,6 +137,15 @@
 <!-- JS -->
 <script src="js/mockData.js"></script>
 <script src="js/main.js"></script>
+<script>
+    // Hide loading screen after page loads
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const ls = document.getElementById('loading-screen');
+            if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+        }, 600);
+    });
+</script>
 
 </body>
 </html>

@@ -1,14 +1,13 @@
 const state = {
-    role: 'student', // student | driver | admin
+    role: 'student',
     timer: 8,
     timerSpeed: 24,
     user: JSON.parse(sessionStorage.getItem('velocity_user')) || null,
-    fleet: JSON.parse(localStorage.getItem('velocity_fleet')) || (window.MockData ? window.MockData.buses : []),
     notifications: [],
     liveBuses: []
 };
 
-// Mock API Layer
+// API Layer
 const MockAPI = {
     login: async (email, password, role) => {
         try {
@@ -74,11 +73,13 @@ const MockAPI = {
             return { success: false, data: null };
         }
     },
-    updateBusLocation: async (busId, lat, lng, speed, isLive = null, assignedRoute = null) => {
+    updateBusLocation: async (busId, lat, lng, speed, isLive = null, assignedRoute = null, assignedDriver = null, driverPhone = null) => {
         try {
             const body = { lat, lng, speed };
             if (isLive !== null) body.isLive = isLive;
             if (assignedRoute !== null) body.assignedRoute = assignedRoute;
+            if (assignedDriver !== null) body.assignedDriver = assignedDriver;
+            if (driverPhone !== null) body.driverPhone = driverPhone;
             const res = await fetch(`/api/buses/${busId}/location`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -89,17 +90,26 @@ const MockAPI = {
             console.error('updateBusLocation error:', e);
             return { success: false };
         }
+    },
+    getAdminDashboard: async () => {
+        try {
+            const res = await fetch('/api/admin/dashboard');
+            return await res.json();
+        } catch (e) {
+            console.error('getAdminDashboard error:', e);
+            return { success: false, data: {} };
+        }
     }
 };
 
 window.MockAPI = MockAPI;
 
-// Initialize Theme and Auth on load
+// ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    // Only check auth if not on login page
     if (!document.getElementById('page-login')) {
         checkAuth();
+        populateUserUI();
         initNotifications();
         startNotificationPoller();
     }
@@ -107,11 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initTheme() {
     const isDark = localStorage.getItem('velocity_dark_mode') === 'true';
-    if (isDark) {
-        document.body.classList.add('dark-theme');
-    }
-    
-    // Auto-detect admin theme from filename or session
+    if (isDark) document.body.classList.add('dark-theme');
     if (window.location.pathname.includes('admin') || (state.user && state.user.role === 'admin')) {
         document.body.classList.add('theme-admin');
     }
@@ -122,13 +128,8 @@ function toggleDarkMode() {
     body.classList.toggle('dark-theme');
     const isDark = body.classList.contains('dark-theme');
     localStorage.setItem('velocity_dark_mode', isDark);
-    
-    // Update any toggle switches on the page
     const switches = document.querySelectorAll('.toggle-switch[data-type="dark-mode"]');
-    switches.forEach(s => {
-        if (isDark) s.classList.add('active');
-        else s.classList.remove('active');
-    });
+    switches.forEach(s => { if (isDark) s.classList.add('active'); else s.classList.remove('active'); });
 }
 
 function checkAuth() {
@@ -137,11 +138,54 @@ function checkAuth() {
     }
 }
 
-// Role tabs logic for Login Page
+// ==================== POPULATE USER UI ====================
+// Replaces all hardcoded placeholders with session user data
+function populateUserUI() {
+    if (!state.user) return;
+    const user = state.user;
+    
+    // Sidebar user card
+    const sidebarName = document.querySelector('.user-card-info h4');
+    const sidebarSub = document.querySelector('.user-card-info p');
+    const sidebarAvatar = document.querySelector('.user-card-avatar img');
+    
+    if (sidebarName) sidebarName.innerText = user.name;
+    if (sidebarSub) {
+        if (user.role === 'student') sidebarSub.innerText = user.usn ? 'USN: ' + user.usn : 'Student';
+        else if (user.role === 'driver') sidebarSub.innerText = 'Driver';
+        else sidebarSub.innerText = 'System Administrator';
+    }
+    if (sidebarAvatar) {
+        const bg = user.role === 'admin' ? '0F172A' : user.role === 'driver' ? '10B981' : '0F172A';
+        sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=${bg}&color=fff`;
+    }
+    
+    // Topbar avatar
+    document.querySelectorAll('.topbar-right .avatar img').forEach(img => {
+        const bg = user.role === 'admin' ? '0F172A' : user.role === 'driver' ? '10B981' : '0F172A';
+        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=${bg}&color=fff`;
+    });
+    
+    // Admin sidebar name
+    const adminSidebarName = document.getElementById('sidebar-user-name');
+    if (adminSidebarName) adminSidebarName.innerText = user.name;
+    
+    // Topbar user name display
+    const topbarUserName = document.getElementById('topbar-user-name');
+    if (topbarUserName) topbarUserName.innerText = user.name;
+}
+
+// ==================== LOGIN / REGISTER ====================
 function switchLoginRole(element) {
     document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
     element.classList.add('active');
     state.role = element.dataset.role;
+    
+    // Toggle USN field visibility based on role (only in register mode)
+    const usnGroup = document.getElementById('reg-usn-group');
+    if (usnGroup && document.body.classList.contains('mode-register')) {
+        usnGroup.style.display = state.role === 'student' ? 'block' : 'none';
+    }
 }
 
 function handleLogin(event) {
@@ -153,7 +197,13 @@ function handleLogin(event) {
     if (isRegister) {
         const name = document.getElementById('reg-name').value;
         const mobileNo = document.getElementById('reg-mobile').value || null;
-        MockAPI.register({ name, email, password, role: state.role, mobileNo }).then(res => {
+        const usn = document.getElementById('reg-usn') ? document.getElementById('reg-usn').value || null : null;
+        
+        if (!name) { alert('Please enter your full name.'); return; }
+        if (!mobileNo) { alert('Please enter your mobile number.'); return; }
+        if (state.role === 'student' && !usn) { alert('Please enter your USN.'); return; }
+        
+        MockAPI.register({ name, email, password, role: state.role, mobileNo, usn }).then(res => {
             if (res.success) {
                 showToast('Registration Successful!', 'Sign in with your new account');
                 toggleLoginMode();
@@ -162,6 +212,7 @@ function handleLogin(event) {
             }
         });
     } else {
+        showLoadingScreen();
         MockAPI.login(email, password, state.role)
         .then(data => {
             if (data.success) {
@@ -174,10 +225,12 @@ function handleLogin(event) {
                     else if (role === 'admin') window.location.href = 'admin-dashboard.html';
                 }, 800);
             } else {
+                hideLoadingScreen();
                 alert(data.message || 'Login failed');
             }
         })
         .catch(() => {
+            hideLoadingScreen();
             alert('An error occurred during login');
         });
     }
@@ -191,6 +244,7 @@ function toggleLoginMode() {
     const footerText = document.querySelector('.login-footer');
     const regNameGroup = document.getElementById('reg-name-group');
     const regMobileGroup = document.getElementById('reg-mobile-group');
+    const regUsnGroup = document.getElementById('reg-usn-group');
 
     if (document.body.classList.contains('mode-register')) {
         title.innerText = 'Create Account';
@@ -199,6 +253,7 @@ function toggleLoginMode() {
         footerText.innerHTML = 'Already have an account? <a href="#" onclick="toggleLoginMode()" style="color:var(--primary); font-weight:600;">Sign In</a>';
         if(regNameGroup) regNameGroup.style.display = 'block';
         if(regMobileGroup) regMobileGroup.style.display = 'block';
+        if(regUsnGroup) regUsnGroup.style.display = state.role === 'student' ? 'block' : 'none';
     } else {
         title.innerText = 'Welcome back';
         subtitle.innerText = 'Please enter your details to sign in.';
@@ -206,10 +261,40 @@ function toggleLoginMode() {
         footerText.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleLoginMode()" style="color:var(--primary); font-weight:600;">Create Account</a>';
         if(regNameGroup) regNameGroup.style.display = 'none';
         if(regMobileGroup) regMobileGroup.style.display = 'none';
+        if(regUsnGroup) regUsnGroup.style.display = 'none';
     }
 }
 
-// Dropdown Toggles
+// ==================== LOADING SCREEN ====================
+function showLoadingScreen() {
+    let ls = document.getElementById('loading-screen');
+    if (!ls) {
+        ls = document.createElement('div');
+        ls.id = 'loading-screen';
+        ls.className = 'loading-screen';
+        ls.innerHTML = `
+            <div class="loading-content">
+                <div class="loading-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div class="loading-text">Velocity</div>
+                <div class="loading-spinner"></div>
+            </div>`;
+        document.body.appendChild(ls);
+    }
+    ls.classList.remove('fade-out');
+    ls.style.display = 'flex';
+}
+
+function hideLoadingScreen() {
+    const ls = document.getElementById('loading-screen');
+    if (ls) {
+        ls.classList.add('fade-out');
+        setTimeout(() => { ls.style.display = 'none'; }, 500);
+    }
+}
+
+// ==================== DROPDOWN / NAV / SIDEBAR ====================
 function toggleDropdown(id) {
     document.querySelectorAll('.dropdown-menu').forEach(el => {
         if(el.id !== id) el.classList.remove('active');
@@ -218,48 +303,36 @@ function toggleDropdown(id) {
     if(d) d.classList.toggle('active');
 }
 
-// Close dropdowns on outside click
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.dropdown')) {
         document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('active'));
     }
 });
 
-// Sidebar navigation active state
 function switchNav(element, targetPage) {
     const parent = element.parentElement;
     parent.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
-    
-    if (targetPage) {
-        window.location.href = targetPage;
-    }
+    if (targetPage) window.location.href = targetPage;
 }
 
-// Collapsible Panels logic
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.querySelector('.collapsed-sidebar-btn');
-    
-    // Check if we are on mobile/tablet (using the 850px breakpoint from CSS)
     const isMobile = window.innerWidth <= 850;
     
     if (sidebar) {
         if (isMobile) {
-            // Mobile: Toggle active class for slide-in drawer
             sidebar.classList.toggle('active');
-            
-            // Toggle overlay
             let overlay = document.querySelector('.sidebar-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.className = 'sidebar-overlay';
                 document.body.appendChild(overlay);
-                overlay.onclick = toggleSidebar; // Close when clicking overlay
+                overlay.onclick = toggleSidebar;
             }
             overlay.classList.toggle('active');
         } else {
-            // Desktop: Toggle collapsed class for width shrink
             sidebar.classList.toggle('collapsed');
             if (sidebar.classList.contains('collapsed')) {
                 if (toggleBtn) toggleBtn.classList.add('visible');
@@ -267,11 +340,7 @@ function toggleSidebar() {
                 if (toggleBtn) toggleBtn.classList.remove('visible');
             }
         }
-        
-        // Trigger map resize after transition
-        setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-        }, 305);
+        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 305);
     }
 }
 
@@ -281,24 +350,19 @@ function togglePanel(panelId) {
         panel.classList.toggle('collapsed');
         const btn = document.querySelector('.drawer-toggle[onclick*="' + panelId + '"]');
         if (btn) btn.classList.toggle('active');
-
-        // Trigger map resize after transition
-        setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-        }, 305);
+        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 305);
     }
 }
 
-// Sign Out (route to index.html)
 function signOut() {
     sessionStorage.clear();
     window.location.href = 'index.html';
 }
 
-// Modals
+// ==================== MODALS ====================
 const modalOverlay = document.getElementById('modal-overlay');
 function showModal(id) {
-    if (!modalOverlay) return; // Prevent errors if modal not on page
+    if (!modalOverlay) return;
     document.querySelectorAll('#modal-overlay > div').forEach(m => m.style.display = 'none');
     const specificModal = document.getElementById(id);
     if (specificModal) {
@@ -314,27 +378,32 @@ function closeModal() {
     setTimeout(() => modalOverlay.style.display = 'none', 200);
 }
 
-// Notifications
+// ==================== TOAST NOTIFICATIONS ====================
 function showToast(title, message) {
-    const container = document.querySelector('.toast-container');
-    const content = document.querySelector('.toast-content');
-    if (!container || !content) return;
+    // Try existing container first
+    let container = document.querySelector('.toast-container');
+    let content = document.querySelector('.toast-content');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        container.innerHTML = '<div class="toast"><div class="toast-dot"></div><div class="toast-content"></div></div>';
+        document.body.appendChild(container);
+        content = container.querySelector('.toast-content');
+    }
+    if (!content) return;
 
     content.innerHTML = `<strong>${title}</strong> • ${message}`;
     container.classList.add('active');
-    
-    setTimeout(() => {
-        container.classList.remove('active');
-    }, 4000);
+    setTimeout(() => { container.classList.remove('active'); }, 4000);
 }
 
 function showEmergencyAlert() { showModal('modal-emergency'); }
 function showAddRouteModal() { showModal('modal-add-route'); }
 function showEndTripModal() { showModal('modal-end-trip'); }
 
-// Notification System logic
+// ==================== NOTIFICATION SYSTEM ====================
 function initNotifications() {
-    // Create the panel if it doesn't exist
     let panel = document.querySelector('.notification-panel');
     if (!panel) {
         panel = document.createElement('div');
@@ -359,24 +428,17 @@ function toggleNotifications() {
     const panel = document.querySelector('.notification-panel');
     if (panel) {
         panel.classList.toggle('active');
-        // Hide red dot when opening
         const dot = document.getElementById('notification-dot');
         if (dot) dot.style.display = 'none';
-        
-        // Reposition based on toggle target if needed, but CSS handles top/right
     }
 }
 
 function addNotification(title, message, type = 'info') {
-    const id = Date.now();
-    state.notifications.unshift({ id, title, message, time: new Date(), unread: true });
+    state.notifications.unshift({ id: Date.now(), title, message, time: new Date(), unread: true });
     
-    // Update UI
     const container = document.getElementById('notification-items');
     if (container) {
-        // Remove "No notifications" placeholder if it exists
         if (state.notifications.length === 1) container.innerHTML = '';
-        
         const item = document.createElement('div');
         item.className = 'notification-item unread';
         item.innerHTML = `
@@ -387,10 +449,7 @@ function addNotification(title, message, type = 'info') {
         container.prepend(item);
     }
     
-    // Show Toast
     showToast(title, message);
-    
-    // Show Red Dot
     const dot = document.getElementById('notification-dot');
     if (dot) dot.style.display = 'block';
 }
@@ -408,13 +467,12 @@ function clearNotifications() {
     }
 }
 
+// ==================== NOTIFICATION POLLER ====================
 let pollInterval = null;
 function startNotificationPoller() {
     if (pollInterval) clearInterval(pollInterval);
-    
-    // Only students/admins need to poll for updates
     if (state.user && state.user.role !== 'driver') {
-        pollInterval = setInterval(checkLiveBuses, 5000); // Check every 5 seconds
+        pollInterval = setInterval(checkLiveBuses, 5000);
     }
 }
 
@@ -424,12 +482,13 @@ async function checkLiveBuses() {
         const currentLive = res.data.filter(b => b.isLive);
         
         currentLive.forEach(bus => {
-            // If this bus was NOT live in our previous state, trigger notification
             const wasLive = state.liveBuses.find(b => b.busId === bus.busId);
             if (!wasLive) {
+                const driverName = bus.assignedDriver || 'Unknown';
+                const busNum = bus.busId;
                 addNotification(
-                    "Bus Live Now! 🚌", 
-                    `Bus #${bus.busId.split('-')[1]} (${bus.assignedRoute.replace(/-/g, ' ')}) has started live tracking.`
+                    "🚌 Your bus has started!", 
+                    `Driver ${driverName}, Bus ${busNum} is on the way.`
                 );
             }
         });
@@ -438,7 +497,7 @@ async function checkLiveBuses() {
     }
 }
 
-// Toggle Location visual
+// ==================== TOGGLE LOCATION (generic) ====================
 function toggleLocation(element) {
     const toggleBg = element;
     const toggleDot = element.firstElementChild;
@@ -453,15 +512,13 @@ function toggleLocation(element) {
     }
 }
 
-// Countdown Timer logic for Student dash
-// Since we have separate pages, check if the timer element exists
+// ==================== STUDENT TIMER ====================
 setInterval(() => {
     const el = document.getElementById('student-timer');
     if (el) {
         if (state.timer === 0) {
-            state.timer = Math.floor(Math.random() * 5) + 1; // reset arrived logic
+            state.timer = Math.floor(Math.random() * 5) + 1;
         } else {
-            // mock countdown tick sometimes
             if(Math.random() > 0.8) {
                 state.timer -= 1;
                 if(state.timer < 0) state.timer = 0;

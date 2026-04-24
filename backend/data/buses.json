@@ -2,76 +2,61 @@
   {
     "busId": "V-101",
     "capacity": 50,
-    "currentOccupancy": 45,
+    "currentOccupancy": 0,
     "status": "active",
-    "assignedDriver": "Ravi Kumar",
-    "driverId": "DR-401",
-    "assignedRoute": "route-1",
-    "lastLocation": {
-      "lat": 15.87900307768512,
-      "lng": 74.51594934524533,
-      "speed": 24,
-      "updatedAt": null
-    }
+    "assignedDriver": null,
+    "driverPhone": null,
+    "driverId": null,
+    "assignedRoute": null,
+    "lastLocation": null,
+    "isLive": false
   },
   {
     "busId": "V-102",
     "capacity": 50,
-    "currentOccupancy": 32,
+    "currentOccupancy": 0,
     "status": "active",
-    "assignedDriver": "John Doe",
-    "driverId": "DR-402",
-    "assignedRoute": "route-2",
-    "lastLocation": {
-      "lat": 15.8336,
-      "lng": 74.5242,
-      "speed": 32,
-      "updatedAt": null
-    }
+    "assignedDriver": null,
+    "driverPhone": null,
+    "driverId": null,
+    "assignedRoute": null,
+    "lastLocation": null,
+    "isLive": false
   },
   {
     "busId": "V-103",
     "capacity": 50,
-    "currentOccupancy": 15,
+    "currentOccupancy": 0,
     "status": "active",
-    "assignedDriver": "Sara Miller",
-    "driverId": "DR-403",
-    "assignedRoute": "route-3",
-    "lastLocation": {
-      "lat": 15.856,
-      "lng": 74.506,
-      "speed": 25,
-      "updatedAt": null
-    }
+    "assignedDriver": null,
+    "driverPhone": null,
+    "driverId": null,
+    "assignedRoute": null,
+    "lastLocation": null,
+    "isLive": false
   },
   {
     "busId": "V-104",
     "capacity": 50,
-    "currentOccupancy": 40,
+    "currentOccupancy": 0,
     "status": "active",
-    "assignedDriver": "Vikram Singh",
-    "driverId": "DR-404",
-    "assignedRoute": "route-4",
-    "lastLocation": {
-      "lat": 15.8629,
-      "lng": 74.6111,
-      "speed": 40,
-      "updatedAt": null
-    }
+    "assignedDriver": null,
+    "driverPhone": null,
+    "driverId": null,
+    "assignedRoute": null,
+    "lastLocation": null,
+    "isLive": false
   },
   {
     "busId": "V-105",
     "capacity": 50,
-    "currentOccupancy": 50,
+    "currentOccupancy": 0,
     "status": "active",
-    "assignedDriver": "Amit Patel",
-    "driverId": "DR-405",
-    "assignedRoute": "route-5",
-    "lastLocation": {
-      "lat": 15.872,
-      "lng": 74.489,
-      "speed": 30,
-      "updatedAt": null
-    }
+    "assignedDriver": null,
+    "driverPhone": null,
+    "driverId": null,
+    "assignedRoute": null,
+    "lastLocation": null,
+    "isLive": false
   }
 ]
