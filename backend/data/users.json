@@ -4,7 +4,7 @@
     "name": "Vedant",
     "email": "vedant@gmail.com",
     "password": "123456",
-    "role": "student",
+    "role": "admin",
     "usn": null
   },
   {
@@ -32,5 +32,14 @@
     "password": "password123password123",
     "role": "student",
     "usn": "USN-9643"
+  },
+  {
+    "id": 5,
+    "name": "Test User",
+    "email": "test@test.com",
+    "password": "password123",
+    "role": "student",
+    "usn": null,
+    "mobileNo": "1234567890"
   }
 ]

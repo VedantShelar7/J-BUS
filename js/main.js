@@ -3,7 +3,9 @@ const state = {
     timer: 8,
     timerSpeed: 24,
     user: JSON.parse(sessionStorage.getItem('velocity_user')) || null,
-    fleet: JSON.parse(localStorage.getItem('velocity_fleet')) || (window.MockData ? window.MockData.buses : [])
+    fleet: JSON.parse(localStorage.getItem('velocity_fleet')) || (window.MockData ? window.MockData.buses : []),
+    notifications: [],
+    liveBuses: []
 };
 
 // Mock API Layer
@@ -98,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only check auth if not on login page
     if (!document.getElementById('page-login')) {
         checkAuth();
+        initNotifications();
+        startNotificationPoller();
     }
 });
 
@@ -236,12 +240,32 @@ function switchNav(element, targetPage) {
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.querySelector('.collapsed-sidebar-btn');
+    
+    // Check if we are on mobile/tablet (using the 850px breakpoint from CSS)
+    const isMobile = window.innerWidth <= 850;
+    
     if (sidebar) {
-        sidebar.classList.toggle('collapsed');
-        if (sidebar.classList.contains('collapsed')) {
-            if (toggleBtn) toggleBtn.classList.add('visible');
+        if (isMobile) {
+            // Mobile: Toggle active class for slide-in drawer
+            sidebar.classList.toggle('active');
+            
+            // Toggle overlay
+            let overlay = document.querySelector('.sidebar-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                document.body.appendChild(overlay);
+                overlay.onclick = toggleSidebar; // Close when clicking overlay
+            }
+            overlay.classList.toggle('active');
         } else {
-            if (toggleBtn) toggleBtn.classList.remove('visible');
+            // Desktop: Toggle collapsed class for width shrink
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                if (toggleBtn) toggleBtn.classList.add('visible');
+            } else {
+                if (toggleBtn) toggleBtn.classList.remove('visible');
+            }
         }
         
         // Trigger map resize after transition
@@ -307,6 +331,112 @@ function showToast(title, message) {
 function showEmergencyAlert() { showModal('modal-emergency'); }
 function showAddRouteModal() { showModal('modal-add-route'); }
 function showEndTripModal() { showModal('modal-end-trip'); }
+
+// Notification System logic
+function initNotifications() {
+    // Create the panel if it doesn't exist
+    let panel = document.querySelector('.notification-panel');
+    if (!panel) {
+        panel = document.createElement('div');
+        panel.className = 'notification-panel';
+        panel.innerHTML = `
+            <div class="notification-header">
+                <span style="font-weight:700; font-family:'Manrope';">Notifications</span>
+                <span style="font-size:12px; color:var(--primary); cursor:pointer;" onclick="clearNotifications()">Clear All</span>
+            </div>
+            <div class="notification-content" id="notification-items">
+                <div style="padding:40px 20px; text-align:center; color:var(--text-muted);">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:48px; height:48px; opacity:0.2; margin-bottom:12px;"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div>No new notifications</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(panel);
+    }
+}
+
+function toggleNotifications() {
+    const panel = document.querySelector('.notification-panel');
+    if (panel) {
+        panel.classList.toggle('active');
+        // Hide red dot when opening
+        const dot = document.getElementById('notification-dot');
+        if (dot) dot.style.display = 'none';
+        
+        // Reposition based on toggle target if needed, but CSS handles top/right
+    }
+}
+
+function addNotification(title, message, type = 'info') {
+    const id = Date.now();
+    state.notifications.unshift({ id, title, message, time: new Date(), unread: true });
+    
+    // Update UI
+    const container = document.getElementById('notification-items');
+    if (container) {
+        // Remove "No notifications" placeholder if it exists
+        if (state.notifications.length === 1) container.innerHTML = '';
+        
+        const item = document.createElement('div');
+        item.className = 'notification-item unread';
+        item.innerHTML = `
+            <div style="font-weight:600; font-size:14px; margin-bottom:4px;">${title}</div>
+            <div style="font-size:12px; color:var(--text-muted); line-height:1.4;">${message}</div>
+            <div style="font-size:10px; color:var(--primary); margin-top:8px; font-weight:600;">JUST NOW</div>
+        `;
+        container.prepend(item);
+    }
+    
+    // Show Toast
+    showToast(title, message);
+    
+    // Show Red Dot
+    const dot = document.getElementById('notification-dot');
+    if (dot) dot.style.display = 'block';
+}
+
+function clearNotifications() {
+    state.notifications = [];
+    const container = document.getElementById('notification-items');
+    if (container) {
+        container.innerHTML = `
+            <div style="padding:40px 20px; text-align:center; color:var(--text-muted);">
+                <svg class="icon" viewBox="0 0 24 24" style="width:48px; height:48px; opacity:0.2; margin-bottom:12px;"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <div>No new notifications</div>
+            </div>
+        `;
+    }
+}
+
+let pollInterval = null;
+function startNotificationPoller() {
+    if (pollInterval) clearInterval(pollInterval);
+    
+    // Only students/admins need to poll for updates
+    if (state.user && state.user.role !== 'driver') {
+        pollInterval = setInterval(checkLiveBuses, 5000); // Check every 5 seconds
+    }
+}
+
+async function checkLiveBuses() {
+    const res = await MockAPI.getBuses();
+    if (res.success) {
+        const currentLive = res.data.filter(b => b.isLive);
+        
+        currentLive.forEach(bus => {
+            // If this bus was NOT live in our previous state, trigger notification
+            const wasLive = state.liveBuses.find(b => b.busId === bus.busId);
+            if (!wasLive) {
+                addNotification(
+                    "Bus Live Now! 🚌", 
+                    `Bus #${bus.busId.split('-')[1]} (${bus.assignedRoute.replace(/-/g, ' ')}) has started live tracking.`
+                );
+            }
+        });
+        
+        state.liveBuses = currentLive;
+    }
+}
 
 // Toggle Location visual
 function toggleLocation(element) {
