@@ -265,7 +265,6 @@
             <button class="btn btn-primary btn-full" onclick="closeModal()">Save Route</button>
         </div>
     </div>
-</div>
 
 <!-- JS -->
 <script src="js/mockData.js"></script>
@@ -273,134 +272,52 @@
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const ls = document.getElementById('loading-screen');
+        if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+    }, 600);
+});
+
 (function() {
     const mapEl = document.getElementById('admin-map');
     if (!mapEl) return;
 
-    const map = L.map('admin-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
-
+    const map = L.map('admin-map', { zoomControl: false, attributionControl: false }).setView([15.8497, 74.4977], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
     }).addTo(map);
 
+    const busMarkers = {};
+
     const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
-  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#E8960A"/>
-  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#D4820A"/>
-  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-10" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-10" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="none" stroke="#C87A00" stroke-width="1"/>
-  <rect x="-5" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
-  <rect x="1" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
+  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#DC2626"/>
+  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#B91C1C"/>
+  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#991B1B"/>
+  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#FEE2E2" stroke="#7F1D1D" stroke-width="0.8"/>
+  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#FECACA"/>
+  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#FECACA"/>
+  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#FEE2E2" stroke="#7F1D1D" stroke-width="0.8"/>
+  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#FECACA"/>
+  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#FECACA"/>
+  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#FECACA"/>
+  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#FEE2E2" stroke="#7F1D1D" stroke-width="0.8"/>
+  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#FECACA"/>
+  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#FECACA"/>
+  <rect x="3" y="7" width="3" height="4" rx="1" fill="#FECACA"/>
   <rect x="-5" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
   <rect x="1" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
-  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
-  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
+  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#B91C1C"/>
+  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#B91C1C"/>
 </svg>`;
 
-    function makeBusIcon(busId, status) {
-        const zoom = map.getZoom();
-        const size = zoom >= 15 ? [60, 100] : zoom >= 13 ? [36, 60] : [20, 34];
-        const opacity = status === 'active' ? 1 : 0.5;
-        
+    function getBusIcon(zoom) {
+        const size = zoom >= 15 ? [40, 68] : zoom >= 13 ? [24, 40] : [14, 24];
         return L.divIcon({
+            html: `<div style="width:${size[0]}px; height:${size[1]}px; transform-origin: center center;">${topViewBusSVG}</div>`,
             className: '',
-            html: `<div style="width:${size[0]}px; height:${size[1]}px; transform-origin: center center; opacity: ${opacity};">${topViewBusSVG}</div>` +
-                  `<div style="background:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,0.15);margin-top:4px;white-space:nowrap;position:absolute;top:100%;left:50%;transform:translateX(-50%);">${busId}</div>`,
             iconSize: size,
-            iconAnchor: [size[0] / 2, size[1] / 2]
-        });
-    }
-
-    const fleetTableBody = document.querySelector('tbody');
-    const searchInput = document.querySelector('.form-input');
-
-    function loadFleetData() {
-        MockAPI.getBuses().then(res => {
-            const buses = res.data;
-            renderFleetTable(buses);
-            renderFleetMap(buses);
-            updateStats(buses);
-        });
-    }
-
-    function renderFleetTable(buses) {
-        fleetTableBody.innerHTML = '';
-        buses.forEach(bus => {
-            const row = document.createElement('tr');
-            row.style.borderBottom = '1px solid var(--border-refined)';
-            row.innerHTML = `
-                <td style="padding: 16px 24px; font-weight: 600;">${bus.busId}</td>
-                <td style="padding: 16px 24px; width: 150px;">${bus.assignedRoute.replace(/-/g, ' ')}</td>
-                <td style="padding: 16px 24px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${bus.assignedDriver.split(' ').map(n=>n[0]).join('')}</div>
-                        <span style="font-weight: 500;">${bus.assignedDriver}</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 24px;"><span class="pill pill-${bus.status === 'active' ? 'tertiary' : 'neutral'}">${bus.status.toUpperCase()}</span></td>
-                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
-            `;
-            fleetTableBody.appendChild(row);
-        });
-    }
-
-    function renderFleetMap(buses) {
-        const bounds = [];
-        buses.forEach(bus => {
-            if (bus.lastLocation) {
-                const latlng = [bus.lastLocation.lat, bus.lastLocation.lng];
-                bounds.push(latlng);
-                const marker = L.marker(latlng, { icon: makeBusIcon(bus.busId, bus.status) })
-                    .bindPopup('<b>' + bus.busId + '</b><br>Driver: ' + bus.assignedDriver + '<br>Route: ' + bus.assignedRoute + '<br>Occupancy: ' + bus.currentOccupancy + '/' + bus.capacity)
-                    .addTo(map);
-                
-                if (bus.status === 'active') {
-                    let angle = Math.random() * Math.PI * 2;
-                    setInterval(() => {
-                        angle += 0.025;
-                        const lat = bus.lastLocation.lat + Math.sin(angle) * 0.001;
-                        const lng = bus.lastLocation.lng + Math.cos(angle) * 0.001;
-                        marker.setLatLng([lat, lng]);
-                    }, 2000);
-                }
-            }
-        });
-        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
-
-        MockAPI.getRoutes().then(res => {
-            const colors = ['#3B82F6', '#F59E0B', '#10B981'];
-            res.data.forEach((route, i) => {
-                const latlngs = route.stops.map(s => [s.lat, s.lng]);
-                L.polyline(latlngs, { color: colors[i % colors.length], weight: 3, dashArray: '8, 6', opacity: 0.6 }).addTo(map);
-            });
-        });
-    }
-
-    function updateStats(buses) {
-        document.querySelector('h1').innerText = buses.length;
-        document.querySelectorAll('h1')[1].innerText = '0' + window.MockData.routes.length;
-        document.querySelectorAll('h1')[2].innerText = '1,500';
-        document.querySelectorAll('h1')[3].innerText = buses.filter(b => b.assignedDriver).length;
-    }
-
-    searchInput.addEventListener('input', (e) => {
-        const q = e.target.value.toLowerCase();
-        MockAPI.getBuses().then(res => {
             iconAnchor: [size[0]/2, size[1]/2]
         });
     }
@@ -422,46 +339,45 @@
                 if (b.isLive && b.assignedRoute) activeRoutes.add(b.assignedRoute);
             });
             
-            document.getElementById('stat-total-buses').innerText = buses.length;
-            document.getElementById('stat-active-routes').innerText = activeRoutes.size;
-            document.getElementById('stat-drivers').innerText = uniqueDrivers;
+            const statTotal = document.getElementById('stat-total-buses');
+            const statActive = document.getElementById('stat-active-routes');
+            const statDrivers = document.getElementById('stat-drivers');
+            
+            if (statTotal) statTotal.innerText = buses.length;
+            if (statActive) statActive.innerText = activeRoutes.size;
+            if (statDrivers) statDrivers.innerText = uniqueDrivers;
             
             // --- Fleet Table ---
             const tbody = document.getElementById('fleet-table-body');
-            tbody.innerHTML = '';
-            
-            buses.forEach(b => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid var(--border-refined)';
-                
-                const routeName = b.assignedRoute ? (routes.find(r => r.id === b.assignedRoute)?.routeName || 'Unknown') : '-';
-                
-                let driverCol = `<td style="padding: 16px 24px; color: var(--text-muted); font-style: italic;">Unassigned</td>`;
-                if (b.assignedDriver) {
-                    const initials = b.assignedDriver.split(' ').map(n=>n[0]).join('').substring(0,2) || 'XX';
-                    driverCol = `
-                        <td style="padding: 16px 24px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${initials}</div>
-                                <span style="font-weight: 500;">${b.assignedDriver}</span>
-                            </div>
-                        </td>`;
-                }
-                
-                let statusBadge = `<span class="pill pill-neutral">IDLE</span>`;
-                if (b.isLive) {
-                    statusBadge = `<span class="pill pill-tertiary">ACTIVE</span>`;
-                }
-
-                tr.innerHTML = `
-                    <td style="padding: 16px 24px; font-weight: 600;">${b.busId}</td>
-                    <td style="padding: 16px 24px; width: 150px;">${routeName}</td>
-                    ${driverCol}
-                    <td style="padding: 16px 24px;">${statusBadge}</td>
-                    <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            if (tbody) {
+                tbody.innerHTML = '';
+                buses.forEach(b => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid var(--border-refined)';
+                    const routeName = b.assignedRoute ? (routes.find(r => r.id === b.assignedRoute)?.routeName || 'Unknown') : '-';
+                    let driverCol = `<td style="padding: 16px 24px; color: var(--text-muted); font-style: italic;">Unassigned</td>`;
+                    if (b.assignedDriver) {
+                        const initials = b.assignedDriver.split(' ').map(n=>n[0]).join('').substring(0,2) || 'XX';
+                        driverCol = `
+                            <td style="padding: 16px 24px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${initials}</div>
+                                    <span style="font-weight: 500;">${b.assignedDriver}</span>
+                                </div>
+                            </td>`;
+                    }
+                    let statusBadge = `<span class="pill pill-neutral">IDLE</span>`;
+                    if (b.isLive) statusBadge = `<span class="pill pill-tertiary">ACTIVE</span>`;
+                    tr.innerHTML = `
+                        <td style="padding: 16px 24px; font-weight: 600;">${b.busId}</td>
+                        <td style="padding: 16px 24px; width: 150px;">${routeName}</td>
+                        ${driverCol}
+                        <td style="padding: 16px 24px;">${statusBadge}</td>
+                        <td style="padding: 16px 24px; text-align: right; color: var(--text-muted); font-weight: 500; cursor: pointer;">edit &nbsp; delete</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
             
             // --- Map Tracking ---
             buses.filter(b => b.isLive && b.lastLocation).forEach(bus => {
@@ -474,7 +390,6 @@
                 }
             });
             
-            // Remove offline buses
             Object.keys(busMarkers).forEach(id => {
                 const busData = buses.find(b => b.busId === id);
                 if (!busData || !busData.isLive) {
@@ -482,23 +397,24 @@
                     delete busMarkers[id];
                 }
             });
-            
-            map.on('zoomend', () => {
-                Object.values(busMarkers).forEach(m => m.setIcon(getBusIcon(map.getZoom())));
-            });
         }
     }
     
-    // Initial fetch
     fetchAndRenderData();
-    // Poll every 5s
     setInterval(fetchAndRenderData, 5000);
+    map.on('zoomend', () => { Object.values(busMarkers).forEach(m => m.setIcon(getBusIcon(map.getZoom()))); });
+
+    if (state.user) {
+        document.querySelectorAll('h4').forEach(h => { if (h.innerText === 'Admin User') h.innerText = state.user.name; });
+        document.querySelectorAll('.avatar img, .user-card-avatar img').forEach(img => {
+            img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(state.user.name)}&background=0F172A&color=fff`;
+        });
+    }
 })();
 </script>
 <!-- Floating btn when sidebar is collapsed -->
 <div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
     <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-</div>
 </div>
 </body>
 </html>
