@@ -63,11 +63,18 @@
                     <h3 style="font-family:'Inter',sans-serif; font-weight:600;">Driver Console</h3>
                 </div>
                 <div class="topbar-right">
+                    <div style="position: relative; margin-right: 16px;">
+                        <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted); cursor: pointer;" onclick="toggleNotifications()">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                        </svg>
+                        <div id="notification-dot" style="display: none; position: absolute; top: 0; right: 2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px var(--white);"></div>
+                    </div>
                     <div class="dropdown">
                         <div class="avatar" onclick="toggleDropdown('driver-dropdown')">
                             <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=10B981&color=fff" alt="avatar" style="width:100%;height:100%;border-radius:50%">
                         </div>
                         <div class="dropdown-menu" id="driver-dropdown">
+                            <div class="dropdown-item" onclick="window.location.href='student-profile.html'">View Profile</div>
                             <div class="dropdown-item" onclick="signOut()">Sign Out</div>
                         </div>
                     </div>
