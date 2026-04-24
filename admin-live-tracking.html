@@ -73,6 +73,12 @@
                 <div class="nav-item" onclick="switchNav(this, 'admin-settings.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Settings
                 </div>
+                <div class="nav-item" onclick="signOut()" style="margin-top: auto; color: var(--danger);">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                    </svg> Logout
+                </div>
+
             </div>
             
             <div class="sidebar-bottom">
@@ -207,11 +213,39 @@
     }).addTo(map);
 
     const fleetListEl = document.getElementById('fleet-list');
-    const busIcon = (color) => L.divIcon({
+    const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
+  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#E8960A"/>
+  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#D4820A"/>
+  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
+  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
+  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
+  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="3" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
+  <rect x="-10" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="7" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="-10" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="7" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
+  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="none" stroke="#C87A00" stroke-width="1"/>
+  <rect x="-5" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
+  <rect x="1" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
+  <rect x="-5" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
+  <rect x="1" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
+  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
+  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
+</svg>`;
+
+    const busIcon = (zoom) => L.divIcon({
         className: '',
-        html: `<div style="width:32px;height:32px;background:${color};border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg></div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
+        html: `<div style="width:36px;height:60px;transform-origin:center center; transition: transform 0.5s ease;">${topViewBusSVG}</div>`,
+        iconSize: [36, 60],
+        iconAnchor: [18, 30]
     });
 
     const searchInput = document.querySelector('.form-input');

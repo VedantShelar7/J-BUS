@@ -1,46 +1,76 @@
 [
   {
-    "busId": "V-102",
+    "busId": "V-101",
     "capacity": 50,
     "currentOccupancy": 45,
     "status": "active",
     "assignedDriver": "Ravi Kumar",
-    "driverId": "DR-402",
+    "driverId": "DR-401",
     "assignedRoute": "route-1",
     "lastLocation": {
-      "lat": 15.8497,
-      "lng": 74.0044,
+      "lat": 15.87900307768512,
+      "lng": 74.51594934524533,
       "speed": 24,
       "updatedAt": null
     }
   },
   {
-    "busId": "V-108",
+    "busId": "V-102",
     "capacity": 50,
     "currentOccupancy": 32,
     "status": "active",
     "assignedDriver": "John Doe",
-    "driverId": "DR-403",
+    "driverId": "DR-402",
     "assignedRoute": "route-2",
     "lastLocation": {
-      "lat": 15.8550,
-      "lng": 74.0100,
+      "lat": 15.8336,
+      "lng": 74.5242,
       "speed": 32,
       "updatedAt": null
     }
   },
   {
-    "busId": "V-115",
+    "busId": "V-103",
     "capacity": 50,
-    "currentOccupancy": 0,
-    "status": "idle",
+    "currentOccupancy": 15,
+    "status": "active",
     "assignedDriver": "Sara Miller",
-    "driverId": "DR-404",
+    "driverId": "DR-403",
     "assignedRoute": "route-3",
     "lastLocation": {
-      "lat": 15.8460,
-      "lng": 73.9980,
-      "speed": 0,
+      "lat": 15.856,
+      "lng": 74.506,
+      "speed": 25,
+      "updatedAt": null
+    }
+  },
+  {
+    "busId": "V-104",
+    "capacity": 50,
+    "currentOccupancy": 40,
+    "status": "active",
+    "assignedDriver": "Vikram Singh",
+    "driverId": "DR-404",
+    "assignedRoute": "route-4",
+    "lastLocation": {
+      "lat": 15.8629,
+      "lng": 74.6111,
+      "speed": 40,
+      "updatedAt": null
+    }
+  },
+  {
+    "busId": "V-105",
+    "capacity": 50,
+    "currentOccupancy": 50,
+    "status": "active",
+    "assignedDriver": "Amit Patel",
+    "driverId": "DR-405",
+    "assignedRoute": "route-5",
+    "lastLocation": {
+      "lat": 15.872,
+      "lng": 74.489,
+      "speed": 30,
       "updatedAt": null
     }
   }

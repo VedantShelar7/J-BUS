@@ -44,13 +44,14 @@
                 <div class="nav-item" onclick="switchNav(this, 'driver-dashboard.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Schedule
                 </div>
+                <div class="nav-item" onclick="signOut()" style="margin-top: auto; color: var(--danger);">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                    </svg> Logout
+                </div>
             </div>
 
-            <div class="sidebar-bottom" style="padding: 24px; border-top: 1px solid var(--border);">
-                <button class="btn btn-primary btn-full" style="background: var(--danger); border-radius: var(--radius-lg);" onclick="signOut()">
-                    <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Logout
-                </button>
-            </div>
+
         </div>
         
         <div class="main-content">
@@ -367,11 +368,27 @@
         MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
             const route = rRes.data;
             if (!route || !route.stops.length) return;
-            driverMarker = L.marker([route.stops[0].lat, route.stops[0].lng], { icon: getBusIcon(map.getZoom()) }).addTo(map);
+            
+            if (driverMarker) map.removeLayer(driverMarker);
+            
+            // Set location to either last location or first stop
+            const loc = bus.lastLocation || { lat: route.stops[0].lat, lng: route.stops[0].lng };
+            driverMarker = L.marker([loc.lat, loc.lng], { 
+                icon: getBusIcon(map.getZoom()),
+                zIndexOffset: 1000 
+            }).addTo(map);
+
+            driverMarker.bindTooltip(`My Bus #${bus.busId.split('-')[1]}`, {
+                permanent: true,
+                direction: 'top',
+                offset: [0, -20]
+            });
             
             map.on('zoomend', () => {
                 if (driverMarker) driverMarker.setIcon(getBusIcon(map.getZoom()));
             });
+
+            map.panTo([loc.lat, loc.lng]);
         });
     }
 

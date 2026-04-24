@@ -37,15 +37,27 @@ const DEFAULT_MOCK_DATA = {
             "type": "express",
             "color": "#E63946",
             "isActive": true,
-            "estimatedDuration": 35,
+            "estimatedDuration": 45,
             "stops": [
-                { "name": "Mahantesh Nagar", "order": 1, "lat": 15.8652, "lng": 74.5021 },
-                { "name": "Subhash Nagar", "order": 2, "lat": 15.8610, "lng": 74.5028 },
-                { "name": "Ramteerth Nagar", "order": 3, "lat": 15.8580, "lng": 74.5024 },
-                { "name": "Tilakwadi", "order": 4, "lat": 15.8545, "lng": 74.5020 },
-                { "name": "KLE Campus", "order": 5, "lat": 15.8510, "lng": 74.5016 },
-                { "name": "Angol Cross", "order": 6, "lat": 15.8475, "lng": 74.5013 },
-                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+                { "name": "Ramdev Hotel", "order": 1, "lat": 15.87900307768512, "lng": 74.51594934524533 },
+                { "name": "Dharmanath Circle", "order": 2, "lat": 15.875829723250984, "lng": 74.52224777331995 },
+                { "name": "Shree Nagar", "order": 3, "lat": 15.87920070156194, "lng": 74.52566622971773 },
+                { "name": "Sangoli", "order": 4, "lat": 15.880695391202302, "lng": 74.52978772623165 },
+                { "name": "Vantamuri", "order": 5, "lat": 15.882234867173155, "lng": 74.5332521682169 },
+                { "name": "Point 6", "order": 6, "lat": 15.881857391248344, "lng": 74.53795660794916 },
+                { "name": "Harsha Hotel", "order": 7, "lat": 15.88738451509207, "lng": 74.54188388210139 },
+                { "name": "Uday", "order": 8, "lat": 15.888582566092433, "lng": 74.54546654811654 },
+                { "name": "Uday Next", "order": 9, "lat": 15.889379731279828, "lng": 74.54662930454572 },
+                { "name": "Ganesh Circle", "order": 10, "lat": 15.88950645244764, "lng": 74.54888461856744 },
+                { "name": "Kanbargi", "order": 11, "lat": 15.889720092111334, "lng": 74.5523694285382 },
+                { "name": "Datta Mandir", "order": 12, "lat": 15.880123238413672, "lng": 74.53806499306003 },
+                { "name": "Nandini", "order": 13, "lat": 15.87770284334685, "lng": 74.53674903853366 },
+                { "name": "Sidnal", "order": 14, "lat": 15.875340327859975, "lng": 74.5332234373483 },
+                { "name": "Mahantesh Nagar", "order": 15, "lat": 15.873375219406894, "lng": 74.52926305788544 },
+                { "name": "Point 16", "order": 16, "lat": 15.87057771337475, "lng": 74.53063342358867 },
+                { "name": "Lake", "order": 17, "lat": 15.86953114453762, "lng": 74.52916406740826 },
+                { "name": "CBT", "order": 18, "lat": 15.862744885230722, "lng": 74.52376083211183 },
+                { "name": "JCER Belagavi", "order": 19, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
@@ -57,13 +69,9 @@ const DEFAULT_MOCK_DATA = {
             "isActive": true,
             "estimatedDuration": 25,
             "stops": [
-                { "name": "Vadgaon", "order": 1, "lat": 15.8780, "lng": 74.5210 },
-                { "name": "Udyamnagar", "order": 2, "lat": 15.8740, "lng": 74.5180 },
-                { "name": "Shivaji Nagar", "order": 3, "lat": 15.8700, "lng": 74.5150 },
-                { "name": "Khade Bazar", "order": 4, "lat": 15.8660, "lng": 74.5120 },
-                { "name": "Camp Road", "order": 5, "lat": 15.8610, "lng": 74.5085 },
-                { "name": "Angol Road", "order": 6, "lat": 15.8520, "lng": 74.5040 },
-                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+                { "name": "Vadgaon Corner", "order": 1, "lat": 15.8336, "lng": 74.5242 },
+                { "name": "Shahapur", "order": 2, "lat": 15.8440, "lng": 74.5120 },
+                { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
@@ -75,13 +83,9 @@ const DEFAULT_MOCK_DATA = {
             "isActive": true,
             "estimatedDuration": 30,
             "stops": [
-                { "name": "RTO Office", "order": 1, "lat": 15.8558, "lng": 74.5198 },
-                { "name": "Goaves", "order": 2, "lat": 15.8540, "lng": 74.5165 },
-                { "name": "Gandhi Nagar", "order": 3, "lat": 15.8520, "lng": 74.5135 },
-                { "name": "Hindwadi", "order": 4, "lat": 15.8500, "lng": 74.5100 },
-                { "name": "Angol Junction", "order": 5, "lat": 15.8472, "lng": 74.5058 },
-                { "name": "Udyambag Cross", "order": 6, "lat": 15.8452, "lng": 74.5030 },
-                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+                { "name": "RTO Belagavi", "order": 1, "lat": 15.856, "lng": 74.506 },
+                { "name": "Tilakwadi", "order": 2, "lat": 15.8545, "lng": 74.5020 },
+                { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
@@ -93,13 +97,9 @@ const DEFAULT_MOCK_DATA = {
             "isActive": true,
             "estimatedDuration": 40,
             "stops": [
-                { "name": "Sambra", "order": 1, "lat": 15.8629, "lng": 74.6111 },
-                { "name": "Hindalga", "order": 2, "lat": 15.8605, "lng": 74.5820 },
-                { "name": "Nehru Nagar", "order": 3, "lat": 15.8580, "lng": 74.5580 },
-                { "name": "Udyambag", "order": 4, "lat": 15.8545, "lng": 74.5320 },
-                { "name": "Angol Bridge", "order": 5, "lat": 15.8500, "lng": 74.5120 },
-                { "name": "Angol Road", "order": 6, "lat": 15.8465, "lng": 74.5060 },
-                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+                { "name": "Sambra Airport", "order": 1, "lat": 15.8629, "lng": 74.6111 },
+                { "name": "Nehru Nagar", "order": 2, "lat": 15.8580, "lng": 74.5580 },
+                { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
             ]
         },
         {
@@ -113,11 +113,7 @@ const DEFAULT_MOCK_DATA = {
             "stops": [
                 { "name": "Hanuman Nagar", "order": 1, "lat": 15.8720, "lng": 74.4890 },
                 { "name": "Khasbag", "order": 2, "lat": 15.8668, "lng": 74.4920 },
-                { "name": "Saptapur", "order": 3, "lat": 15.8610, "lng": 74.4955 },
-                { "name": "Shahapur", "order": 4, "lat": 15.8565, "lng": 74.4980 },
-                { "name": "Fort Area", "order": 5, "lat": 15.8520, "lng": 74.4998 },
-                { "name": "Angol Road", "order": 6, "lat": 15.8472, "lng": 74.5005 },
-                { "name": "JCER", "order": 7, "lat": 15.8438, "lng": 74.5012 }
+                { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
             ]
         }
     ],
@@ -131,8 +127,8 @@ const DEFAULT_MOCK_DATA = {
             "driverId": "DR-401",
             "assignedRoute": "route-1",
             "lastLocation": {
-                "lat": 15.8652,
-                "lng": 74.5021,
+                "lat": 15.87900307768512,
+                "lng": 74.51594934524533,
                 "speed": 24,
                 "updatedAt": null
             }
@@ -146,8 +142,8 @@ const DEFAULT_MOCK_DATA = {
             "driverId": "DR-402",
             "assignedRoute": "route-2",
             "lastLocation": {
-                "lat": 15.8780,
-                "lng": 74.5210,
+                "lat": 15.8336,
+                "lng": 74.5242,
                 "speed": 32,
                 "updatedAt": null
             }
@@ -161,8 +157,8 @@ const DEFAULT_MOCK_DATA = {
             "driverId": "DR-403",
             "assignedRoute": "route-3",
             "lastLocation": {
-                "lat": 15.8558,
-                "lng": 74.5198,
+                "lat": 15.856,
+                "lng": 74.506,
                 "speed": 25,
                 "updatedAt": null
             }
@@ -203,10 +199,10 @@ const DEFAULT_MOCK_DATA = {
 // Persistence Logic
 function getVelocityData() {
     // Force clear for new routes
-    if (!localStorage.getItem('velocity_routes_v2')) {
+    if (!localStorage.getItem('velocity_routes_v4')) {
         localStorage.removeItem('velocity_full_data');
         localStorage.removeItem('velocity_fleet');
-        localStorage.setItem('velocity_routes_v2', 'true');
+        localStorage.setItem('velocity_routes_v4', 'true');
     }
 
     const saved = localStorage.getItem('velocity_full_data');
@@ -226,4 +222,3 @@ function saveVelocityData(data) {
 // Global exposure
 window.MockData = getVelocityData();
 window.saveVelocityData = saveVelocityData;
-

@@ -1,44 +1,83 @@
 [
   {
     "id": "route-1",
-    "routeName": "Vadgaon Route",
-    "routeCode": "Route 14A",
+    "routeName": "Mahantesh Nagar → JCER",
+    "routeCode": "Route 1",
     "type": "express",
     "isActive": true,
-    "estimatedDuration": 35,
+    "estimatedDuration": 45,
     "stops": [
-      { "name": "Ganeshpur", "order": 1, "lat": 15.8520, "lng": 73.9950 },
-      { "name": "RTO", "order": 2, "lat": 15.8497, "lng": 74.0044 },
-      { "name": "Vadgaon", "order": 3, "lat": 15.8440, "lng": 74.0120 },
-      { "name": "Main Campus Gate", "order": 4, "lat": 15.8380, "lng": 74.0200 }
+      { "name": "Ramdev Hotel", "order": 1, "lat": 15.87900307768512, "lng": 74.51594934524533 },
+      { "name": "Dharmanath Circle", "order": 2, "lat": 15.875829723250984, "lng": 74.52224777331995 },
+      { "name": "Shree Nagar", "order": 3, "lat": 15.87920070156194, "lng": 74.52566622971773 },
+      { "name": "Sangoli", "order": 4, "lat": 15.880695391202302, "lng": 74.52978772623165 },
+      { "name": "Vantamuri", "order": 5, "lat": 15.882234867173155, "lng": 74.5332521682169 },
+      { "name": "Point 6", "order": 6, "lat": 15.881857391248344, "lng": 74.53795660794916 },
+      { "name": "Harsha Hotel", "order": 7, "lat": 15.88738451509207, "lng": 74.54188388210139 },
+      { "name": "Uday", "order": 8, "lat": 15.888582566092433, "lng": 74.54546654811654 },
+      { "name": "Uday Next", "order": 9, "lat": 15.889379731279828, "lng": 74.54662930454572 },
+      { "name": "Ganesh Circle", "order": 10, "lat": 15.88950645244764, "lng": 74.54888461856744 },
+      { "name": "Kanbargi", "order": 11, "lat": 15.889720092111334, "lng": 74.5523694285382 },
+      { "name": "Datta Mandir", "order": 12, "lat": 15.880123238413672, "lng": 74.53806499306003 },
+      { "name": "Nandini", "order": 13, "lat": 15.87770284334685, "lng": 74.53674903853366 },
+      { "name": "Sidnal", "order": 14, "lat": 15.875340327859975, "lng": 74.5332234373483 },
+      { "name": "Mahantesh Nagar", "order": 15, "lat": 15.873375219406894, "lng": 74.52926305788544 },
+      { "name": "Point 16", "order": 16, "lat": 15.87057771337475, "lng": 74.53063342358867 },
+      { "name": "Lake", "order": 17, "lat": 15.86953114453762, "lng": 74.52916406740826 },
+      { "name": "CBT", "order": 18, "lat": 15.862744885230722, "lng": 74.52376083211183 },
+      { "name": "JCER Belagavi", "order": 19, "lat": 15.8438, "lng": 74.5012 }
     ]
   },
   {
     "id": "route-2",
-    "routeName": "North Campus Express",
-    "routeCode": "Route 07B",
-    "type": "express",
+    "routeName": "Vadgaon → JCER",
+    "routeCode": "Route 2",
+    "type": "regular",
     "isActive": true,
     "estimatedDuration": 25,
     "stops": [
-      { "name": "Main University Gate", "order": 1, "lat": 15.8380, "lng": 74.0200 },
-      { "name": "Student Residence West", "order": 2, "lat": 15.8420, "lng": 74.0150 },
-      { "name": "Central Library Square", "order": 3, "lat": 15.8460, "lng": 74.0100 },
-      { "name": "Downtown Tech Hub", "order": 4, "lat": 15.8550, "lng": 74.0050 }
+      { "name": "Vadgaon Corner", "order": 1, "lat": 15.8336, "lng": 74.5242 },
+      { "name": "Shahapur", "order": 2, "lat": 15.8440, "lng": 74.5120 },
+      { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
     ]
   },
   {
     "id": "route-3",
-    "routeName": "West Side Shuttle",
-    "routeCode": "Route 22C",
+    "routeName": "RTO → JCER",
+    "routeCode": "Route 3",
     "type": "regular",
+    "isActive": true,
+    "estimatedDuration": 30,
+    "stops": [
+      { "name": "RTO Belagavi", "order": 1, "lat": 15.856, "lng": 74.506 },
+      { "name": "Tilakwadi", "order": 2, "lat": 15.8545, "lng": 74.5020 },
+      { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
+    ]
+  },
+  {
+    "id": "route-4",
+    "routeName": "Sambra → JCER",
+    "routeCode": "Route 4",
+    "type": "express",
     "isActive": true,
     "estimatedDuration": 40,
     "stops": [
-      { "name": "West Gate", "order": 1, "lat": 15.8500, "lng": 73.9900 },
-      { "name": "Market Square", "order": 2, "lat": 15.8470, "lng": 73.9950 },
-      { "name": "Hospital Junction", "order": 3, "lat": 15.8430, "lng": 74.0000 },
-      { "name": "Main Campus Gate", "order": 4, "lat": 15.8380, "lng": 74.0200 }
+      { "name": "Sambra Airport", "order": 1, "lat": 15.8629, "lng": 74.6111 },
+      { "name": "Nehru Nagar", "order": 2, "lat": 15.8580, "lng": 74.5580 },
+      { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
+    ]
+  },
+  {
+    "id": "route-5",
+    "routeName": "Hanuman Nagar → JCER",
+    "routeCode": "Route 5",
+    "type": "express",
+    "isActive": true,
+    "estimatedDuration": 35,
+    "stops": [
+      { "name": "Hanuman Nagar", "order": 1, "lat": 15.8720, "lng": 74.4890 },
+      { "name": "Khasbag", "order": 2, "lat": 15.8668, "lng": 74.4920 },
+      { "name": "JCER Belagavi", "order": 3, "lat": 15.8438, "lng": 74.5012 }
     ]
   }
 ]
