@@ -74,11 +74,13 @@ const MockAPI = {
             return { success: false, data: null };
         }
     },
-    updateBusLocation: async (busId, lat, lng, speed, isLive = null, assignedRoute = null) => {
+    updateBusLocation: async (busId, lat, lng, speed, isLive = null, assignedRoute = null, assignedDriver = null, driverPhone = null) => {
         try {
             const body = { lat, lng, speed };
             if (isLive !== null) body.isLive = isLive;
             if (assignedRoute !== null) body.assignedRoute = assignedRoute;
+            if (assignedDriver !== null) body.assignedDriver = assignedDriver;
+            if (driverPhone !== null) body.driverPhone = driverPhone;
             const res = await fetch(`/api/buses/${busId}/location`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -88,6 +90,37 @@ const MockAPI = {
         } catch (e) {
             console.error('updateBusLocation error:', e);
             return { success: false };
+        }
+    },
+    sendEmergencyAlert: async (alertData) => {
+        try {
+            const res = await fetch('/api/alerts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(alertData)
+            });
+            return await res.json();
+        } catch (e) {
+            console.error('sendEmergencyAlert error:', e);
+            return { success: false };
+        }
+    },
+    getAlerts: async () => {
+        try {
+            const res = await fetch('/api/alerts');
+            return await res.json();
+        } catch (e) {
+            console.error('getAlerts error:', e);
+            return { success: false, data: [] };
+        }
+    },
+    getAdminStats: async () => {
+        try {
+            const res = await fetch('/api/admin/dashboard');
+            return await res.json();
+        } catch (e) {
+            console.error('getAdminStats error:', e);
+            return { success: false, data: null };
         }
     }
 };
@@ -453,21 +486,5 @@ function toggleLocation(element) {
     }
 }
 
-// Countdown Timer logic for Student dash
-// Since we have separate pages, check if the timer element exists
-setInterval(() => {
-    const el = document.getElementById('student-timer');
-    if (el) {
-        if (state.timer === 0) {
-            state.timer = Math.floor(Math.random() * 5) + 1; // reset arrived logic
-        } else {
-            // mock countdown tick sometimes
-            if(Math.random() > 0.8) {
-                state.timer -= 1;
-                if(state.timer < 0) state.timer = 0;
-            }
-        }
-        const txt = (state.timer < 10 ? '0'+state.timer : state.timer);
-        el.innerHTML = `${txt}<span>mins</span>`;
-    }
-}, 1000);
+// Notification polling is now handled via startNotificationPoller() in specific contexts if needed.
+

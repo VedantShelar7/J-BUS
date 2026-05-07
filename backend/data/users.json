@@ -4,40 +4,67 @@
     "name": "Vedant",
     "email": "vedant@gmail.com",
     "password": "123456",
-    "role": "admin",
-    "usn": null
+    "role": "admin"
   },
   {
-    "id": 2,
-    "name": "driver",
-    "email": "driver@gmail.com",
+    "id": 6,
+    "name": "sumit",
+    "email": "sumit@gmail.com",
     "password": "123456",
     "role": "driver",
     "usn": null,
     "mobileNo": "7795868592"
   },
   {
-    "id": 3,
-    "name": "student",
-    "email": "student@gmail.com",
+    "id": 7,
+    "name": "sumit2",
+    "email": "sumit2@gmail.com",
     "password": "123456",
-    "role": "student",
+    "role": "driver",
     "usn": null,
-    "mobileNo": null
+    "mobileNo": "5641115665"
   },
   {
-    "id": 4,
-    "name": "student",
-    "email": "student@velocity.com",
-    "password": "password123password123",
-    "role": "student",
-    "usn": "USN-9643"
+    "id": 8,
+    "name": "sumit3",
+    "email": "sumit3@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": null,
+    "mobileNo": "545485445"
   },
   {
-    "id": 5,
-    "name": "Test User",
-    "email": "test@test.com",
-    "password": "password123",
+    "id": 9,
+    "name": "sumit4",
+    "email": "sumit4@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": null,
+    "mobileNo": "4868681616"
+  },
+  {
+    "id": 10,
+    "name": "sumit5",
+    "email": "sumit5@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": null,
+    "mobileNo": "78454511451"
+  },
+  {
+    "id": 11,
+    "name": "su mit",
+    "email": "sumeetmargankop@gmail.com",
+    "password": "123456",
+    "role": "admin",
+    "usn": null,
+    "mobileNo": "156511111515"
+  },
+  {
+    "id": 12,
+    "name": "Test Student",
+    "email": "student@test.com",
+    "password": "123456",
     "role": "student",
     "usn": null,
     "mobileNo": "1234567890"

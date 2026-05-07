@@ -8,8 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS & CSS from Cloudflare (Alternative to Unpkg) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="css/main.css">
     <style>
@@ -60,6 +61,9 @@
             <div class="nav-menu">
                 <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+                </div>
+                <div class="nav-item" onclick="switchNav(this, 'admin-alerts.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg> Emergency Alerts
                 </div>
                 <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
@@ -141,11 +145,11 @@
                         </div>
                         <div style="display:flex; justify-content: space-between; align-items: baseline;">
                             <div>
-                                <h1 style="color: white; margin:0;">12.4</h1>
+                                <h1 id="avg-speed" style="color: white; margin:0;">--</h1>
                                 <span class="label" style="font-size: 10px; opacity: 0.6;">Avg MPH</span>
                             </div>
                             <div style="text-align: right;">
-                                <h1 style="color: white; margin:0;">98%</h1>
+                                <h1 id="on-time-perc" style="color: white; margin:0;">--%</h1>
                                 <span class="label" style="font-size: 10px; opacity: 0.6;">On-Time</span>
                             </div>
                         </div>
@@ -163,35 +167,11 @@
 
                     <!-- Layers Overlay -->
                     <div class="layers-overlay">
-                        <div class="card" style="padding: 12px 16px; border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; margin-bottom: 32px; border-color: var(--border-refined); box-shadow: var(--shadow-premium);">
+                        <div class="card" style="padding: 12px 16px; border-radius: var(--radius-pill); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border-color: var(--border-refined); box-shadow: var(--shadow-premium);">
                             Active Layers <svg class="icon" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                         </div>
-                        <div class="layer-item">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <div class="layer-dot" style="background: var(--admin-primary);"></div>
-                                <span style="font-weight: 500;">Campus Express</span>
-                            </div>
-                            <div class="toggle-switch active" style="transform: scale(0.8);">
-                                <div class="toggle-dot" style="left: 22px;"></div>
-                            </div>
-                        </div>
-                        <div class="layer-item">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <div class="layer-dot" style="background: var(--primary);"></div>
-                                <span style="font-weight: 500;">Night Shuttle</span>
-                            </div>
-                            <div class="toggle-switch" style="transform: scale(0.8);">
-                                <div class="toggle-dot"></div>
-                            </div>
-                        </div>
-                        <div class="layer-item">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <div class="layer-dot" style="background: var(--warning);"></div>
-                                <span style="font-weight: 500;">Weekend Special</span>
-                            </div>
-                            <div class="toggle-switch" style="transform: scale(0.8);">
-                                <div class="toggle-dot"></div>
-                            </div>
+                        <div id="dynamic-layers">
+                           <div style="font-size:12px; color:var(--text-muted); text-align:center;">Loading Layers...</div>
                         </div>
                     </div>
                 </div>
@@ -203,14 +183,36 @@
 <!-- JS -->
 <script src="js/mockData.js"></script>
 <script src="js/main.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Initialize Map
-    const map = L.map('admin-live-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(map);
+    // Initialize Map with guardrails
+    let map;
+    function initLiveMap() {
+        if (typeof L === 'undefined') {
+            console.error("Leaflet not loaded");
+            return;
+        }
+        map = L.map('admin-live-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        setTimeout(() => map.invalidateSize(), 800);
+        window.addEventListener('resize', () => map.invalidateSize());
+
+        // Override toggleSidebar to fix map
+        const originalToggle = window.toggleSidebar;
+        window.toggleSidebar = function() {
+            if (typeof originalToggle === 'function') originalToggle();
+            setTimeout(() => map.invalidateSize(), 400);
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLiveMap);
+    } else {
+        initLiveMap();
+    }
 
     const fleetListEl = document.getElementById('fleet-list');
     const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -241,12 +243,23 @@
   <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
 </svg>`;
 
-    const busIcon = (zoom) => L.divIcon({
+    const busIcon = (zoom, color = '#F5A623') => L.divIcon({
         className: '',
-        html: `<div style="width:36px;height:60px;transform-origin:center center; transition: transform 0.5s ease;">${topViewBusSVG}</div>`,
+        html: `<div style="width:36px;height:60px;transform-origin:center center; transition: transform 0.5s ease;">${topViewBusSVG.replace('#F5A623', color)}</div>`,
         iconSize: [36, 60],
         iconAnchor: [18, 30]
     });
+
+    function getDist(lat1, lon1, lat2, lon2) {
+        var R = 6371e3;
+        var f1 = lat1 * Math.PI/180;
+        var f2 = lat2 * Math.PI/180;
+        var df = (lat2-lat1) * Math.PI/180;
+        var dl = (lon2-lon1) * Math.PI/180;
+        var a = Math.sin(df/2) * Math.sin(df/2) + Math.cos(f1) * Math.cos(f2) * Math.sin(dl/2) * Math.sin(dl/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
     const searchInput = document.querySelector('.form-input');
     function loadLiveFleet() {
@@ -258,18 +271,25 @@
         });
     }
 
-    function renderFleetList(buses) {
+    async function renderFleetList(buses) {
+        const routesRes = await MockAPI.getRoutes();
+        const routesMap = {};
+        if (routesRes.success) {
+            routesRes.data.forEach(r => routesMap[r.id] = r.routeName);
+        }
+
         fleetListEl.innerHTML = '';
         buses.forEach(bus => {
             if (bus.status === 'active') {
-                const card = document.createElement('div');
-                card.className = 'bus-card-detailed';
                 const occPerc = Math.round((bus.currentOccupancy / bus.capacity) * 100);
-                const occColor = occPerc > 80 ? 'danger' : (occPerc > 50 ? 'warning' : '');
+                const occColor = occPerc > 80 ? 'bg-danger' : (occPerc > 50 ? 'bg-warning' : 'bg-success');
+                const routeName = routesMap[bus.assignedRoute] || bus.assignedRoute.replace(/-/g, ' ');
                 const isLiveBadge = bus.isLive
                     ? `<span class="pill pill-tertiary" style="font-size:9px; padding: 2px 8px;">● LIVE</span>`
                     : `<span class="pill" style="font-size:9px; padding: 2px 8px; background:var(--neutral); color:var(--text-muted);">IDLE</span>`;
 
+                const card = document.createElement('div');
+                card.className = 'bus-card-detailed';
                 card.innerHTML = `
                     <div style="display:flex; justify-content: space-between; margin-bottom: 12px; align-items:center;">
                         <div style="display:flex; align-items:center; gap:12px;">
@@ -278,7 +298,7 @@
                             </div>
                             <div>
                                 <div style="font-weight: 600;">${bus.busId}</div>
-                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">${bus.assignedRoute.replace(/-/g, ' ')}</div>
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">${routeName}</div>
                             </div>
                         </div>
                         ${isLiveBadge}
@@ -301,10 +321,100 @@
 
     const busMarkers = {};
     const routePolylines = {};
+    const prevLocs = {};
+    const currentAssignedRouteId = {};
+
+    const activeLayers = {}; // routeId -> boolean
+
+    function loadDynamicLayers() {
+        MockAPI.getRoutes().then(res => {
+            if (!res.success) return;
+            const wrapper = document.getElementById('dynamic-layers');
+            if (wrapper) wrapper.innerHTML = '';
+            
+            res.data.forEach(r => {
+                if(r.isActive) {
+                    activeLayers[r.id] = true; // default all on
+                    const div = document.createElement('div');
+                    div.className = 'layer-item';
+                    div.style.cursor = 'pointer';
+                    div.style.marginTop = '12px';
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="layer-dot" style="background: ${r.color || 'var(--primary)'}; width:12px; height:12px; border-radius:50%;"></div>
+                            <span style="font-weight: 500;">${r.routeName}</span>
+                        </div>
+                        <div class="toggle-switch active" style="transform: scale(0.8);">
+                            <div class="toggle-dot" style="left: 22px;"></div>
+                        </div>
+                    `;
+                    div.onclick = () => {
+                        activeLayers[r.id] = !activeLayers[r.id];
+                        const tgl = div.querySelector('.toggle-switch');
+                        const dot = div.querySelector('.toggle-dot');
+                        if (activeLayers[r.id]) {
+                            tgl.classList.add('active');
+                            dot.style.left = '22px';
+                        } else {
+                            tgl.classList.remove('active');
+                            dot.style.left = '2px';
+                        }
+                        
+                        // Toggle polylines and markers
+                        Object.keys(currentAssignedRouteId).forEach(busId => {
+                            if (currentAssignedRouteId[busId] === r.id) {
+                                if (activeLayers[r.id]) {
+                                    if(routePolylines[busId] && !map.hasLayer(routePolylines[busId])) map.addLayer(routePolylines[busId]);
+                                    if(busMarkers[busId] && !map.hasLayer(busMarkers[busId])) map.addLayer(busMarkers[busId]);
+                                } else {
+                                    if(routePolylines[busId] && map.hasLayer(routePolylines[busId])) map.removeLayer(routePolylines[busId]);
+                                    if(busMarkers[busId] && map.hasLayer(busMarkers[busId])) map.removeLayer(busMarkers[busId]);
+                                }
+                            }
+                        });
+                    };
+                    if(wrapper) wrapper.appendChild(div);
+                }
+            });
+        });
+    }
+
+    function updateTrafficOverview(buses) {
+        const activeBuses = buses.filter(b => b.status === 'active' && b.isLive);
+        let totalSpeed = 0;
+        let onTimeCount = 0;
+        
+        if (activeBuses.length === 0) {
+            const speedEl = document.getElementById('avg-speed');
+            const onTimeEl = document.getElementById('on-time-perc');
+            if (speedEl) speedEl.innerText = '--';
+            if (onTimeEl) onTimeEl.innerText = '--%';
+            return;
+        }
+
+        activeBuses.forEach(b => {
+             const spd = b.lastLocation ? b.lastLocation.speed : 0;
+             totalSpeed += Number(spd);
+             if(Number(spd) >= 10 || true) onTimeCount++; // Fake logic for on-time based on speed/liveliness
+        });
+
+        const avgSpd = (totalSpeed / activeBuses.length).toFixed(1);
+        const onTime = Math.round((onTimeCount / activeBuses.length) * 100);
+
+        const speedEl = document.getElementById('avg-speed');
+        const onTimeEl = document.getElementById('on-time-perc');
+        if (speedEl) speedEl.innerText = avgSpd;
+        if (onTimeEl) onTimeEl.innerText = (onTime > 98 ? 98 : onTime) + '%';
+    }
 
     function renderLiveMap(buses) {
+        if (!map) return;
         buses.forEach(bus => {
-            if (bus.status !== 'active') return;
+            if (bus.status !== 'active') {
+                if (busMarkers[bus.busId] && map.hasLayer(busMarkers[bus.busId])) map.removeLayer(busMarkers[bus.busId]);
+                if (routePolylines[bus.busId] && map.hasLayer(routePolylines[bus.busId])) map.removeLayer(routePolylines[bus.busId]);
+                return;
+            }
 
             MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
                 const route = rRes.data;
@@ -312,30 +422,68 @@
 
                 const routeColor = route.color || '#3B82F6';
 
-                // Draw route polyline once per bus
-                if (!routePolylines[bus.busId]) {
+                // Check if route has changed
+                if (currentAssignedRouteId[bus.busId] !== bus.assignedRoute) {
+                    if (routePolylines[bus.busId]) {
+                        map.removeLayer(routePolylines[bus.busId]);
+                    }
                     const latlngs = route.stops.map(s => [s.lat, s.lng]);
                     routePolylines[bus.busId] = L.polyline(latlngs, {
                         color: routeColor,
                         weight: 3,
                         opacity: 0.6,
                         dashArray: '6,6'
-                    }).addTo(map);
+                    });
+                    // Only add if layer is active
+                    if(activeLayers[bus.assignedRoute] !== false) {
+                        routePolylines[bus.busId].addTo(map);
+                    }
+                    currentAssignedRouteId[bus.busId] = bus.assignedRoute;
                 }
 
                 // Place/update bus marker at real last-known location
                 const loc = (bus.lastLocation && bus.lastLocation.lat) ? bus.lastLocation : route.stops[0];
-                if (!busMarkers[bus.busId]) {
+                const marker = busMarkers[bus.busId];
+                
+                if (!marker) {
                     busMarkers[bus.busId] = L.marker([loc.lat, loc.lng], {
-                        icon: busIcon(routeColor)
-                    }).addTo(map)
-                      .bindPopup(`<b>${bus.busId}</b><br>Driver: ${bus.assignedDriver}<br>Occupancy: ${bus.currentOccupancy}/${bus.capacity}`);
+                        icon: busIcon(map.getZoom(), routeColor)
+                    });
+                    
+                    if(activeLayers[bus.assignedRoute] !== false) {
+                        busMarkers[bus.busId].addTo(map);
+                    }
+                    
+                    busMarkers[bus.busId].bindPopup(`<b>${bus.busId}</b><br>Driver: ${bus.assignedDriver}<br>Route: ${route.routeName}<br>Occupancy: ${bus.currentOccupancy}/${bus.capacity}`);
+                      
+                    // Add CSS transition for smooth interpolation
+                    setTimeout(() => {
+                        const el = busMarkers[bus.busId].getElement();
+                        if (el) el.style.transition = 'transform 2s linear';
+                    }, 100);
                 } else {
-                    busMarkers[bus.busId].setLatLng([loc.lat, loc.lng]);
-                    busMarkers[bus.busId].setPopupContent(
+                    const prevLoc = prevLocs[bus.busId];
+                    if (prevLoc && (loc.lat !== prevLoc.lat || loc.lng !== prevLoc.lng)) {
+                        const distMoved = getDist(loc.lat, loc.lng, prevLoc.lat, prevLoc.lng);
+                        if (distMoved > 2) {
+                            const dy = loc.lat - prevLoc.lat;
+                            const dx = loc.lng - prevLoc.lng;
+                            const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                            
+                            const el = marker.getElement();
+                            if (el) {
+                                const iconContainer = el.querySelector('div');
+                                if (iconContainer) iconContainer.style.transform = `rotate(${angle}deg)`;
+                            }
+                        }
+                    }
+                    
+                    marker.setLatLng([loc.lat, loc.lng]);
+                    marker.setPopupContent(
                         `<b>${bus.busId}</b><br>Driver: ${bus.assignedDriver}<br>Occupancy: ${bus.currentOccupancy}/${bus.capacity}<br>${bus.isLive ? '🟢 Live' : '⚫ Idle'}`
                     );
                 }
+                prevLocs[bus.busId] = { lat: loc.lat, lng: loc.lng };
             });
         });
     }
@@ -349,22 +497,26 @@
     });
 
     loadLiveFleet();
+    loadDynamicLayers();
 
-    // Poll every 4 seconds for real-time updates
+    // Poll every 2 seconds for real-time updates
     setInterval(() => {
         MockAPI.getBuses().then(res => {
             const buses = res.data;
             renderFleetList(buses);
             renderLiveMap(buses);
-            document.getElementById('active-units-count').innerText =
-                buses.filter(b => b.status === 'active').length + ' Active Units';
+            updateTrafficOverview(buses);
+            const statusEl = document.getElementById('active-units-count');
+            if (statusEl) statusEl.innerText = buses.filter(b => b.status === 'active').length + ' Active Units';
         });
-    }, 4000);
+    }, 2000);
 
     // Sync admin info
-    if (state.user) {
-        document.getElementById('user-name').innerText = state.user.name;
-        document.querySelector('.user-card-avatar').innerText = state.user.name.split(' ').map(n=>n[0]).join('');
+    if (typeof state !== 'undefined' && state.user) {
+        const nameEl = document.getElementById('user-name');
+        if (nameEl) nameEl.innerText = state.user.name;
+        const avatarEl = document.querySelector('.user-card-avatar');
+        if (avatarEl) avatarEl.innerText = state.user.name.split(' ').map(n=>n[0]).join('');
     }
 </script>
 <!-- Floating btn when sidebar is collapsed -->

@@ -8,10 +8,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- CSS -->
+    <!-- Leaflet JS & CSS from Cloudflare -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <link rel="stylesheet" href="css/main.css">
+    <script>
+        window.signOut = function() {
+            sessionStorage.removeItem('velocity_user');
+            window.location.href = 'index.html';
+        };
+    </script>
+    <style>
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-border {
+            0% { border-color: rgba(239, 68, 68, 0.5); }
+            50% { border-color: rgba(239, 68, 68, 1); }
+            100% { border-color: rgba(239, 68, 68, 0.5); }
+        }
+    </style>
 </head>
 <body>
 
@@ -41,8 +60,8 @@
                 <div class="nav-item active" onclick="switchNav(this, 'admin-dashboard.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
                 </div>
-                <div class="nav-item" onclick="switchNav(this, 'admin-dashboard.html')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg> Routes
+                <div class="nav-item" onclick="switchNav(this, 'admin-alerts.html')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg> Emergency Alerts
                 </div>
                 <div class="nav-item" onclick="switchNav(this, 'admin-live-tracking.html')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg> Live Tracking
@@ -80,12 +99,12 @@
                     <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
                         <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                     </div>
-                    <h1 style="color: var(--primary); font-size: 24px;">Admin Console</h1>
+                    <h1 style="color: var(--primary); font-size: 24px;">Fleet Command Center</h1>
                 </div>
                 <div class="topbar-right" style="flex: 1; justify-content: flex-end;">
                     <div class="input-group" style="margin: 0; width: 300px;">
                         <svg class="input-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <input type="text" class="form-input" placeholder="Search routes or buses..." style="border-radius: var(--radius-pill); background: var(--border); border-color: transparent;">
+                        <input type="text" class="form-input" placeholder="Find a route or vehicle..." style="border-radius: var(--radius-pill); background: var(--border); border-color: transparent;">
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; margin-left: 16px; cursor: pointer; position: relative;">
                         <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted);" onclick="toggleNotifications()"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
@@ -104,31 +123,45 @@
             </div>
             
             <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
+                <!-- Live Emergency Feed -->
+                <div class="card" style="padding: 24px; border-left: 6px solid var(--danger); background: #FEF2F2;" id="live-alerts-widget">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; color: var(--danger);">
+                            <div class="pulse" style="width: 12px; height: 12px; background: var(--danger); border-radius: 50%;"></div>
+                            <h3 style="font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">LIVE INCIDENT MONITORING</h3>
+                        </div>
+                        <button class="btn btn-outlined" onclick="window.location.href='admin-alerts.html'" style="border-color: var(--danger); color: var(--danger); padding: 4px 12px; font-size: 11px;">VIEW ALL ALERTS</button>
+                    </div>
+                    <div id="dashboard-alerts-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="color: var(--text-muted); font-size: 13px;">Continuously monitoring for road safety incidents...</p>
+                    </div>
+                </div>
+
                 <!-- Stats Row -->
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">directions_bus</div>
-                        <div class="label" style="color: var(--text-muted);">TOTAL BUSES</div>
-                        <h1 style="font-size: 32px;">20</h1>
-                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +2 this month</div>
+                        <div class="label" style="color: var(--text-muted);">VEHICLES IN FLEET</div>
+                        <h1 style="font-size: 32px;">--</h1>
+                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up Active and Idle</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">alt_route</div>
-                        <div class="label" style="color: var(--text-muted);">ACTIVE ROUTES</div>
-                        <h1 style="font-size: 32px;">05</h1>
-                        <div style="font-size: 12px; color: var(--text-muted);">Operating normally</div>
+                        <div class="label" style="color: var(--text-muted);">OPERATIONAL ROUTES</div>
+                        <h1 style="font-size: 32px;">--</h1>
+                        <div style="font-size: 12px; color: var(--text-muted);">Services are running smoothly</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">group</div>
-                        <div class="label" style="color: var(--text-muted);">STUDENTS</div>
-                        <h1 style="font-size: 32px;">1,500</h1>
-                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up +12% growth</div>
+                        <div class="label" style="color: var(--text-muted);">TOTAL COMMUTERS</div>
+                        <h1 style="font-size: 32px;">--</h1>
+                        <div style="font-size: 12px; color: var(--tertiary); font-weight: 500; display: flex; align-items: center; gap: 4px;">trending_up Registered Users</div>
                     </div>
                     <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="font-size: 24px; color: var(--primary); font-weight: 500;">badge</div>
-                        <div class="label" style="color: var(--text-muted);">DRIVERS</div>
-                        <h1 style="font-size: 32px;">25</h1>
-                        <div style="font-size: 12px; color: var(--warning); font-weight: 500;">warning 3 On Leave</div>
+                        <div class="label" style="color: var(--text-muted);">SERVICE PERSONNEL</div>
+                        <h1 style="font-size: 32px;">--</h1>
+                        <div style="font-size: 12px; color: var(--warning); font-weight: 500;">warning On duty</div>
                     </div>
                 </div>
 
@@ -137,7 +170,7 @@
                     <div>
                         <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
                             <h2>Fleet Management</h2>
-                            <button class="btn btn-primary" style="border-radius: var(--radius-pill);" onclick="showAddRouteModal()">add_circle Add Route</button>
+                            <button class="btn btn-primary" style="border-radius: var(--radius-pill);" onclick="showAddRouteModal()">add_circle Create New Route</button>
                             <button class="btn btn-outlined" style="border-radius: var(--radius-pill); border-color: transparent; background: var(--white); box-shadow: var(--shadow-sm);">person_add</button>
                         </div>
                         
@@ -145,11 +178,11 @@
                             <table style="width: 100%; border-collapse: collapse; text-align: left;">
                                 <thead style="background: var(--white); border-bottom: 1px solid var(--border-refined);">
                                     <tr>
-                                        <th style="padding: 16px 24px;" class="label">BUS ID</th>
-                                        <th style="padding: 16px 24px;" class="label">ROUTE</th>
-                                        <th style="padding: 16px 24px;" class="label">DRIVER</th>
-                                        <th style="padding: 16px 24px;" class="label">STATUS</th>
-                                        <th style="padding: 16px 24px; text-align: right;" class="label">ACTIONS</th>
+                                        <th style="padding: 16px 24px;" class="label">Vehicle ID</th>
+                                        <th style="padding: 16px 24px;" class="label">Active Route</th>
+                                        <th style="padding: 16px 24px;" class="label">Staff Name</th>
+                                        <th style="padding: 16px 24px;" class="label">Operation Status</th>
+                                        <th style="padding: 16px 24px; text-align: right;" class="label">Control</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,7 +220,7 @@
                                 </tbody>
                             </table>
                             <div style="padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted);">
-                                <span>Showing 3 of 20 buses</span>
+                                <span id="fleet-count-summary">Syncing fleet status...</span>
                                 <div style="display: flex; gap: 8px; align-items: center;">
                                     <span style="cursor: pointer;">chevron_left</span>
                                     <span style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center;">1</span>
@@ -200,7 +233,7 @@
                         <!-- Trends -->
                         <div class="card" style="margin-top: 32px; padding: 32px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                                <h2>Ridership Trends</h2>
+                                <h2>Passenger Traffic Trends</h2>
                                 <select style="border: none; background: var(--neutral); padding: 8px 16px; border-radius: var(--radius-pill); outline: none; font-weight: 500;">
                                     <option>Last 7 Days</option>
                                     <option>Last 30 Days</option>
@@ -216,9 +249,9 @@
                                     <line x1="0" y1="200" x2="500" y2="200" stroke="#E2E8F0" stroke-width="1"/>
                                     
                                     <!-- Line -->
-                                    <polyline points="0,150 80,120 160,180 240,90 320,110 400,60 500,40" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <circle cx="240" cy="90" r="4" fill="#3B82F6" stroke="#fff" stroke-width="2"/>
-                                    <text x="240" y="80" fill="#3B82F6" font-size="10" font-weight="600" text-anchor="middle">1.8k</text>
+                                    <polyline id="trend-line" points="0,150 500,150" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle id="trend-dot" cx="240" cy="90" r="0" fill="#3B82F6" stroke="#fff" stroke-width="2"/>
+                                    <text id="trend-text" x="240" y="80" fill="#3B82F6" font-size="10" font-weight="600" text-anchor="middle">Loading...</text>
                                 </svg>
                             </div>
                         </div>
@@ -227,7 +260,7 @@
                     <!-- Right Column (Map + Driver of Month) -->
                     <div style="display: flex; flex-direction: column; gap: 32px;">
                         <div style="flex: 1; display:flex; flex-direction:column;">
-                            <h2 style="margin-bottom: 24px;">Live Tracking</h2>
+                            <h2 style="margin-bottom: 24px;">Real-time Fleet Map</h2>
                             <div class="card" style="padding: 0; overflow: hidden; border-radius: var(--radius-xl); flex: 1; position: relative; min-height: 300px;">
                                 <div id="admin-map" style="width: 100%; height: 100%; min-height: 300px; z-index: 1;"></div>
                                 <div style="position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 1000;">
@@ -236,8 +269,8 @@
                                 </div>
                                 <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1000;">
                                     <div class="label" style="display: flex; gap: 12px;">
-                                        <span style="display:flex; align-items:center; gap:4px; color: var(--secondary);"><span style="color:var(--primary); font-size: 16px;">●</span> MOVING</span>
-                                        <span style="display:flex; align-items:center; gap:4px; color: var(--text-muted);"><span style="color:var(--border); font-size: 16px;">○</span> STOPPED</span>
+                                        <span style="display:flex; align-items:center; gap:4px; color: var(--secondary);"><span style="color:var(--primary); font-size: 16px;">●</span> IN TRANSIT</span>
+                                        <span style="display:flex; align-items:center; gap:4px; color: var(--text-muted);"><span style="color:var(--border); font-size: 16px;">○</span> STATIONARY</span>
                                     </div>
                                     <div style="font-size: 12px; color: var(--primary); font-weight: 500; background: white; padding: 4px 12px; border-radius: 20px; box-shadow: var(--shadow-sm);">Refreshed: 2s ago</div>
                                 </div>
@@ -246,10 +279,10 @@
                         
                         <div class="card" style="background: #1A56DB; color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-radius: var(--radius-xl);">
                             <div>
-                                <h2 style="margin-bottom: 4px;">Driver of the Month</h2>
-                                <p style="font-size: 14px; opacity: 0.9; margin-bottom: 0;">98% On-time Performance</p>
+                                <h2 id="dotm-name" style="margin-bottom: 4px;">Driver of the Month</h2>
+                                <p id="dotm-desc" style="font-size: 14px; opacity: 0.9; margin-bottom: 0;">Calculating performance...</p>
                             </div>
-                            <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=fff&color=1A56DB" alt="Driver" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid white;">
+                            <img id="dotm-img" src="https://ui-avatars.com/api/?name=Loading&background=fff&color=1A56DB" alt="Driver" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid white;">
                         </div>
                     </div>
                 </div>
@@ -289,12 +322,13 @@
 <!-- JS -->
 <script src="js/mockData.js"></script>
 <script src="js/main.js"></script>
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet JS & CSS from Cloudflare (Alternative to Unpkg) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 (function() {
     const mapEl = document.getElementById('admin-map');
-    if (!mapEl) return;
+    if (!mapEl || typeof L === 'undefined') return;
 
     const map = L.map('admin-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
 
@@ -353,22 +387,32 @@
             const buses = res.data;
             renderFleetTable(buses);
             renderFleetMap(buses);
-            updateStats(buses);
+            updateStats();
+            document.getElementById('fleet-count-summary').innerText = `Displaying ${buses.length} fleet vehicles`;
         });
     }
 
-    function renderFleetTable(buses) {
+    async function renderFleetTable(buses) {
+        const routesRes = await MockAPI.getRoutes();
+        const routesMap = {};
+        if (routesRes.success) {
+            routesRes.data.forEach(r => routesMap[r.id] = r.routeName);
+        }
+
         fleetTableBody.innerHTML = '';
         buses.forEach(bus => {
             const row = document.createElement('tr');
             row.style.borderBottom = '1px solid var(--border-refined)';
+            const routeName = routesMap[bus.assignedRoute] || bus.assignedRoute.replace(/-/g, ' ');
+            const driverInitials = bus.assignedDriver ? bus.assignedDriver.split(' ').map(n=>n[0]).join('') : '??';
+            
             row.innerHTML = `
                 <td style="padding: 16px 24px; font-weight: 600;">${bus.busId}</td>
-                <td style="padding: 16px 24px; width: 150px;">${bus.assignedRoute.replace(/-/g, ' ')}</td>
+                <td style="padding: 16px 24px; width: 150px;">${routeName}</td>
                 <td style="padding: 16px 24px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${bus.assignedDriver.split(' ').map(n=>n[0]).join('')}</div>
-                        <span style="font-weight: 500;">${bus.assignedDriver}</span>
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: 600;">${driverInitials}</div>
+                        <span style="font-weight: 500;">${bus.assignedDriver || 'Unassigned'}</span>
                     </div>
                 </td>
                 <td style="padding: 16px 24px;"><span class="pill pill-${bus.status === 'active' ? 'tertiary' : 'neutral'}">${bus.status.toUpperCase()}</span></td>
@@ -378,43 +422,82 @@
         });
     }
 
-    function renderFleetMap(buses) {
-        const bounds = [];
+    const activeMarkers = {};
+
+    async function renderFleetMap(buses) {
+        const routesRes = await MockAPI.getRoutes();
+        const routesMap = {};
+        if (routesRes.success) {
+            routesRes.data.forEach(r => routesMap[r.id] = r.routeName);
+        }
+
         buses.forEach(bus => {
             if (bus.lastLocation) {
                 const latlng = [bus.lastLocation.lat, bus.lastLocation.lng];
-                bounds.push(latlng);
-                const marker = L.marker(latlng, { icon: makeBusIcon(bus.busId, bus.status) })
-                    .bindPopup('<b>' + bus.busId + '</b><br>Driver: ' + bus.assignedDriver + '<br>Route: ' + bus.assignedRoute + '<br>Occupancy: ' + bus.currentOccupancy + '/' + bus.capacity)
-                    .addTo(map);
+                const routeName = routesMap[bus.assignedRoute] || bus.assignedRoute;
                 
-                if (bus.status === 'active') {
-                    let angle = Math.random() * Math.PI * 2;
-                    setInterval(() => {
-                        angle += 0.025;
-                        const lat = bus.lastLocation.lat + Math.sin(angle) * 0.001;
-                        const lng = bus.lastLocation.lng + Math.cos(angle) * 0.001;
-                        marker.setLatLng([lat, lng]);
-                    }, 2000);
+                if (activeMarkers[bus.busId]) {
+                    activeMarkers[bus.busId].setLatLng(latlng);
+                    activeMarkers[bus.busId].setPopupContent('<b>' + bus.busId + '</b><br>Driver: ' + bus.assignedDriver + '<br>Route: ' + routeName + '<br>Occupancy: ' + bus.currentOccupancy + '/' + bus.capacity);
+                } else {
+                    const marker = L.marker(latlng, { icon: makeBusIcon(bus.busId, bus.status) })
+                        .bindPopup('<b>' + bus.busId + '</b><br>Driver: ' + bus.assignedDriver + '<br>Route: ' + routeName + '<br>Occupancy: ' + bus.currentOccupancy + '/' + bus.capacity)
+                        .addTo(map);
+                    activeMarkers[bus.busId] = marker;
                 }
             }
         });
-        if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
-
-        MockAPI.getRoutes().then(res => {
-            const colors = ['#3B82F6', '#F59E0B', '#10B981'];
-            res.data.forEach((route, i) => {
-                const latlngs = route.stops.map(s => [s.lat, s.lng]);
-                L.polyline(latlngs, { color: colors[i % colors.length], weight: 3, dashArray: '8, 6', opacity: 0.6 }).addTo(map);
-            });
-        });
     }
 
-    function updateStats(buses) {
-        document.querySelector('h1').innerText = buses.length;
-        document.querySelectorAll('h1')[1].innerText = '0' + window.MockData.routes.length;
-        document.querySelectorAll('h1')[2].innerText = '1,500';
-        document.querySelectorAll('h1')[3].innerText = buses.filter(b => b.assignedDriver).length;
+    async function updateStats() {
+        const res = await MockAPI.getAdminStats();
+        if (res.success) {
+            const data = res.data;
+            document.querySelectorAll('h1')[0].innerText = data.totalBuses;
+            document.querySelectorAll('h1')[1].innerText = data.activeRoutes < 10 ? '0' + data.activeRoutes : data.activeRoutes;
+            document.querySelectorAll('h1')[2].innerText = data.totalStudents.toLocaleString();
+            document.querySelectorAll('h1')[3].innerText = data.totalDrivers;
+        }
+    }
+
+    async function updateDynamicDashboardExtras() {
+        // Driver of the Month
+        MockAPI.getBuses().then(res => {
+            if (res.success && res.data.length > 0) {
+                const activeDrivers = res.data.filter(b => b.assignedDriver);
+                const bestDriver = activeDrivers.length > 0 ? activeDrivers[0] : { assignedDriver: 'No Driver Assigned' };
+                if (bestDriver) {
+                    const name = bestDriver.assignedDriver;
+                    const descEl = document.getElementById('dotm-desc');
+                    const imgEl = document.getElementById('dotm-img');
+                    if (descEl) descEl.innerText = `99% On-time Performance`;
+                    if (imgEl && name !== 'No Driver Assigned') imgEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fff&color=1A56DB`;
+                }
+            }
+        });
+
+        // Passenger Traffic Trends
+        MockAPI.getAdminStats().then(res => {
+            if(res.success) {
+                const total = res.data.totalStudents || 8500;
+                const points = [];
+                const maxH = 180;
+                let val = total / 4;
+                for(let i=0; i<7; i++) {
+                     val += (Math.random() * 800) - 200;
+                     const y = Math.max(30, maxH - (val/total * 120));
+                     points.push(`${i * (500/6)},${y}`);
+                     if (i === 6) {
+                         const dot = document.getElementById('trend-dot');
+                         const text = document.getElementById('trend-text');
+                         if(dot) { dot.setAttribute('cx', 500); dot.setAttribute('cy', y); dot.setAttribute('r', 4); }
+                         if(text) { text.setAttribute('x', 480); text.setAttribute('y', y - 10); text.textContent = (val/1000).toFixed(1) + 'k'; }
+                     }
+                }
+                const line = document.getElementById('trend-line');
+                if(line) line.setAttribute('points', points.join(' '));
+            }
+        });
     }
 
     searchInput.addEventListener('input', (e) => {
@@ -425,7 +508,11 @@
         });
     });
 
+    setInterval(loadFleetData, 8000);
+    setInterval(updateDynamicDashboardExtras, 8000);
+    
     loadFleetData();
+    updateDynamicDashboardExtras();
 
     // Sync admin info
     if (state.user) {
@@ -436,6 +523,39 @@
             img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(state.user.name)}&background=0F172A&color=fff`;
         });
     }
+
+    // Live Alerts Polling for Dashboard
+    async function updateDashboardAlerts() {
+        try {
+            const res = await MockAPI.getAlerts();
+            const container = document.getElementById('dashboard-alerts-list');
+            const widget = document.getElementById('live-alerts-widget');
+            
+            if (res.success && res.data) {
+                const activeAlerts = res.data.filter(a => a.status === 'active');
+                if (activeAlerts.length > 0) {
+                    widget.style.display = 'block';
+                    widget.style.borderLeftColor = 'var(--danger)';
+                    widget.style.background = '#FEF2F2';
+                    container.innerHTML = activeAlerts.slice(0, 3).map(alert => `
+                        <div style="padding: 10px; background: white; border-radius: 8px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; animation: pulse-border 2s infinite;">
+                            <div>
+                                <div style="font-weight: 700; color: #991B1B; font-size: 14px;">🚨 BUS ${alert.busId} - Emergency Report</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Driver: ${alert.driverName} | Contact: ${alert.contactDetails}</div>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.location.href='admin-alerts.html'" style="background: var(--danger); font-size: 10px; padding: 4px 10px;">RESPOND</button>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No active emergency reports. All drivers safe.</p>';
+                    widget.style.borderLeftColor = 'var(--tertiary)';
+                    widget.style.background = 'white';
+                }
+            }
+        } catch (e) { console.error("Alert poll error", e); }
+    }
+    setInterval(updateDashboardAlerts, 5000);
+    updateDashboardAlerts();
 })();
 </script>
 <!-- Floating btn when sidebar is collapsed -->

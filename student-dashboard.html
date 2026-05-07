@@ -12,9 +12,25 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap"
         rel="stylesheet">
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- CSS -->
     <link rel="stylesheet" href="css/main.css">
+    <!-- Leaflet JS & CSS from Cloudflare -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        window.openRouteModal = function() {
+            const modal = document.getElementById('route-modal');
+            if (modal) modal.style.display = 'flex';
+        };
+        window.closeRouteModal = function() {
+            const modal = document.getElementById('route-modal');
+            if (modal) modal.style.display = 'none';
+        };
+        window.signOut = function() {
+            if (window.logout) window.logout();
+            else { sessionStorage.removeItem('velocity_user'); window.location.href = 'index.html'; }
+        };
+    </script>
 </head>
 
 <body>
@@ -97,7 +113,7 @@
                     </div>
                     <div class="topbar-nav">
                         <a href="student-dashboard.html" class="active">Dashboard</a>
-                        <a href="student-dashboard.html" onclick="openRouteModal(); return false;">Routes</a>
+                        <a href="student-dashboard.html" onclick="window.openRouteModal(); return false;">Routes</a>
                         <a href="student-dashboard.html">Live Tracking</a>
                     </div>
                     <div class="topbar-right">
@@ -146,7 +162,7 @@
                                 style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                                 <div>
                                     <span class="pill pill-tertiary">ARRIVING</span>
-                                    <h1 style="margin-top: 8px;">Bus #42</h1>
+                                    <h1 id="arrived-bus-id" style="margin-top: 8px;">Bus #--</h1>
                                 </div>
                                 <div class="brand-icon" style="border-radius: var(--radius-md);">
                                     <svg class="icon" viewBox="0 0 24 24">
@@ -159,43 +175,42 @@
                             <div
                                 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: var(--neutral); border-radius: var(--radius-md);">
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=3B82F6&color=fff"
+                                    <img id="arrived-driver-avatar" src="https://ui-avatars.com/api/?name=Waiting+for+Driver&background=3B82F6&color=fff"
                                         alt="" style="width: 36px; height: 36px; border-radius: 50%;">
                                     <div>
                                         <div class="label"
                                             style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">
                                             DRIVER</div>
-                                        <div style="font-weight: 600; font-size: 14px;">Ravi Kumar</div>
+                                        <div id="arrived-driver-name" style="font-weight: 600; font-size: 14px;">Waiting for Driver...</div>
                                     </div>
                                 </div>
-                                <svg class="icon" style="color: var(--primary); width: 16px; height: 16px;"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                                </svg>
+                                <a href="#" id="driver-call-btn" style="display: flex; align-items: center; justify-content: center; transition: 0.2s;">
+                                    <svg class="icon" style="color: var(--primary); width: 16px; height: 16px;"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                                    </svg>
+                                </a>
                             </div>
 
-                            <p
+                            <p  id="arrived-route-desc"
                                 style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                                 <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
                                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
-                                </svg> Heading to Main Campus Gate...
+                                </svg> Waiting for bus assignment...
                             </p>
 
-                            <button class="btn btn-primary btn-full">Track Bus <svg class="icon" viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" fill="none" />
-                                </svg></button>
+                            <button id="track-bus-btn" class="btn btn-primary" style="width: 100%;">Track Bus <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
                         </div>
                     </div>
 
                     <div class="map-overlay-bottom-right">
                         <div class="next-arrival-card">
                             <div class="label" style="opacity: 0.8;">NEXT ARRIVAL</div>
-                            <h2 id="student-timer">08<span>mins</span></h2>
+                            <h2 id="student-timer">--<span>mins</span></h2>
                             <div class="label" style="opacity: 0.8; margin-top: 16px; font-size: 10px;">SPEED</div>
                             <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                                <div style="font-weight: 600; font-size: 14px;">24 km/h</div>
+                                <div id="student-speed" style="font-weight: 600; font-size: 14px;">0 km/h</div>
                                 <div
                                     style="width: 24px; height: 3px; background: rgba(255,255,255,0.4); border-radius: 2px;">
                                     <div style="width: 100%; height: 100%; background: #fff; border-radius: 2px;"></div>
@@ -207,6 +222,14 @@
                     <!-- Leaflet Map -->
                     <div class="dash-right" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
                         <div id="student-map" style="width: 100%; height: 100%; z-index: 1;"></div>
+                        
+                        <!-- Map Controls -->
+                        <div style="position: absolute; top: 24px; right: 24px; z-index: 5; display: flex; flex-direction: column; gap: 8px;">
+                            <button id="recenter-btn" class="card" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: 0.2s;" title="Recenter to My Location">
+                                <svg class="icon" style="color: var(--primary); width: 20px; height: 20px;" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+                            </button>
+                        </div>
+
                         <div id="route-card" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 5; width: 90%; max-width: 500px;"></div>
                     </div>
                 </div>
@@ -219,24 +242,72 @@
         </div>
     </div>
 
-    <!-- JS -->
+    <!-- Route Selection Modal -->
+    <div id="route-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 20px;">Select Transit Route</h2>
+                <div id="route-modal-close-btn">
+                    <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
+            </div>
+            <div id="route-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+                <!-- Rendered via JS -->
+            </div>
+        </div>
+    </div>
+    <style>
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
+    .route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    </style>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
     <script src="js/mockData.js"></script>
     <script src="js/main.js"></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize Leaflet Map for Student Dashboard
+
         (function () {
-            const map = L.map('student-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
+            let map;
+            try {
+                if (typeof L === 'undefined') {
+                    console.error("Leaflet (L) is not defined. Resource might be blocked.");
+                    document.getElementById('student-map').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Error: Map library (Leaflet) could not be loaded. Please check your internet connection or tracking prevention settings.</div>';
+                    return;
+                }
+                map = L.map('student-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
+            } catch (e) {
+                console.error("Map initialization failed", e);
+                return;
+            }
+
             let currentRouteLayer = null;
             let stopMarkers = [];
             let busMarkers = {};
+            let studentMarker = null;
+            let studentCircle = null;
             let simulator = null;
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
+
+            // Fix for grey map issue: invalidate size after a delay
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 500);
+
+            // Listen for window resize
+            window.addEventListener('resize', () => map.invalidateSize());
+
+            // Handle sidebar toggle event if any
+            const originalToggle = window.toggleSidebar;
+            window.toggleSidebar = function() {
+                if (typeof originalToggle === 'function') originalToggle();
+                setTimeout(() => map.invalidateSize(), 300);
+            };
 
             const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
   <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
@@ -370,20 +441,64 @@
                 });
             }
 
+            function getStudentMarker() {
+                return L.divIcon({
+                    className: 'student-location-marker',
+                    html: `
+                        <div class="pulse-ring"></div>
+                        <div class="dot"></div>
+                        <style>
+                            .student-location-marker { position: relative; width: 20px; height: 20px; }
+                            .student-location-marker .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; background: #3B82F6; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); z-index: 2; }
+                            .student-location-marker .pulse-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; background: #3B82F6; border-radius: 50%; animation: pulse-animation 2s infinite; opacity: 0.4; z-index: 1; }
+                            @keyframes pulse-animation { 0% { width: 14px; height: 14px; opacity: 0.4; } 100% { width: 40px; height: 40px; opacity: 0; } }
+                        </style>
+                    `,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+            }
+
+            function updateStudentLocation() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.watchPosition((pos) => {
+                        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+                        
+                        if (!studentMarker) {
+                            studentMarker = L.marker([lat, lng], { icon: getStudentMarker() }).addTo(map);
+                            studentCircle = L.circle([lat, lng], { radius: accuracy, color: '#3B82F6', fillOpacity: 0.1, weight: 1 }).addTo(map);
+                        } else {
+                            studentMarker.setLatLng([lat, lng]);
+                            studentCircle.setLatLng([lat, lng]);
+                            studentCircle.setRadius(accuracy);
+                        }
+                    }, (err) => {
+                        console.warn("Error getting student location:", err);
+                    }, { enableHighAccuracy: true });
+                }
+            }
+
+            document.getElementById('recenter-btn').onclick = () => {
+                if (studentMarker) {
+                    map.flyTo(studentMarker.getLatLng(), 16);
+                } else {
+                    alert("Acquiring your location...");
+                }
+            };
+
+            updateStudentLocation();
+
             const chipsContainer = document.querySelector('.route-chips');
 
             let routeSelected = false;
 
-            function openRouteModal() {
-                const modal = document.getElementById('route-modal');
-                modal.style.display = 'flex';
-                // Hide close button if no route has been selected yet
-                const closeBtn = document.getElementById('route-modal-close-btn');
-                if (closeBtn) closeBtn.style.display = routeSelected ? 'block' : 'none';
-            }
-            function closeRouteModal() {
-                document.getElementById('route-modal').style.display = 'none';
-            }
+            // Remove the duplicate global assignments since we moved them to the top
+            // window.openRouteModal = function() { ... }
+            // window.closeRouteModal = function() { ... }
+            
+            // Wire up modal close button
+            const studentModalClose = document.getElementById('route-modal-close-btn');
+            if (studentModalClose) studentModalClose.onclick = window.closeRouteModal;
 
             function showLoader(show) {
                 let overlay = document.getElementById('osrm-loader');
@@ -404,13 +519,17 @@
                     const listObj = document.getElementById('route-modal-list');
                     if (listObj) {
                         listObj.innerHTML = '';
+                        if (!routes || routes.length === 0) {
+                            listObj.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">No routes available at the moment.</div>';
+                            return;
+                        }
                         routes.forEach(r => {
                             const div = document.createElement('div');
                             div.className = 'route-choice-card';
                             div.onclick = () => {
                                 document.getElementById('active-route-label').innerText = r.routeName;
                                 routeSelected = true;
-                                closeRouteModal();
+                                window.closeRouteModal();
                                 renderRoute(r.id);
                             };
                             div.innerHTML = `
@@ -426,18 +545,13 @@
                     }
                     
                     if (routes.length > 0) {
-                        showLoader(true);
-                        for (let i = 0; i < routes.length; i++) {
-                            await getRoadRoute(routes[i].id, routes[i].stops);
-                            if (i < routes.length - 1) {
-                                await new Promise(resolve => setTimeout(resolve, 300));
-                            }
-                        }
                         showLoader(false);
-
-                        // Force the student to select a route — do NOT auto-load routes[0]
-                        openRouteModal();
+                        window.openRouteModal();
                     }
+                }).catch(err => {
+                    console.error("Failed to load routes:", err);
+                    const listObj = document.getElementById('route-modal-list');
+                    if (listObj) listObj.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Error loading routes. Please check your connection.</div>';
                 });
             }
 
@@ -467,11 +581,10 @@
                     }).addTo(map);
 
                     route.stops.forEach((stop, i) => {
-                        const color = i === 0 || i === route.stops.length - 1 ? rColor : '#E2E8F0';
-                        const m = L.marker([stop.lat, stop.lng], { icon: stopIcon(color) })
-                            .bindPopup(`<strong>${stop.name}</strong>`)
-                            .addTo(map);
-                        stopMarkers.push(m);
+                        // Add stop marker
+                        const marker = L.marker([stop.lat, stop.lng], { icon: stopIcon('#E2E8F0') }).addTo(map);
+                        marker.bindPopup(`<b>${stop.name}</b>`);
+                        stopMarkers.push(marker);
                     });
 
                     // Update Chips
@@ -489,20 +602,54 @@
                     updateArrivingInfo(routeId);
                 });
             }
+            
+            let trackingBusId = null;
 
             function updateArrivingInfo(routeId) {
                 MockAPI.getBuses().then(res => {
                     const bus = res.data.find(b => b.assignedRoute === routeId);
                     
                     if (bus) {
-                        document.querySelector('h1').innerText = 'Bus #' + bus.busId.split('-')[1];
-                        document.querySelector('.label + div + div').nextElementSibling.innerText = ' Heading to ' + bus.assignedRoute.replace(/-/g, ' ') + '...';
-                        document.querySelector('img[alt=""]').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bus.assignedDriver)}&background=3B82F6&color=fff`;
-                        document.querySelector('.label + div + div div:last-child').innerText = bus.assignedDriver;
+                        trackingBusId = bus.busId;
+                        const busIdEl = document.getElementById('arrived-bus-id');
+                        if (busIdEl) busIdEl.innerText = 'Bus #' + bus.busId.split('-')[1];
+                        document.getElementById('arrived-route-desc').innerHTML = `<svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg> Heading to ${bus.assignedRoute.replace(/-/g, ' ')}...`;
+                        
+                        const driverName = bus.assignedDriver || "Unknown Driver";
+                        const driverAvatar = document.getElementById('arrived-driver-avatar');
+                        if (driverAvatar) driverAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(driverName)}&background=3B82F6&color=fff`;
+                        const driverNameEl = document.getElementById('arrived-driver-name');
+                        if (driverNameEl) driverNameEl.innerText = driverName;
+                        
+                        const callBtn = document.getElementById('driver-call-btn');
+                        if (callBtn) {
+                            if (bus.driverPhone) {
+                                callBtn.href = 'tel:' + bus.driverPhone;
+                                callBtn.style.opacity = '1';
+                                callBtn.style.pointerEvents = 'auto';
+                            } else {
+                                callBtn.removeAttribute('href');
+                                callBtn.style.opacity = '0.3';
+                                callBtn.style.pointerEvents = 'none';
+                            }
+                        }
                         
                         startSim(bus.busId);
                     }
                 });
+            }
+
+            // Wire up Track Bus button once
+            const trackBtn = document.getElementById('track-bus-btn');
+            if (trackBtn) {
+                trackBtn.onclick = () => {
+                    if (trackingBusId && busMarkers[trackingBusId]) {
+                        const currentPos = busMarkers[trackingBusId].getLatLng();
+                        map.flyTo(currentPos, 17, { duration: 1.5 });
+                    } else {
+                        showToast("Waiting for Bus", "The assigned bus hasn't started broadcasting its location yet.");
+                    }
+                };
             }
 
             let busPollInterval = null;
@@ -534,7 +681,7 @@
                             }
                         }, 100);
 
-                        map.on('zoomend', () => {
+                        const onZoomEnd = () => {
                             if(marker) {
                                 marker.setIcon(getBusIcon(map.getZoom()));
                                 setTimeout(() => {
@@ -542,7 +689,8 @@
                                     if (iconEl) iconEl.style.transition = 'transform 3s linear';
                                 }, 50);
                             }
-                        });
+                        };
+                        map.on('zoomend', onZoomEnd);
                         
                         busMarkers[busId] = marker;
                         lastKnownLiveStatus = !!bus.isLive;
@@ -566,25 +714,28 @@
                                     const lng = currentBus.lastLocation.lng;
                                     
                                     if (lat !== prevLat || lng !== prevLng) {
-                                        // Calculate angle based on vector from last point
-                                        const dy = lat - prevLat;
-                                        const dx = lng - prevLng;
-                                        const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
-                                        
-                                        marker.setLatLng([lat, lng]);
-                                        
-                                        const el = marker.getElement();
-                                        if (el) {
-                                            const iconContainer = el.querySelector('div');
-                                            if (iconContainer) iconContainer.style.transform = `rotate(${angle}deg)`;
+                                        // Calculate angle based on vector from last point, but only if moved enough
+                                        const distMoved = getDist(lat, lng, prevLat, prevLng);
+                                        if (distMoved > 2) {
+                                            const dy = lat - prevLat;
+                                            const dx = lng - prevLng;
+                                            const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
+                                            
+                                            const el = marker.getElement();
+                                            if (el) {
+                                                const iconContainer = el.querySelector('div');
+                                                if (iconContainer) iconContainer.style.transform = `rotate(${angle}deg)`;
+                                            }
                                         }
+
+                                        marker.setLatLng([lat, lng]);
 
                                         prevLat = lat;
                                         prevLng = lng;
                                         
                                         // Highlight nearest stop if they are close
                                         let nearestIdx = -1;
-                                        let minDist = 100;
+                                        let minDist = 1000;
                                         route.stops.forEach((s, idx) => {
                                             const d = getDist(lat, lng, s.lat, s.lng);
                                             if (d < minDist) { minDist = d; nearestIdx = idx; }
@@ -592,25 +743,31 @@
 
                                         const rColor = route.color || '#3B82F6';
                                         stopMarkers.forEach((m, i) => {
-                                            const isCurrent = (i === nearestIdx && minDist < 50);
+                                            const isCurrent = (i === nearestIdx && minDist < 100);
                                             const color = (i === 0 || i === route.stops.length - 1) ? rColor : (isCurrent ? rColor : '#E2E8F0');
                                             m.setIcon(stopIcon(color, isCurrent));
                                         });
+
+                                        // Update Timer based on distance to BELAGAVI (last stop)
+                                        const dest = route.stops[route.stops.length - 1];
+                                        const distToDest = getDist(lat, lng, dest.lat, dest.lng);
+                                        const estMins = Math.ceil(distToDest / 400); // Rough estimate: 24km/h is 400m/min
+                                        const timerEl = document.getElementById('student-timer');
+                                        if (timerEl) {
+                                            timerEl.innerHTML = `${estMins < 10 ? '0'+estMins : estMins}<span>mins</span>`;
+                                        }
                                     }
                                 }
 
                                 // Update Speed UI occasionally based on real speed
                                 const speedInfo = Math.floor((currentBus.lastLocation && currentBus.lastLocation.speed) || 0);
-                                const speedEl = document.querySelector('.next-arrival-card div:last-child div:first-child');
+                                const speedEl = document.getElementById('student-speed');
                                 if (speedEl) speedEl.innerText = speedInfo + ' km/h';
-
                             });
-                        }, 3000); // Poll every 3 sections
+                        }, 2000); // Poll every 2 seconds
                     });
                 });
             }
-
-
 
             loadRoutes();
 
@@ -629,24 +786,5 @@
         })();
     </script>
 
-    <!-- Route Selection Modal -->
-    <div id="route-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
-        <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 20px;">Select Transit Route</h2>
-                <div id="route-modal-close-btn">
-                    <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </div>
-            </div>
-            <div id="route-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
-                <!-- Rendered via JS -->
-            </div>
-        </div>
-    </div>
-    <style>
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
-    .route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-    </style>
 </body>
 </html>

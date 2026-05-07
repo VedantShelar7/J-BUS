@@ -121,7 +121,7 @@ app.get('/api/buses/:busId', (req, res) => {
 
 // PATCH /api/buses/:busId/location
 app.patch('/api/buses/:busId/location', (req, res) => {
-    const { lat, lng, speed, isLive, assignedRoute } = req.body;
+    const { lat, lng, speed, isLive, assignedRoute, assignedDriver, driverPhone } = req.body;
     const buses = readJSON('buses.json');
     const bus = buses.find(b => b.busId === req.params.busId);
     if (!bus) {
@@ -130,10 +130,24 @@ app.patch('/api/buses/:busId/location', (req, res) => {
     if (typeof isLive !== 'undefined' && isLive !== null) {
         bus.isLive = isLive;
     }
-    if (assignedRoute) {
+    if (assignedRoute !== null) {
         bus.assignedRoute = assignedRoute;
+        bus.status = assignedRoute ? 'active' : 'idle';
     }
-    bus.lastLocation = { lat, lng, speed: speed || 0, updatedAt: new Date().toISOString() };
+    if (assignedDriver !== null) {
+        bus.assignedDriver = assignedDriver;
+    }
+    if (driverPhone) {
+        bus.driverPhone = driverPhone;
+    }
+    if (typeof lat !== 'undefined' && typeof lng !== 'undefined') {
+        bus.lastLocation = { 
+            lat, 
+            lng, 
+            speed: speed || 0, 
+            updatedAt: new Date().toISOString() 
+        };
+    }
     writeJSON('buses.json', buses);
     res.json({ success: true, data: bus, message: 'Location updated' });
 });
@@ -149,6 +163,59 @@ app.patch('/api/buses/:busId/occupancy', (req, res) => {
     bus.currentOccupancy = occupancy;
     writeJSON('buses.json', buses);
     res.json({ success: true, data: bus, message: 'Occupancy updated' });
+});
+
+// ==================== ALERTS ROUTES ====================
+
+// POST /api/alerts
+app.post('/api/alerts', (req, res) => {
+    const { busId, driverName, contactDetails, message, location } = req.body;
+    let alerts = [];
+    try {
+        alerts = readJSON('alerts.json');
+    } catch (e) {
+        // file doesn't exist yet, that's fine
+    }
+
+    const newAlert = {
+        id: Date.now(),
+        busId,
+        driverName,
+        contactDetails,
+        message: message || "Emergency Alert Triggered!",
+        location: location || null,
+        timestamp: new Date().toISOString(),
+        status: 'active'
+    };
+
+    alerts.unshift(newAlert); // Newest first
+    writeJSON('alerts.json', alerts);
+    res.json({ success: true, data: newAlert, message: 'Alert sent successfully' });
+});
+
+// GET /api/alerts
+app.get('/api/alerts', (req, res) => {
+    try {
+        const alerts = readJSON('alerts.json');
+        res.json({ success: true, data: alerts });
+    } catch (e) {
+        res.json({ success: true, data: [] });
+    }
+});
+
+// PATCH /api/alerts/:id/resolve
+app.patch('/api/alerts/:id/resolve', (req, res) => {
+    try {
+        const alerts = readJSON('alerts.json');
+        const alert = alerts.find(a => a.id === parseInt(req.params.id));
+        if (alert) {
+            alert.status = 'resolved';
+            writeJSON('alerts.json', alerts);
+        }
+        res.json({ success: true, message: 'Alert resolved' });
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to resolve alert' });
+    }
 });
 
 // ==================== ROUTES ROUTES ====================

@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1777264634480,
+    "busId": "V-101",
+    "driverName": "sumit",
+    "contactDetails": "7795868592",
+    "message": "EMERGENCY: Driver requested immediate assistance!",
+    "location": {
+      "lat": 15.821981584821696,
+      "lng": 74.48919113950966
+    },
+    "timestamp": "2026-04-27T04:37:14.480Z",
+    "status": "resolved"
+  },
+  {
+    "id": 1777218926548,
+    "busId": "V-101",
+    "driverName": "sumit",
+    "contactDetails": "7795868592",
+    "message": "EMERGENCY: Driver requested immediate assistance!",
+    "location": {
+      "lat": 15.8607435,
+      "lng": 74.510212
+    },
+    "timestamp": "2026-04-26T15:55:26.548Z",
+    "status": "resolved"
+  },
+  {
+    "id": 1777218616336,
+    "busId": "V-101",
+    "driverName": "sumit",
+    "contactDetails": "7795868592",
+    "message": "EMERGENCY: Driver requested immediate assistance!",
+    "location": null,
+    "timestamp": "2026-04-26T15:50:16.336Z",
+    "status": "resolved"
+  },
+  {
+    "id": 1777218600776,
+    "busId": "V-101",
+    "driverName": "sumit",
+    "contactDetails": "7795868592",
+    "message": "EMERGENCY: Driver requested immediate assistance!",
+    "location": null,
+    "timestamp": "2026-04-26T15:50:00.776Z",
+    "status": "resolved"
+  },
+  {
+    "id": 1777218588518,
+    "busId": "V-101",
+    "driverName": "sumit",
+    "contactDetails": "7795868592",
+    "message": "EMERGENCY: Driver requested immediate assistance!",
+    "location": null,
+    "timestamp": "2026-04-26T15:49:48.518Z",
+    "status": "resolved"
+  }
+]
