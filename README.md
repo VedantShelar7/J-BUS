@@ -1,2 +1,2 @@
-# J-BUS
-A college/uni bus tracking system 
+# Bus Tracking System
+A college/university bus tracking system.
