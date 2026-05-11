@@ -1,240 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velocity - Admin Dashboard</title>
+    <title>Velocity - Admin Fleet Command</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Leaflet JS & CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <style>
-        #admin-map { height: 100% !important; width: 100% !important; background: #f8fafc !important; }
-        .dashboard-layout { height: 100vh !important; overflow: hidden !important; display: flex; }
-        .main-content { flex: 1 !important; height: 100vh !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; position: relative; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        :root {
+            --primary: #EF4444; /* Admin Red */
+            --primary-dark: #B91C1C;
+            --glass: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow: 0 8px 32px 0 rgba(135, 31, 31, 0.15);
         }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        
+        #admin-map { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f1f5f9; z-index: 1; 
+        }
+
+        .dashboard-layout { height: 100vh; overflow: hidden; display: flex; position: relative; }
+        
+        .glass-overlay {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        .sidebar {
+            width: 260px; height: 100vh; display: flex; flex-direction: column;
+            padding: 24px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; left: 0; top: 0; z-index: 200;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .main-content { flex: 1; height: 100vh; position: relative; overflow: hidden; }
+
+        .top-nav {
+            position: absolute; top: 20px; left: 20px; right: 20px;
+            height: 64px; border-radius: 20px; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .stats-overlay {
+            position: absolute; top: 104px; left: 20px;
+            display: flex; gap: 12px; z-index: 100;
+        }
+
+        .stat-pill {
+            padding: 12px 20px; border-radius: 16px;
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .fleet-panel {
+            position: absolute; bottom: 20px; left: 20px; width: 380px; top: 180px;
+            border-radius: 24px; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        .traffic-widget {
+            position: absolute; bottom: 20px; right: 20px; width: 420px;
+            border-radius: 24px; padding: 20px; z-index: 100;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
         .pulse { animation: pulse-red 2s infinite; }
+
+        .bus-row {
+            padding: 12px; border-radius: 16px; background: white;
+            border: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+        }
+        .bus-row:hover { border-color: var(--primary); transform: translateX(4px); }
+
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 10000; display: flex; align-items: center;
+            justify-content: center; flex-direction: column; gap: 16px;
+        }
     </style>
-    <script>
-        window.signOut = function () {
-            sessionStorage.removeItem('velocity_user');
-            window.location.href = 'index.html';
-        };
-    </script>
 </head>
-
 <body>
-    <div id="app">
-        <div id="page-admin" class="page dashboard-layout active">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="brand">
-                    <div class="brand-icon">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
-                    </div>
-                    <div class="brand-text">Velocity</div>
-                </div>
-                <div class="user-card">
-                    <div class="user-card-avatar" style="background: var(--secondary);"><img id="sidebar-avatar" src="" style="width:100%;height:100%;border-radius:50%"></div>
-                    <div class="user-card-info"><h4 id="sidebar-user-name">Admin User</h4><p>System Administrator</p></div>
-                </div>
-                <div class="nav-menu">
-                    <div class="nav-item active" onclick="switchNav(this, 'admin-dashboard.html')"><svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard</div>
-                    <div class="nav-item" onclick="window.location.href='admin-alerts.html'"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg> Alerts</div>
-                    <div class="nav-item" onclick="signOut()" style="margin-top:auto; color:var(--danger)"><svg class="icon" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Logout</div>
-                </div>
+
+<div id="loader" class="loader-overlay">
+    <div style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div style="font-family: 'Manrope'; font-weight: 700; color: var(--primary); font-size: 20px;">Velocity Command</div>
+</div>
+
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar glass-overlay">
+        <div class="brand" style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+            <div style="width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
             </div>
+            <span style="font-family: 'Manrope'; font-weight: 800; font-size: 22px; color: var(--primary);">Velocity</span>
+        </div>
 
-            <!-- Main Content -->
-            <div class="main-content">
-                <div id="admin-map" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
-                
-                <!-- Top Overlay -->
-                <div class="topbar glass-panel" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: 100; border-radius: 20px; padding: 0 24px; height: 64px; width: calc(100% - 40px);">
-                    <div style="display: flex; align-items: center; gap: 16px;">
-                        <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                        </div>
-                        <h1 style="color: var(--primary); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin: 0;">FLEET COMMAND</h1>
-                    </div>
-                    <div class="topbar-right" style="flex: 1; justify-content: flex-end; gap: 20px;">
-                        <div class="input-group" style="margin: 0; width: 260px; background: rgba(0,0,0,0.05); border-radius: 30px;">
-                            <svg class="input-icon" viewBox="0 0 24 24" style="top: 8px;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                            <input type="text" id="admin-search-input" class="form-input" placeholder="Search fleet..." style="height: 36px; background: transparent; border: none; padding-left: 44px;">
-                        </div>
-                        <div class="avatar" style="width: 40px; height: 40px; border: 2px solid var(--primary);" onclick="toggleDropdown('admin-dropdown')">
-                            <img id="topbar-avatar" src="" style="width:100%;height:100%;border-radius:50%">
-                        </div>
-                        <div class="dropdown-menu" id="admin-dropdown" style="top: 70px; right: 0;">
-                            <div class="dropdown-item" onclick="window.location.href='student-profile.html'">View Profile</div>
-                            <div class="dropdown-item" onclick="signOut()">Sign Out</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats Overlay -->
-                <div style="position: absolute; top: 104px; left: 20px; z-index: 100; display: flex; gap: 12px;">
-                    <div class="card glass-panel" style="padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-radius: 16px;">
-                        <div style="width: 36px; height: 36px; background: #EEF2FF; color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg class="icon" viewBox="0 0 24 24" style="width: 20px;"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">TOTAL BUSES</div>
-                            <div style="font-size: 20px; font-weight: 800; color: var(--text);">24</div>
-                        </div>
-                    </div>
-                    <div class="card glass-panel" style="padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-radius: 16px;">
-                        <div style="width: 36px; height: 36px; background: #ECFDF5; color: #10B981; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <svg class="icon" viewBox="0 0 24 24" style="width: 20px;"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">ACTIVE ROUTES</div>
-                            <div style="font-size: 20px; font-weight: 800; color: var(--text);">12</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Side Panels -->
-                <div style="position: absolute; bottom: 20px; left: 20px; width: 380px; top: 104px; z-index: 100; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="card glass-panel" style="flex: 1; display: flex; flex-direction: column; padding: 0; border-radius: 24px; overflow: hidden;">
-                        <div style="padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="font-size: 18px; margin: 0;">Fleet Monitor</h2>
-                            <span class="pill pill-tertiary" style="font-size: 10px;">LIVE</span>
-                        </div>
-                        <div style="flex: 1; overflow-y: auto; padding: 12px;">
-                            <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
-                                <tbody id="fleet-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="card glass-panel" id="live-alerts-widget" style="padding: 20px; border-radius: 24px; border-left: 6px solid var(--danger);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div class="pulse" style="width: 10px; height: 10px; background: var(--danger); border-radius: 50%;"></div>
-                                <h3 style="font-size: 14px; font-weight: 800; color: var(--danger); letter-spacing: 0.5px; margin: 0;">INCIDENTS</h3>
-                            </div>
-                            <a href="admin-alerts.html" style="font-size: 11px; font-weight: 700; color: var(--text-muted);">VIEW ALL</a>
-                        </div>
-                        <div id="dashboard-alerts-list"><p style="font-size: 12px; color: var(--text-muted);">Scanning for alerts...</p></div>
-                    </div>
-                </div>
-
-                <!-- Trends Overlay -->
-                <div class="card glass-panel" style="position: absolute; bottom: 20px; right: 20px; width: 440px; padding: 20px; border-radius: 24px; z-index: 100;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-size: 15px; margin: 0; font-weight: 700;">Passenger Traffic</h3>
-                        <div style="font-size: 11px; font-weight: 700; color: var(--primary);">REAL-TIME</div>
-                    </div>
-                    <div style="height: 100px; width: 100%;">
-                        <svg width="100%" height="100%" viewBox="0 0 500 100" preserveAspectRatio="none">
-                            <polyline id="trend-line" points="0,80 500,80" fill="none" stroke="#3B82F6" stroke-width="3"/>
-                            <circle id="trend-dot" cx="0" cy="0" r="0" fill="#3B82F6" stroke="#fff" stroke-width="2"/>
-                        </svg>
-                    </div>
-                </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 16px; margin-bottom: 32px;">
+            <div id="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">A</div>
+            <div>
+                <div id="user-name" style="font-weight: 700;">Admin User</div>
+                <div style="font-size: 12px; color: #64748b;">Fleet Manager</div>
             </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: var(--primary); color: white; cursor: pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span style="font-weight: 600;">Fleet Monitor</span>
+            </div>
+            <div class="nav-item" onclick="window.location.href='admin-alerts.html'" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #64748b;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span style="font-weight: 600;">Emergency Alerts</span>
+            </div>
+        </div>
+
+        <div onclick="signOut()" style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <span style="font-weight: 600;">Sign Out</span>
         </div>
     </div>
 
-    <script src="js/mockData.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
-    <script>
-        (function () {
-            const map = L.map('admin-map', { zoomControl: false }).setView([15.8497, 74.4977], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM', maxZoom: 19 }).addTo(map);
+    <!-- Main Content -->
+    <div class="main-content">
+        <div id="admin-map"></div>
 
-            const activeMarkers = {};
+        <!-- Top Nav Overlay -->
+        <div class="top-nav glass-overlay">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button onclick="toggleSidebar()" style="width: 40px; height: 40px; border-radius: 10px; border: none; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <h1 style="font-family: 'Manrope'; font-weight: 800; font-size: 18px; margin: 0; letter-spacing: -0.5px; color: var(--primary);">FLEET COMMAND</h1>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="position: relative;">
+                    <input type="text" id="fleet-search" placeholder="Search fleet..." style="width: 240px; height: 40px; border-radius: 20px; border: 1px solid #e2e8f0; padding: 0 16px 0 40px; outline: none; font-size: 13px;">
+                    <svg style="position: absolute; left: 14px; top: 12px; color: #94a3b8;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <img id="nav-avatar" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </div>
 
-            function makeBusIcon(busId, status) {
-                const color = status === 'active' ? '#3B82F6' : '#94A3B8';
-                return L.divIcon({
-                    className: 'custom-bus-marker',
-                    html: `<div style="width:20px;height:20px;background:${color};border:3px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>` +
-                        `<div style="background:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,0.15);margin-top:4px;white-space:nowrap;position:absolute;top:100%;left:50%;transform:translateX(-50%);">${busId}</div>`,
-                    iconSize: [26, 26], iconAnchor: [13, 13]
-                });
+        <!-- Stats Row -->
+        <div class="stats-overlay">
+            <div class="stat-pill glass-overlay">
+                <div style="width: 32px; height: 32px; background: #FEF2F2; color: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                </div>
+                <div>
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b;">TOTAL BUSES</div>
+                    <div id="stat-total" style="font-size: 18px; font-weight: 800;">0</div>
+                </div>
+            </div>
+            <div class="stat-pill glass-overlay">
+                <div style="width: 32px; height: 32px; background: #ECFDF5; color: #10B981; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+                </div>
+                <div>
+                    <div style="font-size: 10px; font-weight: 800; color: #64748b;">LIVE NOW</div>
+                    <div id="stat-live" style="font-size: 18px; font-weight: 800;">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fleet Monitor Panel -->
+        <div class="fleet-panel glass-overlay">
+            <div style="padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 18px; font-weight: 800; margin: 0;">Fleet Monitor</h2>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="pulse" style="width: 8px; height: 8px; background: #10B981; border-radius: 50%;"></div>
+                    <span style="font-size: 11px; font-weight: 800; color: #10B981;">REAL-TIME</span>
+                </div>
+            </div>
+            <div id="bus-list" style="flex: 1; overflow-y: auto; padding: 12px;">
+                <!-- JS Rendered -->
+            </div>
+        </div>
+
+        <!-- Traffic Widget -->
+        <div class="traffic-widget glass-overlay">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 14px; font-weight: 800;">Passenger Volume</h3>
+                <div style="font-size: 11px; font-weight: 700; color: var(--primary);">TRENDING</div>
+            </div>
+            <div style="height: 60px; width: 100%; display: flex; align-items: flex-end; gap: 8px;">
+                <div style="flex: 1; height: 40%; background: #fee2e2; border-radius: 4px;"></div>
+                <div style="flex: 1; height: 60%; background: #fee2e2; border-radius: 4px;"></div>
+                <div style="flex: 1; height: 80%; background: #fee2e2; border-radius: 4px;"></div>
+                <div style="flex: 1; height: 50%; background: #fee2e2; border-radius: 4px;"></div>
+                <div style="flex: 1; height: 90%; background: var(--primary); border-radius: 4px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<script>
+    let map;
+    let markers = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // User sync
+        const user = JSON.parse(sessionStorage.getItem('velocity_user') || '{}');
+        if (user.name) {
+            document.getElementById('user-name').innerText = user.name;
+            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=EF4444&color=fff`;
+            document.getElementById('nav-avatar').src = avatarUrl;
+        }
+
+        // Map Init
+        setTimeout(() => {
+            map = L.map('admin-map', { zoomControl: false, attributionControl: false }).setView([15.8497, 74.4977], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+            
+            map.invalidateSize();
+            loadFleet();
+        }, 100);
+    });
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+    async function loadFleet() {
+        const res = await MockAPI.getBuses();
+        if (!res.success) return;
+        
+        const buses = res.data;
+        document.getElementById('stat-total').innerText = buses.length;
+        document.getElementById('stat-live').innerText = buses.filter(b => b.isLive || b.status === 'active').length;
+
+        const list = document.getElementById('bus-list');
+        list.innerHTML = buses.map(b => {
+            const initials = b.assignedDriver ? b.assignedDriver.split(' ').map(n=>n[0]).join('').substring(0,2) : '--';
+            const color = b.status === 'active' ? '#10B981' : '#94a3b8';
+            
+            return `
+                <div class="bus-row" onclick="focusBus('${b.busId}', ${b.lastLocation?.lat}, ${b.lastLocation?.lng})">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #fee2e2; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800;">${initials}</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-weight: 800; font-size: 13px;">Bus ${b.busId}</span>
+                            <span style="font-size: 9px; font-weight: 800; color: ${color};">${b.status.toUpperCase()}</span>
+                        </div>
+                        <div style="font-size: 11px; color: #64748b;">${b.assignedRoute || 'No Route Assigned'}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Markers
+        buses.forEach(b => {
+            if (b.lastLocation && b.lastLocation.lat) {
+                const latlng = [b.lastLocation.lat, b.lastLocation.lng];
+                if (markers[b.busId]) {
+                    markers[b.busId].setLatLng(latlng);
+                } else {
+                    markers[b.busId] = L.marker(latlng, {
+                        icon: L.divIcon({
+                            className: '',
+                            html: `<div style="width:24px;height:24px;background:var(--primary);border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;color:white;font-size:8px;font-weight:900;">${b.busId.split('-')[1] || ''}</div>`,
+                            iconSize: [24, 24], iconAnchor: [12, 12]
+                        })
+                    }).addTo(map);
+                }
             }
+        });
+    }
 
-            async function renderFleetTable(buses) {
-                const tableBody = document.getElementById('fleet-table-body');
-                const routesRes = await MockAPI.getRoutes();
-                const routesMap = {};
-                if (routesRes.success) routesRes.data.forEach(r => routesMap[r.id] = r.routeName);
+    function focusBus(id, lat, lng) {
+        if (lat && lng) map.flyTo([lat, lng], 17);
+    }
 
-                tableBody.innerHTML = buses.map(bus => {
-                    const routeName = routesMap[bus.assignedRoute] || bus.assignedRoute.replace(/-/g, ' ');
-                    const statusColor = bus.status === 'active' ? 'var(--primary)' : '#94A3B8';
-                    return `
-                        <tr style="cursor: pointer;" onclick="map.flyTo([${bus.lastLocation.lat}, ${bus.lastLocation.lng}], 16)">
-                            <td style="padding: 8px;">
-                                <div style="display: flex; align-items: center; gap: 12px; background: white; padding: 12px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                                    <div style="width: 4px; height: 32px; background: ${statusColor}; border-radius: 2px;"></div>
-                                    <div style="flex: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 800; font-size: 14px; color: var(--text);">BUS ${bus.busId.split('-')[1]}</span>
-                                            <span style="font-size: 10px; font-weight: 700; color: ${statusColor};">${bus.status.toUpperCase()}</span>
-                                        </div>
-                                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${routeName}</div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+    setInterval(loadFleet, 5000);
 
-            function renderFleetMap(buses) {
-                buses.forEach(bus => {
-                    if (bus.lastLocation) {
-                        const latlng = [bus.lastLocation.lat, bus.lastLocation.lng];
-                        if (activeMarkers[bus.busId]) {
-                            activeMarkers[bus.busId].setLatLng(latlng);
-                        } else {
-                            activeMarkers[bus.busId] = L.marker(latlng, { icon: makeBusIcon(bus.busId, bus.status) }).addTo(map);
-                        }
-                    }
-                });
-            }
+    function signOut() { sessionStorage.clear(); window.location.href = 'index.html'; }
+</script>
 
-            function loadData() {
-                MockAPI.getBuses().then(res => {
-                    renderFleetTable(res.data);
-                    renderFleetMap(res.data);
-                });
-            }
+<style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
 
-            document.getElementById('admin-search-input').oninput = (e) => {
-                const q = e.target.value.toLowerCase();
-                MockAPI.getBuses().then(res => {
-                    const filtered = res.data.filter(b => b.busId.toLowerCase().includes(q) || b.assignedRoute.toLowerCase().includes(q));
-                    renderFleetTable(filtered);
-                });
-            };
-
-            setInterval(loadData, 8000);
-            loadData();
-
-            // Sync user
-            const user = JSON.parse(sessionStorage.getItem('velocity_user') || '{}');
-            if (user.name) {
-                document.getElementById('sidebar-user-name').innerText = user.name;
-                const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0F172A&color=fff`;
-                document.getElementById('sidebar-avatar').src = avatar;
-                document.getElementById('topbar-avatar').src = avatar;
-            }
-        })();
-    </script>
 </body>
 </html>

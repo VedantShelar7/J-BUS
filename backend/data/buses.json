@@ -3,18 +3,16 @@
     "busId": "V-101",
     "capacity": 50,
     "currentOccupancy": 0,
-    "status": "active",
+    "status": "idle",
     "driverId": "",
     "lastLocation": {
-      "lat": 15.821972103519503,
-      "lng": 74.48912960336335,
-      "speed": 30,
-      "updatedAt": "2026-05-11T04:38:22.479Z"
+      "lat": 15.821852633029701,
+      "lng": 74.48902453715232,
+      "speed": 24,
+      "updatedAt": "2026-05-11T10:21:24.266Z"
     },
     "driverPhone": "7795868592",
-    "isLive": true,
-    "assignedDriver": "driver",
-    "assignedRoute": "route-1"
+    "isLive": true
   },
   {
     "busId": "V-102",

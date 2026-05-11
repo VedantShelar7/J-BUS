@@ -181,6 +181,7 @@ app.patch('/api/buses/:busId/location', (req, res) => {
             updatedAt: new Date().toISOString() 
         };
     }
+
     writeJSON('buses.json', buses);
     res.json({ success: true, data: bus, message: 'Location updated' });
 });

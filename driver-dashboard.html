@@ -1,169 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velocity - Driver Dashboard</title>
+    <title>Velocity - Driver Console</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Leaflet JS & CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <style>
-        #driver-map { height: 100% !important; width: 100% !important; background: #f8fafc !important; }
-        .dashboard-layout { height: 100vh !important; overflow: hidden !important; display: flex; }
-        .main-content { flex: 1 !important; height: 100vh !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; position: relative; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
+        :root {
+            --primary: #10B981; /* Driver Green */
+            --primary-dark: #059669;
+            --glass: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.15);
+        }
+        
+        #driver-map { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f1f5f9; z-index: 1; 
+        }
+
+        .dashboard-layout { height: 100vh; overflow: hidden; display: flex; position: relative; }
+        
+        .glass-overlay {
+            background: var(--glass);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        .sidebar {
+            width: 260px; height: 100vh; display: flex; flex-direction: column;
+            padding: 24px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; left: 0; top: 0; z-index: 200;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .main-content { flex: 1; height: 100vh; position: relative; overflow: hidden; }
+
+        .top-nav {
+            position: absolute; top: 20px; left: 20px; right: 20px;
+            height: 64px; border-radius: 20px; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .ops-panel {
+            position: absolute; top: 104px; left: 20px; width: 340px;
+            border-radius: 24px; padding: 24px; display: flex;
+            flex-direction: column; gap: 20px; z-index: 100;
+        }
+
+        .status-widget {
+            position: absolute; bottom: 20px; right: 20px; width: 300px;
+            border-radius: 24px; padding: 24px; z-index: 100;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .pulse { animation: pulse-green 2s infinite; }
+
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 10000; display: flex; align-items: center;
+            justify-content: center; flex-direction: column; gap: 16px;
+        }
+
+        .btn-panic {
+            background: #ef4444; color: white; border: none; border-radius: 16px;
+            height: 56px; font-weight: 800; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            width: 100%; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
     </style>
-    <script>
-        window.signOut = function() {
-            sessionStorage.removeItem('velocity_user');
-            window.location.href = 'index.html';
-        };
-    </script>
 </head>
-
 <body>
-    <div id="app">
-        <div id="page-driver" class="page dashboard-layout active">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="brand">
-                    <div class="brand-icon">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
-                    </div>
-                    <div class="brand-text">Velocity</div>
+
+<div id="loader" class="loader-overlay">
+    <div style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div style="font-family: 'Manrope'; font-weight: 700; color: var(--primary); font-size: 20px;">Velocity Driver</div>
+</div>
+
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar glass-overlay">
+        <div class="brand" style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+            <div style="width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+            </div>
+            <span style="font-family: 'Manrope'; font-weight: 800; font-size: 22px; color: var(--primary);">Velocity</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 16px; margin-bottom: 32px;">
+            <div id="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">D</div>
+            <div>
+                <div id="user-name" style="font-weight: 700;">Driver Name</div>
+                <div style="font-size: 12px; color: #64748b;">Active Driver</div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: var(--primary); color: white; cursor: pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span style="font-weight: 600;">Trip Console</span>
+            </div>
+        </div>
+
+        <div onclick="signOut()" style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <span style="font-weight: 600;">Sign Out</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div id="driver-map"></div>
+
+        <!-- Top Nav Overlay -->
+        <div class="top-nav glass-overlay">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button onclick="toggleSidebar()" style="width: 40px; height: 40px; border-radius: 10px; border: none; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <h1 style="font-family: 'Manrope'; font-weight: 800; font-size: 18px; margin: 0; letter-spacing: -0.5px; color: var(--primary);">DRIVER CONSOLE</h1>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div id="broadcast-pill" style="display: none; align-items: center; gap: 10px; padding: 6px 16px; background: #ECFDF5; border-radius: 30px; border: 1px solid #A7F3D0;">
+                    <div class="pulse" style="width: 8px; height: 8px; background: #10B981; border-radius: 50%;"></div>
+                    <span style="font-weight: 700; color: #059669; font-size: 13px;">BROADCASTING LIVE</span>
                 </div>
-                <div class="user-card">
-                    <div class="user-card-avatar" style="background: var(--tertiary);"><img id="sidebar-avatar" src="" style="width:100%;height:100%;border-radius:50%"></div>
-                    <div class="user-card-info"><h4 id="sidebar-user-name">Driver</h4><p id="sidebar-bus-info">Bus Loading...</p></div>
-                </div>
-                <div class="nav-menu">
-                    <div class="nav-item active"><svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Console</div>
-                    <div class="nav-item" onclick="signOut()" style="margin-top:auto; color:var(--danger)"><svg class="icon" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Logout</div>
+                <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <img id="nav-avatar" src="" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
+        </div>
 
-            <!-- Main Content -->
-            <div class="main-content">
-                <div id="driver-map" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
-                
-                <!-- Topbar Overlay -->
-                <div class="topbar glass-panel" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: 100; border-radius: 20px; padding: 0 24px; height: 64px; width: calc(100% - 40px);">
-                    <div style="display: flex; align-items: center; gap: 16px;">
-                        <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px; background: var(--tertiary);" onclick="toggleSidebar()">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                        </div>
-                        <h3 style="font-weight: 800; font-size: 18px; margin: 0;">DRIVER CONSOLE</h3>
-                    </div>
-                    <div class="topbar-right">
-                        <div class="pill pill-tertiary" style="height: 32px; display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 8px; height: 8px; background: var(--tertiary); border-radius: 50%;" class="pulse"></div>
-                            LIVE BROADCASTING
-                        </div>
-                        <div class="avatar" style="width: 40px; height: 40px; border: 2px solid var(--tertiary);" onclick="toggleDropdown('driver-dropdown')">
-                            <img id="topbar-avatar" src="" style="width:100%;height:100%;border-radius:50%">
-                        </div>
-                    </div>
+        <!-- Ops Panel -->
+        <div class="ops-panel glass-overlay">
+            <h2 style="font-size: 20px; font-weight: 800; margin: 0;">Trip Controls</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="font-size: 12px; font-weight: 800; color: #64748b;">SELECT ASSIGNED BUS</label>
+                <select id="bus-select" style="width: 100%; height: 48px; border-radius: 12px; border: 1.5px solid #e2e8f0; padding: 0 16px; outline: none; font-weight: 600;">
+                    <option value="">Select a Bus</option>
+                    <option value="V-101">Bus V-101 (Active)</option>
+                    <option value="V-102">Bus V-102</option>
+                    <option value="V-103">Bus V-103</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="font-size: 12px; font-weight: 800; color: #64748b;">SELECT ROUTE</label>
+                <select id="route-select" style="width: 100%; height: 48px; border-radius: 12px; border: 1.5px solid #e2e8f0; padding: 0 16px; outline: none; font-weight: 600;">
+                    <option value="">Select a Route</option>
+                    <!-- JS Rendered -->
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 12px;">
+                <button id="start-trip-btn" onclick="startTrip()" style="flex: 1; height: 52px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; cursor: pointer;">Start Trip</button>
+                <button id="end-trip-btn" onclick="endTrip()" style="flex: 1; height: 52px; background: #fee2e2; color: #ef4444; border: none; border-radius: 16px; font-weight: 700; cursor: pointer; display: none;">End Trip</button>
+            </div>
+
+            <div style="margin-top: 24px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 24px;">
+                <button class="btn-panic" onclick="triggerPanic()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.47 10 10 10 10-4.47 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    PANIC ALERT
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Widget -->
+        <div id="status-widget" class="status-widget glass-overlay" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 14px; font-weight: 800;">Real-time Status</h3>
+                <span style="font-size: 10px; font-weight: 800; color: #10B981;">CONNECTED</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 16px;">
+                    <div style="font-size: 10px; color: #64748b; font-weight: 700;">SPEED</div>
+                    <div style="font-size: 20px; font-weight: 800;" id="curr-speed">0 <span style="font-size: 12px;">km/h</span></div>
                 </div>
-
-                <!-- Control Panel -->
-                <div class="glass-panel" style="position: absolute; top: 104px; left: 20px; width: 340px; bottom: 20px; z-index: 100; border-radius: 24px; display: flex; flex-direction: column; padding: 24px; gap: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-size: 20px; font-weight: 800; margin: 0;">Drive Ops</h2>
-                        <span class="pill pill-tertiary" style="font-size: 10px;">DUTY ON</span>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <button id="start-trip-btn" class="btn btn-primary" style="height: 70px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;" onclick="startDriverTrip()">
-                            <svg class="icon" viewBox="0 0 24 24" style="width: 20px;"><path d="M8 5v14l11-7z"/></svg>
-                            <span style="font-size: 11px; font-weight: 800;">START</span>
-                        </button>
-                        <button id="end-trip-btn" class="btn btn-secondary" style="height: 70px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0.5;" disabled>
-                            <svg class="icon" viewBox="0 0 24 24" style="width: 20px;"><path d="M6 6h12v12H6z"/></svg>
-                            <span style="font-size: 11px; font-weight: 800;">END</span>
-                        </button>
-                    </div>
-
-                    <div class="card" style="padding: 16px; background: rgba(0,0,0,0.03); border: none; border-radius: 16px;">
-                        <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">ACTIVE ROUTE</div>
-                        <h3 id="driver-route-name" style="font-size: 18px; margin: 0;">Route 14A • Express</h3>
-                    </div>
-
-                    <div style="flex: 1; overflow-y: auto;">
-                        <div class="label" style="font-weight: 800; color: var(--primary); margin-bottom: 12px;">STOPS REMAINING</div>
-                        <div id="driver-stops-list" style="display: flex; flex-direction: column; gap: 16px; padding-left: 10px; position: relative;">
-                            <div style="position: absolute; left: 4px; top: 5px; bottom: 5px; width: 2px; background: var(--border);"></div>
-                            <div style="display: flex; align-items: center; gap: 12px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--primary);z-index:1"></div><div style="font-size: 14px; font-weight: 700;">Main Gate</div></div>
-                            <div style="display: flex; align-items: center; gap: 12px; opacity: 0.5;"><div style="width:10px;height:10px;border-radius:50%;background:var(--white);border:2px solid var(--border);z-index:1"></div><div style="font-size: 14px; font-weight: 600;">Student Res West</div></div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-action-danger btn-full" style="height: 54px; border-radius: 16px; font-weight: 800;" onclick="showEmergencyAlert()">
-                        🚨 EMERGENCY ALERT
-                    </button>
-                </div>
-
-                <!-- Status Overlay -->
-                <div class="glass-panel" style="position: absolute; bottom: 20px; left: 380px; right: 20px; padding: 20px; border-radius: 24px; z-index: 100; display: flex; justify-content: space-around; align-items: center;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);">NEXT STOP</div>
-                        <h2 id="next-stop-time" style="font-size: 24px; font-weight: 800; margin: 0; color: var(--primary);">12 Mins</h2>
-                    </div>
-                    <div style="width: 1px; height: 40px; background: rgba(0,0,0,0.05);"></div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);">SPEED</div>
-                        <h2 id="driver-avg-speed" style="font-size: 24px; font-weight: 800; margin: 0;">24 km/h</h2>
-                    </div>
+                <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 16px;">
+                    <div style="font-size: 10px; color: #64748b; font-weight: 700;">OCCUPANCY</div>
+                    <div style="font-size: 20px; font-weight: 800;">12 <span style="font-size: 12px;">/ 50</span></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="js/mockData.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
-    <script>
-        (function () {
-            const map = L.map('driver-map', { zoomControl: false }).setView([15.8497, 74.4977], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(map);
+<script src="js/mockData.js"></script>
+<script src="js/main.js"></script>
+<script>
+    let map;
+    let driverMarker;
+    let watchId;
+    let isTracking = false;
 
-            let driverMarker = null;
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = JSON.parse(sessionStorage.getItem('velocity_user') || '{}');
+        if (user.name) {
+            document.getElementById('user-name').innerText = user.name;
+            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=10B981&color=fff`;
+            document.getElementById('nav-avatar').src = avatarUrl;
+        }
 
-            function updateLocation() {
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(pos => {
-                        const latlng = [pos.coords.latitude, pos.coords.longitude];
-                        if (!driverMarker) {
-                            driverMarker = L.marker(latlng, { icon: L.divIcon({ className:'custom-bus-marker', html:'<div style="width:20px;height:20px;background:#10B981;border:3px solid white;border-radius:50%"></div>' }) }).addTo(map);
-                            map.setView(latlng);
-                        } else {
-                            driverMarker.setLatLng(latlng);
-                        }
-                    });
-                }
-            }
-            setInterval(updateLocation, 5000);
-            updateLocation();
+        setTimeout(() => {
+            map = L.map('driver-map', { zoomControl: false, attributionControl: false }).setView([15.8497, 74.4977], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+            
+            map.invalidateSize();
+            loadRoutes();
+        }, 100);
+    });
 
-            // Sync user
-            const user = JSON.parse(sessionStorage.getItem('velocity_user') || '{}');
-            if (user.name) {
-                document.getElementById('sidebar-user-name').innerText = user.name;
-                const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=10B981&color=fff`;
-                document.getElementById('sidebar-avatar').src = avatar;
-                document.getElementById('topbar-avatar').src = avatar;
-                document.getElementById('sidebar-bus-info').innerText = 'Vehicle: ' + (user.busId || 'V-102');
-            }
-        })();
-    </script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+    async function loadRoutes() {
+        const res = await MockAPI.getRoutes();
+        const sel = document.getElementById('route-select');
+        sel.innerHTML += res.data.map(r => `<option value="${r.id}">${r.routeName}</option>`).join('');
+    }
+
+    function startTrip() {
+        const busId = document.getElementById('bus-select').value;
+        const routeId = document.getElementById('route-select').value;
+        if (!busId || !routeId) { alert('Please select both bus and route.'); return; }
+
+        isTracking = true;
+        document.getElementById('start-trip-btn').style.display = 'none';
+        document.getElementById('end-trip-btn').style.display = 'block';
+        document.getElementById('broadcast-pill').style.display = 'flex';
+        document.getElementById('status-widget').style.display = 'block';
+
+        if (navigator.geolocation) {
+            watchId = navigator.geolocation.watchPosition(updatePosition, (e) => console.error(e), { enableHighAccuracy: true });
+        }
+    }
+
+    async function updatePosition(pos) {
+        if (!isTracking) return;
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const speed = Math.round(pos.coords.speed * 3.6) || 0;
+        
+        document.getElementById('curr-speed').innerText = speed + ' km/h';
+        
+        if (!driverMarker) {
+            driverMarker = L.circleMarker([lat, lng], { radius: 10, fillColor: '#10B981', color: 'white', weight: 3, fillOpacity: 1 }).addTo(map);
+        } else {
+            driverMarker.setLatLng([lat, lng]);
+        }
+        map.panTo([lat, lng]);
+
+        const busId = document.getElementById('bus-select').value;
+        const routeId = document.getElementById('route-select').value;
+        
+        // Sync with backend
+        await fetch(`${API_BASE}/api/buses/${busId}/location`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat, lng, speed, isLive: true, assignedRoute: routeId })
+        });
+    }
+
+    function endTrip() {
+        isTracking = false;
+        navigator.geolocation.clearWatch(watchId);
+        document.getElementById('start-trip-btn').style.display = 'block';
+        document.getElementById('end-trip-btn').style.display = 'none';
+        document.getElementById('broadcast-pill').style.display = 'none';
+        document.getElementById('status-widget').style.display = 'none';
+        alert('Trip ended. Location broadcasting stopped.');
+    }
+
+    function triggerPanic() {
+        alert('PANIC ALERT SENT! Emergency services and admin have been notified.');
+    }
+
+    function signOut() { sessionStorage.clear(); window.location.href = 'index.html'; }
+</script>
+
+<style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+
 </body>
 </html>
