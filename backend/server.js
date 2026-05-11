@@ -101,6 +101,39 @@ app.get('/api/auth/me/:id', (req, res) => {
     res.json({ success: true, data: userWithoutPassword });
 });
 
+// GET /api/admin/dashboard
+app.get('/api/admin/dashboard', (req, res) => {
+    const buses = readJSON('buses.json');
+    const routes = readJSON('routes.json');
+    const users = readJSON('users.json');
+    
+    const totalBuses = buses.length;
+    const activeRoutes = routes.filter(r => r.isActive).length;
+    const totalStudents = users.filter(u => u.role === 'student').length;
+    const totalDrivers = users.filter(u => u.role === 'driver').length;
+    
+    res.json({
+        success: true,
+        data: {
+            totalBuses,
+            activeRoutes,
+            totalStudents,
+            totalDrivers
+        }
+    });
+});
+
+// GET /api/users
+app.get('/api/users', (req, res) => {
+    const users = readJSON('users.json');
+    // return users without passwords
+    const safeUsers = users.map(u => {
+        const { password, ...rest } = u;
+        return rest;
+    });
+    res.json({ success: true, data: safeUsers });
+});
+
 // ==================== BUSES ROUTES ====================
 
 // GET /api/buses

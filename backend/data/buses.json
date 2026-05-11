@@ -3,23 +3,25 @@
     "busId": "V-101",
     "capacity": 50,
     "currentOccupancy": 0,
-    "status": "idle",
-    "driverId": "driver-1",
+    "status": "active",
+    "driverId": "",
     "lastLocation": {
-      "lat": 15.865116,
-      "lng": 74.507034,
+      "lat": 15.821972103519503,
+      "lng": 74.48912960336335,
       "speed": 30,
-      "updatedAt": "2026-05-07T15:47:05.803Z"
+      "updatedAt": "2026-05-11T04:38:22.479Z"
     },
     "driverPhone": "7795868592",
-    "isLive": true
+    "isLive": true,
+    "assignedDriver": "driver",
+    "assignedRoute": "route-1"
   },
   {
     "busId": "V-102",
     "capacity": 55,
     "currentOccupancy": 0,
-    "status": "active",
-    "assignedDriver": "Test Student",
+    "status": "idle",
+    "assignedDriver": "",
     "driverId": "",
     "lastLocation": {
       "lat": 15.8336,
@@ -27,8 +29,9 @@
       "speed": 0,
       "updatedAt": null
     },
-    "driverPhone": "1234567890",
-    "assignedRoute": "route-2"
+    "driverPhone": "",
+    "isLive": false,
+    "assignedRoute": ""
   },
   {
     "busId": "V-103",
@@ -40,12 +43,12 @@
       "lat": 0,
       "lng": 0,
       "speed": 0,
-      "updatedAt": "2026-04-27T05:29:51.484Z"
+      "updatedAt": null
     },
-    "driverPhone": "7795868592",
+    "driverPhone": "",
     "isLive": false,
-    "assignedRoute": "",
-    "assignedDriver": ""
+    "assignedDriver": "",
+    "assignedRoute": ""
   },
   {
     "busId": "V-104",
@@ -54,27 +57,31 @@
     "status": "idle",
     "assignedDriver": "",
     "driverId": "",
-    "assignedRoute": "",
     "lastLocation": {
       "lat": 15.8629,
       "lng": 74.6111,
       "speed": 0,
       "updatedAt": null
-    }
+    },
+    "driverPhone": "",
+    "isLive": false,
+    "assignedRoute": ""
   },
   {
     "busId": "V-105",
     "capacity": 50,
     "currentOccupancy": 0,
     "status": "idle",
-    "assignedDriver": "",
     "driverId": "",
-    "assignedRoute": "",
     "lastLocation": {
-      "lat": 15.872,
-      "lng": 74.489,
+      "lat": 15.822,
+      "lng": 74.4891,
       "speed": 0,
       "updatedAt": null
-    }
+    },
+    "driverPhone": "",
+    "isLive": false,
+    "assignedDriver": "",
+    "assignedRoute": ""
   }
 ]

@@ -1,72 +1,53 @@
 [
   {
     "id": 1,
-    "name": "Vedant",
-    "email": "vedant@gmail.com",
+    "name": "student",
+    "email": "student@gmail.com",
     "password": "123456",
-    "role": "admin"
+    "role": "student",
+    "usn": null,
+    "mobileNo": "7795868592"
   },
   {
-    "id": 6,
-    "name": "sumit",
-    "email": "sumit@gmail.com",
+    "id": 2,
+    "name": "driver",
+    "email": "driver@gmail.com",
     "password": "123456",
     "role": "driver",
     "usn": null,
     "mobileNo": "7795868592"
   },
   {
-    "id": 7,
-    "name": "sumit2",
-    "email": "sumit2@gmail.com",
-    "password": "123456",
-    "role": "driver",
-    "usn": null,
-    "mobileNo": "5641115665"
-  },
-  {
-    "id": 8,
-    "name": "sumit3",
-    "email": "sumit3@gmail.com",
-    "password": "123456",
-    "role": "driver",
-    "usn": null,
-    "mobileNo": "545485445"
-  },
-  {
-    "id": 9,
-    "name": "sumit4",
-    "email": "sumit4@gmail.com",
-    "password": "123456",
-    "role": "driver",
-    "usn": null,
-    "mobileNo": "4868681616"
-  },
-  {
-    "id": 10,
-    "name": "sumit5",
-    "email": "sumit5@gmail.com",
-    "password": "123456",
-    "role": "driver",
-    "usn": null,
-    "mobileNo": "78454511451"
-  },
-  {
-    "id": 11,
-    "name": "su mit",
-    "email": "sumeetmargankop@gmail.com",
+    "id": 3,
+    "name": "admin",
+    "email": "admin@gmail.com",
     "password": "123456",
     "role": "admin",
     "usn": null,
-    "mobileNo": "156511111515"
+    "mobileNo": "7795868592"
   },
   {
-    "id": 12,
-    "name": "Test Student",
-    "email": "student@test.com",
+    "id": 4,
+    "name": "driver1",
+    "email": "driver1@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": "USN-6888"
+  },
+  {
+    "id": 5,
+    "name": "driver2",
+    "email": "driver2@gmail.com",
+    "password": "123456",
+    "role": "driver",
+    "usn": "USN-2000"
+  },
+  {
+    "id": 6,
+    "name": "vedant",
+    "email": "vedant@gmail.com",
     "password": "123456",
     "role": "student",
-    "usn": null,
-    "mobileNo": "1234567890"
+    "usn": "USN-7137"
   }
 ]

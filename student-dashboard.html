@@ -18,15 +18,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script>
-        window.openRouteModal = function() {
+        window.openRouteModal = function () {
             const modal = document.getElementById('route-modal');
             if (modal) modal.style.display = 'flex';
         };
-        window.closeRouteModal = function() {
+        window.closeRouteModal = function () {
             const modal = document.getElementById('route-modal');
             if (modal) modal.style.display = 'none';
         };
-        window.signOut = function() {
+        window.signOut = function () {
             if (window.logout) window.logout();
             else { sessionStorage.removeItem('velocity_user'); window.location.href = 'index.html'; }
         };
@@ -92,7 +92,8 @@
                     </div>
                     <div class="nav-item" onclick="signOut()" style="margin-top: auto; color: var(--danger);">
                         <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                            <path
+                                d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
                         </svg> Logout
                     </div>
 
@@ -107,8 +108,11 @@
             <div class="main-content">
                 <div class="topbar">
                     <div style="display: flex; align-items: center; gap: 16px;">
-                        <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;" onclick="toggleSidebar()">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                        <div class="brand-icon" style="cursor: pointer; width: 36px; height: 36px;"
+                            onclick="toggleSidebar()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                            </svg>
                         </div>
                     </div>
                     <div class="topbar-nav">
@@ -118,10 +122,14 @@
                     </div>
                     <div class="topbar-right">
                         <div style="position: relative;">
-                            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted); cursor: pointer;" onclick="toggleNotifications()">
-                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                            <svg class="icon" viewBox="0 0 24 24" style="color: var(--text-muted); cursor: pointer;"
+                                onclick="toggleNotifications()">
+                                <path
+                                    d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
                             </svg>
-                            <div id="notification-dot" style="display: none; position: absolute; top: 0; right: 2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px var(--white);"></div>
+                            <div id="notification-dot"
+                                style="display: none; position: absolute; top: 0; right: 2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px var(--white);">
+                            </div>
                         </div>
                         <div class="dropdown">
                             <div class="avatar" onclick="toggleDropdown('student-dropdown')">
@@ -129,7 +137,8 @@
                                     alt="avatar" style="width:100%;height:100%;border-radius:50%">
                             </div>
                             <div class="dropdown-menu" id="student-dropdown">
-                                <div class="dropdown-item" onclick="window.location.href='student-profile.html'">View Profile</div>
+                                <div class="dropdown-item" onclick="window.location.href='student-profile.html'">View
+                                    Profile</div>
                                 <div class="dropdown-item" onclick="signOut()">Sign Out</div>
                             </div>
                         </div>
@@ -143,20 +152,29 @@
                             style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; min-width: 320px; box-shadow: var(--shadow-premium); border-color: var(--border-refined); cursor: pointer; background: var(--surface);">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <svg class="icon" style="color: var(--primary);" viewBox="0 0 24 24">
-                                    <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" />
+                                    <path
+                                        d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z" />
                                 </svg>
                                 <div>
-                                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">ACTIVE ROUTE</div>
-                                    <div id="active-route-label" style="font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px;">Select a Route</div>
+                                    <div
+                                        style="font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">
+                                        ACTIVE ROUTE</div>
+                                    <div id="active-route-label"
+                                        style="font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px;">
+                                        Select a Route</div>
                                 </div>
                             </div>
-                            <svg class="icon" style="color: var(--text-muted); width: 20px; height: 20px;" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                            <svg class="icon" style="color: var(--text-muted); width: 20px; height: 20px;"
+                                viewBox="0 0 24 24">
+                                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+                            </svg>
                         </div>
                         <div class="route-chips" style="justify-content: center; margin-top: 8px;"></div>
                     </div>
 
                     <!-- Arriving overlay bottom left -->
-                    <div style="position: absolute; bottom: 24px; left: 24px; z-index: 5; width: 320px;">
+                    <div class="student-map-overlay-bottom"
+                        style="position: absolute; bottom: 24px; left: 24px; z-index: 5; width: 320px;">
                         <div class="card" style="box-shadow: var(--shadow-float); padding: 20px;">
                             <div
                                 style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
@@ -175,16 +193,22 @@
                             <div
                                 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: var(--neutral); border-radius: var(--radius-md);">
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img id="arrived-driver-avatar" src="https://ui-avatars.com/api/?name=Waiting+for+Driver&background=3B82F6&color=fff"
+                                    <img id="arrived-driver-avatar"
+                                        src="https://ui-avatars.com/api/?name=Waiting+for+Driver&background=3B82F6&color=fff"
                                         alt="" style="width: 36px; height: 36px; border-radius: 50%;">
                                     <div>
                                         <div class="label"
                                             style="font-size: 10px; color: var(--text-muted); margin-bottom: 2px;">
                                             DRIVER</div>
-                                        <div id="arrived-driver-name" style="font-weight: 600; font-size: 14px;">Waiting for Driver...</div>
+                                        <div id="arrived-driver-name"
+                                            style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">Waiting for
+                                            Driver...</div>
+                                        <div id="arrived-driver-phone"
+                                            style="font-size: 12px; color: var(--text-muted);">--</div>
                                     </div>
                                 </div>
-                                <a href="#" id="driver-call-btn" style="display: flex; align-items: center; justify-content: center; transition: 0.2s;">
+                                <a href="#" id="driver-call-btn"
+                                    style="display: flex; align-items: center; justify-content: center; transition: 0.2s;">
                                     <svg class="icon" style="color: var(--primary); width: 16px; height: 16px;"
                                         viewBox="0 0 24 24">
                                         <path
@@ -193,14 +217,17 @@
                                 </a>
                             </div>
 
-                            <p  id="arrived-route-desc"
+                            <p id="arrived-route-desc"
                                 style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                                 <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
                                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
                                 </svg> Waiting for bus assignment...
                             </p>
 
-                            <button id="track-bus-btn" class="btn btn-primary" style="width: 100%;">Track Bus <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                            <button id="track-bus-btn" class="btn btn-primary" style="width: 100%;">Track Bus <svg
+                                    class="icon" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg></button>
                         </div>
                     </div>
 
@@ -222,50 +249,93 @@
                     <!-- Leaflet Map -->
                     <div class="dash-right" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
                         <div id="student-map" style="width: 100%; height: 100%; z-index: 1;"></div>
-                        
+
                         <!-- Map Controls -->
-                        <div style="position: absolute; top: 24px; right: 24px; z-index: 5; display: flex; flex-direction: column; gap: 8px;">
-                            <button id="recenter-btn" class="card" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: 0.2s;" title="Recenter to My Location">
-                                <svg class="icon" style="color: var(--primary); width: 20px; height: 20px;" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+                        <div
+                            style="position: absolute; top: 24px; right: 24px; z-index: 5; display: flex; flex-direction: column; gap: 8px;">
+                            <button id="recenter-btn" class="card"
+                                style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: 0.2s;"
+                                title="Recenter to My Location">
+                                <svg class="icon" style="color: var(--primary); width: 20px; height: 20px;"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+                                </svg>
                             </button>
                         </div>
 
-                        <div id="route-card" style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 5; width: 90%; max-width: 500px;"></div>
+                        <div id="route-card"
+                            style="position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 5; width: 90%; max-width: 500px;">
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Floating btn when sidebar is collapsed -->
             <div class="collapsed-sidebar-btn" onclick="toggleSidebar()">
-                <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                <svg class="icon" viewBox="0 0 24 24" style="color: var(--primary);">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                </svg>
             </div>
         </div>
     </div>
 
     <!-- Route Selection Modal -->
-    <div id="route-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+    <div id="route-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
         <div class="card" style="width: 90%; max-width: 500px; padding: 24px; animation: slideUp 0.3s ease-out;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 20px;">Select Transit Route</h2>
                 <div id="route-modal-close-btn">
-                    <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    <svg class="icon" onclick="closeRouteModal()" style="cursor: pointer; color: var(--text-muted);"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
                 </div>
             </div>
-            <div id="route-modal-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
+            <div id="route-modal-list"
+                style="display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 8px;">
                 <!-- Rendered via JS -->
             </div>
         </div>
     </div>
     <style>
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .route-choice-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--neutral); border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
-    .route-choice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .route-choice-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background: var(--neutral);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .route-choice-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
     </style>
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/main.css">
-    <script src="js/mockData.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/mockData.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
     <script>
 
         (function () {
@@ -304,75 +374,29 @@
 
             // Handle sidebar toggle event if any
             const originalToggle = window.toggleSidebar;
-            window.toggleSidebar = function() {
+            window.toggleSidebar = function () {
                 if (typeof originalToggle === 'function') originalToggle();
                 setTimeout(() => map.invalidateSize(), 300);
             };
 
-            const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
-  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#E8960A"/>
-  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#D4820A"/>
-  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-10" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-10" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="none" stroke="#C87A00" stroke-width="1"/>
-  <rect x="-5" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
-  <rect x="1" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
-  <rect x="-5" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
-  <rect x="1" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
-  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
-  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
-</svg>`;
-
-            const sideViewBusSVG = `<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="150" cy="280" r="40" fill="#333"/>
-  <circle cx="150" cy="280" r="20" fill="#bbb"/>
-  <circle cx="530" cy="280" r="40" fill="#333"/>
-  <circle cx="530" cy="280" r="20" fill="#bbb"/>
-  <path d="M 50 280 L 50 100 Q 50 60 90 60 L 600 60 Q 640 60 640 100 L 640 280 Z" fill="#3B82F6"/>
-  <rect x="50" y="240" width="590" height="15" fill="#2563EB"/>
-  <rect x="70" y="80" width="80" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="170" y="80" width="80" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="270" y="80" width="80" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="370" y="80" width="80" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="470" y="80" width="80" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="570" y="80" width="50" height="100" rx="10" fill="#C8EDFF"/>
-  <rect x="570" y="190" width="50" height="90" fill="#222"/>
-  <rect x="60" y="200" width="30" height="10" rx="5" fill="#F5A623"/>
-</svg>`;
-
             function getBusIcon(zoom) {
-                const size = zoom >= 15 ? [60, 100] : zoom >= 13 ? [36, 60] : [20, 34];
                 return L.divIcon({
-                    html: `<div style="width:${size[0]}px; height:${size[1]}px; transform-origin: center center;">${topViewBusSVG}</div>`,
-                    className: '',
-                    iconSize: size,
-                    iconAnchor: [size[0] / 2, size[1] / 2]
+                    className: 'custom-bus-marker',
+                    html: `<div style="width:20px;height:20px;background:#3B82F6;border:3px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3); transition: transform 0.5s ease;"></div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13]
                 });
             }
 
             function showRouteCard(route) {
-              const card = document.getElementById('route-card');
-              if (card) {
-                card.innerHTML = `
+                const card = document.getElementById('route-card');
+                if (card) {
+                    card.innerHTML = `
                   <div style="display:flex; align-items:center; gap:16px; padding:12px 16px;
                               background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.15);">
-                    <div style="width:120px; flex-shrink:0;">
-                      ${sideViewBusSVG}
-                    </div>
+                      <div style="width:40px; height:40px; border-radius:50%; background:#EEF2FF; color:var(--primary); display:flex; align-items:center; justify-content:center;">
+                        <svg class="icon" viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>
+                      </div>
                     <div>
                       <div style="font-size:15px; font-weight:600; color:#333;">
                         ${route.routeName || route.name || 'Active Route'}
@@ -386,7 +410,7 @@
                     </div>
                   </div>
                 `;
-              }
+                }
             }
 
             // OSRM Global Caching
@@ -395,27 +419,27 @@
             // Helper to measure distance in meters roughly
             function getDist(lat1, lon1, lat2, lon2) {
                 var R = 6371e3; // metres
-                var f1 = lat1 * Math.PI/180;
-                var f2 = lat2 * Math.PI/180;
-                var df = (lat2-lat1) * Math.PI/180;
-                var dl = (lon2-lon1) * Math.PI/180;
+                var f1 = lat1 * Math.PI / 180;
+                var f2 = lat2 * Math.PI / 180;
+                var df = (lat2 - lat1) * Math.PI / 180;
+                var dl = (lon2 - lon1) * Math.PI / 180;
 
-                var a = Math.sin(df/2) * Math.sin(df/2) +
-                        Math.cos(f1) * Math.cos(f2) *
-                        Math.sin(dl/2) * Math.sin(dl/2);
-                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                var a = Math.sin(df / 2) * Math.sin(df / 2) +
+                    Math.cos(f1) * Math.cos(f2) *
+                    Math.sin(dl / 2) * Math.sin(dl / 2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                 return R * c;
             }
 
             async function getRoadRoute(routeId, stops) {
                 if (osrmCache[routeId]) return osrmCache[routeId];
-                
+
                 try {
                     const coords = stops.map(s => `${s.lng},${s.lat}`).join(';');
                     const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
                     const res = await fetch(url);
                     const data = await res.json();
-                    
+
                     if (data.routes && data.routes[0]) {
                         const pts = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
                         osrmCache[routeId] = pts;
@@ -424,7 +448,7 @@
                 } catch (e) {
                     console.error('OSRM Fetch Failed for route', routeId, e);
                 }
-                
+
                 // Fallback
                 const fallback = stops.map(s => [s.lat, s.lng]);
                 osrmCache[routeId] = fallback;
@@ -463,7 +487,7 @@
                 if ("geolocation" in navigator) {
                     navigator.geolocation.watchPosition((pos) => {
                         const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-                        
+
                         if (!studentMarker) {
                             studentMarker = L.marker([lat, lng], { icon: getStudentMarker() }).addTo(map);
                             studentCircle = L.circle([lat, lng], { radius: accuracy, color: '#3B82F6', fillOpacity: 0.1, weight: 1 }).addTo(map);
@@ -495,7 +519,7 @@
             // Remove the duplicate global assignments since we moved them to the top
             // window.openRouteModal = function() { ... }
             // window.closeRouteModal = function() { ... }
-            
+
             // Wire up modal close button
             const studentModalClose = document.getElementById('route-modal-close-btn');
             if (studentModalClose) studentModalClose.onclick = window.closeRouteModal;
@@ -513,9 +537,10 @@
             }
 
             async function loadRoutes() {
+                showLoader(true);
                 MockAPI.getRoutes().then(async res => {
                     const routes = res.data;
-                    
+
                     const listObj = document.getElementById('route-modal-list');
                     if (listObj) {
                         listObj.innerHTML = '';
@@ -543,19 +568,21 @@
                             listObj.appendChild(div);
                         });
                     }
-                    
+
                     if (routes.length > 0) {
-                        showLoader(false);
+                        setTimeout(() => showLoader(false), 2000);
                         window.openRouteModal();
                     }
                 }).catch(err => {
                     console.error("Failed to load routes:", err);
                     const listObj = document.getElementById('route-modal-list');
                     if (listObj) listObj.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Error loading routes. Please check your connection.</div>';
+                    setTimeout(() => showLoader(false), 2000);
                 });
             }
 
             async function renderRoute(routeId) {
+                showLoader(true);
                 MockAPI.getRouteById(routeId).then(async res => {
                     const route = res.data;
                     if (!route) return;
@@ -570,11 +597,11 @@
                     // Use cached road points
                     const roadPoints = await getRoadRoute(route.id, route.stops);
                     const rColor = route.color || '#3B82F6';
-                    
-                    currentRouteLayer = L.polyline(roadPoints, { 
-                        color: rColor, 
-                        weight: 5, 
-                        dashArray: '', 
+
+                    currentRouteLayer = L.polyline(roadPoints, {
+                        color: rColor,
+                        weight: 5,
+                        dashArray: '',
                         opacity: 0.8,
                         lineJoin: 'round',
                         lineCap: 'round'
@@ -597,46 +624,68 @@
                     });
 
                     map.fitBounds(L.latLngBounds(roadPoints).pad(0.3));
-                    
+
                     showRouteCard(route);
                     updateArrivingInfo(routeId);
+                    setTimeout(() => showLoader(false), 2000);
+                }).catch(err => {
+                    console.error("Render route error:", err);
+                    setTimeout(() => showLoader(false), 2000);
                 });
             }
-            
+
             let trackingBusId = null;
+            let arrivingPollInterval = null;
 
             function updateArrivingInfo(routeId) {
-                MockAPI.getBuses().then(res => {
-                    const bus = res.data.find(b => b.assignedRoute === routeId);
-                    
-                    if (bus) {
-                        trackingBusId = bus.busId;
-                        const busIdEl = document.getElementById('arrived-bus-id');
-                        if (busIdEl) busIdEl.innerText = 'Bus #' + bus.busId.split('-')[1];
-                        document.getElementById('arrived-route-desc').innerHTML = `<svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg> Heading to ${bus.assignedRoute.replace(/-/g, ' ')}...`;
-                        
-                        const driverName = bus.assignedDriver || "Unknown Driver";
-                        const driverAvatar = document.getElementById('arrived-driver-avatar');
-                        if (driverAvatar) driverAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(driverName)}&background=3B82F6&color=fff`;
-                        const driverNameEl = document.getElementById('arrived-driver-name');
-                        if (driverNameEl) driverNameEl.innerText = driverName;
-                        
-                        const callBtn = document.getElementById('driver-call-btn');
-                        if (callBtn) {
-                            if (bus.driverPhone) {
-                                callBtn.href = 'tel:' + bus.driverPhone;
-                                callBtn.style.opacity = '1';
-                                callBtn.style.pointerEvents = 'auto';
-                            } else {
-                                callBtn.removeAttribute('href');
-                                callBtn.style.opacity = '0.3';
-                                callBtn.style.pointerEvents = 'none';
+                if (arrivingPollInterval) clearInterval(arrivingPollInterval);
+                const fetchAndSet = () => {
+                    MockAPI.getBuses().then(res => {
+                        const bus = res.data.find(b => b.assignedRoute === routeId);
+
+                        if (bus) {
+                            trackingBusId = bus.busId;
+                            const busIdEl = document.getElementById('arrived-bus-id');
+                            if (busIdEl) busIdEl.innerText = 'Bus #' + bus.busId.split('-')[1];
+                            document.getElementById('arrived-route-desc').innerHTML = `<svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg> Heading to ${bus.assignedRoute.replace(/-/g, ' ')}...`;
+
+                            const driverName = bus.assignedDriver || "Unknown Driver";
+                            const driverAvatar = document.getElementById('arrived-driver-avatar');
+                            if (driverAvatar) driverAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(driverName)}&background=3B82F6&color=fff`;
+                            const driverNameEl = document.getElementById('arrived-driver-name');
+                            if (driverNameEl) driverNameEl.innerText = driverName;
+
+                            const callBtn = document.getElementById('driver-call-btn');
+                            const phoneEl = document.getElementById('arrived-driver-phone');
+                            if (callBtn) {
+                                if (bus.driverPhone) {
+                                    callBtn.href = 'tel:' + bus.driverPhone;
+                                    callBtn.style.opacity = '1';
+                                    callBtn.style.pointerEvents = 'auto';
+                                    if (phoneEl) phoneEl.innerText = '+91 ' + bus.driverPhone;
+                                } else {
+                                    callBtn.removeAttribute('href');
+                                    callBtn.style.opacity = '0.3';
+                                    callBtn.style.pointerEvents = 'none';
+                                    if (phoneEl) phoneEl.innerText = 'No Contact Info';
+                                }
                             }
+
+                            startSim(bus.busId);
+                        } else {
+                            // Reset if bus disconnected or not assigned yet
+                            const driverNameEl = document.getElementById('arrived-driver-name');
+                            if (driverNameEl) driverNameEl.innerText = "Waiting for Driver...";
+                            const busIdEl = document.getElementById('arrived-bus-id');
+                            if (busIdEl) busIdEl.innerText = 'Bus #--';
+                            const phoneEl = document.getElementById('arrived-driver-phone');
+                            if (phoneEl) phoneEl.innerText = '--';
+                            document.getElementById('arrived-route-desc').innerHTML = `<svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" /></svg> Waiting for bus assignment...`;
                         }
-                        
-                        startSim(bus.busId);
-                    }
-                });
+                    });
+                };
+                fetchAndSet();
+                arrivingPollInterval = setInterval(fetchAndSet, 3000);
             }
 
             // Wire up Track Bus button once
@@ -657,20 +706,20 @@
 
             function startSim(busId) {
                 if (busPollInterval) clearInterval(busPollInterval);
-                
+
                 MockAPI.getBusById(busId).then(res => {
                     const bus = res.data;
                     if (!bus) return;
-                    
+
                     MockAPI.getRouteById(bus.assignedRoute).then(async rRes => {
                         const route = rRes.data;
                         if (!route || !route.stops.length) return;
 
                         if (busMarkers[busId]) map.removeLayer(busMarkers[busId]);
-                        
+
                         const startPoint = bus.lastLocation || { lat: route.stops[0].lat, lng: route.stops[0].lng };
                         const marker = L.marker([startPoint.lat, startPoint.lng], { icon: getBusIcon(map.getZoom()) }).addTo(map);
-                        
+
                         // Let Leaflet inject the marker DOM, then add CSS transitions for smooth interpolation
                         setTimeout(() => {
                             const iconEl = marker.getElement();
@@ -682,7 +731,7 @@
                         }, 100);
 
                         const onZoomEnd = () => {
-                            if(marker) {
+                            if (marker) {
                                 marker.setIcon(getBusIcon(map.getZoom()));
                                 setTimeout(() => {
                                     const iconEl = marker.getElement();
@@ -691,7 +740,7 @@
                             }
                         };
                         map.on('zoomend', onZoomEnd);
-                        
+
                         busMarkers[busId] = marker;
                         lastKnownLiveStatus = !!bus.isLive;
 
@@ -712,7 +761,7 @@
                                 if (currentBus.lastLocation) {
                                     const lat = currentBus.lastLocation.lat;
                                     const lng = currentBus.lastLocation.lng;
-                                    
+
                                     if (lat !== prevLat || lng !== prevLng) {
                                         // Calculate angle based on vector from last point, but only if moved enough
                                         const distMoved = getDist(lat, lng, prevLat, prevLng);
@@ -720,7 +769,7 @@
                                             const dy = lat - prevLat;
                                             const dx = lng - prevLng;
                                             const angle = 90 - (Math.atan2(dy, dx) * 180 / Math.PI);
-                                            
+
                                             const el = marker.getElement();
                                             if (el) {
                                                 const iconContainer = el.querySelector('div');
@@ -732,7 +781,7 @@
 
                                         prevLat = lat;
                                         prevLng = lng;
-                                        
+
                                         // Highlight nearest stop if they are close
                                         let nearestIdx = -1;
                                         let minDist = 1000;
@@ -754,7 +803,7 @@
                                         const estMins = Math.ceil(distToDest / 400); // Rough estimate: 24km/h is 400m/min
                                         const timerEl = document.getElementById('student-timer');
                                         if (timerEl) {
-                                            timerEl.innerHTML = `${estMins < 10 ? '0'+estMins : estMins}<span>mins</span>`;
+                                            timerEl.innerHTML = `${estMins < 10 ? '0' + estMins : estMins}<span>mins</span>`;
                                         }
                                     }
                                 }
@@ -787,4 +836,25 @@
     </script>
 
 </body>
+
+</html>
+loadRoutes();
+
+// Sync user data
+if (state.user) {
+document.querySelectorAll('h4').forEach(h => {
+if (h.innerText === 'Alex Rivers') h.innerText = state.user.name;
+});
+document.querySelectorAll('.user-card-info p').forEach(p => {
+if (p.innerText.includes('Student ID')) p.innerText = 'Student ID: ' + (state.user.usn || '2024-XXX');
+});
+document.querySelectorAll('.avatar img, .user-card-avatar img').forEach(img => {
+img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(state.user.name)}&background=0F172A&color=fff`;
+});
+}
+})();
+</script>
+
+</body>
+
 </html>

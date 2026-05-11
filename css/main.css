@@ -51,7 +51,15 @@ body.theme-admin {
     --secondary: var(--admin-secondary);
 }
 
+/* Absolute Scrollbar Removal - No exceptions */
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
 * {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -64,6 +72,7 @@ body {
     line-height: 1.6;
     font-size: 14px;
     overflow: hidden; /* Prevent body scroll, let inner containers scroll */
+    -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -181,6 +190,37 @@ button, input { font-family: inherit; }
 /* Icons */
 .icon { width: 20px; height: 20px; fill: currentColor; }
 
+/* Back Button Component */
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+.back-btn:hover { background: var(--neutral); transform: translateX(-2px); }
+
+/* Centered Content Container for Settings/Profile */
+.content-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 64px;
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        padding: 0 16px 32px;
+    }
+}
+
 /* Page Layouts */
 /* Login Page */
 #page-login {
@@ -271,7 +311,7 @@ button, input { font-family: inherit; }
 .system-health { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--text-muted); background: #EFF6FF; padding: 12px; border-radius: var(--radius-md); }
 
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--neutral); position: relative;}
-.topbar { height: 72px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; background: var(--white); border-bottom: 1px solid var(--border-refined); }
+.topbar { height: 72px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; background: var(--white); border-bottom: 1px solid rgba(0, 0, 0, 0.05); z-index: 50; }
 .topbar-nav { display: flex; gap: 24px; font-weight: 500; }
 .topbar-nav a { color: var(--text-muted); transition: 0.2s; }
 .topbar-nav a.active, .topbar-nav a:hover { color: var(--primary); }
@@ -287,8 +327,8 @@ button, input { font-family: inherit; }
 .dropdown-item:hover { background: var(--neutral); }
 
 /* Common Dashboard Two Column Layout */
-.dash-cols { display: flex; flex: 1; overflow: hidden; position: relative; }
-.dash-left { width: 400px; padding: 24px 32px; overflow-y: auto; background: var(--white); flex-shrink: 0; border-right: 1px solid var(--border-refined); display: flex; flex-direction: column; gap: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; position: relative; }
+.dash-cols { display: flex; flex: 1; overflow: hidden; position: relative; background: var(--white); }
+.dash-left { width: 320px; padding: 24px; overflow-y: auto; background: var(--white); flex-shrink: 0; border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; position: relative; }
 .dash-left.collapsed { width: 0; padding: 0; border: none; opacity: 0; pointer-events: none; }
 .dash-right { flex: 1; position: relative; overflow: hidden; background: #E8EDF2; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -299,23 +339,23 @@ button, input { font-family: inherit; }
     transform: translateY(-50%);
     width: 24px;
     height: 48px;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0 4px 4px 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 100;
-    box-shadow: var(--shadow-sm);
     transition: 0.3s;
-    color: var(--text-muted);
+    color: rgba(0,0,0,0.2);
 }
 .drawer-toggle:hover { color: var(--primary); background: var(--neutral); }
 .drawer-toggle.sidebar-toggle { left: 0; top: 110px; border-left: none; }
 .drawer-toggle.sidebar-toggle.active { left: 220px; }
 .drawer-toggle.ops-toggle { left: 0; border-left: none; }
-.drawer-toggle.ops-toggle.active { left: 400px; }
+.drawer-toggle.ops-toggle.active { left: 320px; }
 .sidebar-overlay-btn { position: fixed; top: 110px; left: 12px; z-index: 100; opacity: 1; transition: 0.3s; }
 .collapsed-sidebar-btn { 
     position: fixed; top: 20px; left: 8px; z-index: 1000; 
@@ -328,7 +368,7 @@ button, input { font-family: inherit; }
 .collapsed-sidebar-btn.visible { opacity: 1; pointer-events: auto; }
 
 /* Cards & Widgets */
-.card { background: var(--white); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-premium); border: 1px solid var(--border-refined); }
+.card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-premium); border: 1px solid rgba(255, 255, 255, 0.6); }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 
 .pill { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; }
@@ -435,97 +475,506 @@ button, input { font-family: inherit; }
    MOBILE & RESPONSIVE BREAKPOINTS
    ========================================================================== */
 
-@media (max-width: 850px) {
-    h1 { font-size: 26px; }
-    h2 { font-size: 20px; }
+/* ==========================================================================
+   ULTRA-CLEAN MOBILE DASHBOARDS (Student, Driver, Admin)
+   ========================================================================== */
 
-    /* Login Page Responsive */
-    .login-card { flex-direction: column; max-width: 100%; border-radius: 0; height: 100vh; }
-    .login-left { padding: 32px; min-height: 200px; flex: none; border-radius: 0; }
-    .login-text-content p { font-size: 14px; }
-    .login-right { padding: 32px; }
-    .role-tabs { margin-bottom: 24px; }
+@media (max-width: 768px) {
+    /* LOGIN PAGE FIXES */
+    #page-login {
+        padding: 16px !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        background: var(--white) !important;
+    }
 
-    /* Sidebar Overlay for Mobile */
-    .sidebar {
-        position: fixed;
-        left: -240px;
-        top: 0;
-        bottom: 0;
-        width: 240px;
-        z-index: 2000;
-        height: 100vh;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.1);
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    #page-login .login-card {
+        flex-direction: column !important;
+        max-width: 100% !important;
+        min-height: unset !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
     }
-    .sidebar.active {
-        transform: translateX(240px);
+
+    #page-login .login-left {
+        display: none !important; /* Hide branding sidebar on mobile for focus */
     }
-    /* Simple overlay backdrop when sidebar is open */
-    .sidebar-overlay {
-        position: fixed;
+
+    #page-login .login-right {
+        padding: 32px 16px !important;
+        width: 100% !important;
+    }
+
+    #page-login .input-group a {
+        position: relative !important;
+        display: block !important;
+        text-align: right !important;
+        margin-top: -8px !important;
+        margin-bottom: 12px !important;
+        right: 0 !important;
+        top: 0 !important;
+    }
+
+    #page-login .login-footer-links {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding-top: 32px !important;
+    }
+
+    /* Global Container: Ensure map is ALWAYS full screen background */
+    body #app .dashboard-layout {
+        display: block !important; /* Break flex flow to prevent map squeezing */
+        position: relative !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+    }
+
+    body #app .main-content {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+        padding: 0 !important;
+        background: #f8fafc !important;
+    }
+
+    body #app .dash-cols {
+        height: 100% !important;
+        width: 100% !important;
+        position: relative !important;
+        display: block !important;
+    }
+
+    body #app .dash-right {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+    }
+
+    /* Sidebar: True Mobile Drawer Overlay */
+    body #app .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -260px !important;
+        width: 260px !important;
+        height: 100vh !important;
+        z-index: 3000 !important;
+        background: white !important;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.15) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: flex !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    body #app .sidebar.active {
+        transform: translateX(260px) !important;
+    }
+
+    /* Floating Navigation Icons - Only for Map Dashboards */
+    .dashboard-layout:not(.content-page) body #app .topbar {
+        position: absolute !important;
+        top: 12px !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 16px !important;
+        height: auto !important;
+        pointer-events: none !important;
+        display: flex !important;
+        justify-content: space-between !important;
+    }
+
+    /* Standard Topbar for Content Pages (Settings/Profile) */
+    .content-page .topbar {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border) !important;
+        height: 64px !important;
+        padding: 0 16px !important;
+        z-index: 2000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        pointer-events: auto !important;
+    }
+
+    .content-page .topbar > * { display: flex !important; align-items: center; gap: 8px; }
+    .content-page .topbar .topbar-right { margin-left: auto !important; }
+    .content-page .topbar .brand-icon, .content-page .topbar .back-btn { width: 40px !important; height: 40px !important; }
+    .content-page .topbar h2 { font-size: 18px !important; white-space: nowrap; }
+
+    body #app .topbar > * { pointer-events: auto !important; }
+    
+    body #app .topbar .brand-icon, 
+    body #app .topbar .avatar,
+    body #app .collapsed-sidebar-btn {
+        width: 44px !important;
+        height: 44px !important;
+        background: white !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: var(--primary) !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    /* Hide text/search elements on mobile map view */
+    body #app .topbar h1, body #app .topbar h3, body #app .topbar-nav, 
+    body #app .topbar .topbar-right > div:not(.dropdown),
+    body #app .topbar .input-group {
+        display: none !important;
+    }
+
+    /* --- STUDENT DASHBOARD: Compact Floating Pills --- */
+    body #page-student .map-overlay-center {
+        top: 12px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        max-width: 200px !important;
+        z-index: 500 !important;
+    }
+
+    body #page-student .route-chips {
+        display: none !important;
+    }
+
+    body #page-student .ui-route-btn {
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(8px) !important;
+        padding: 8px 16px !important;
+        border-radius: var(--radius-pill) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        min-width: unset !important;
+    }
+
+    body #page-student .ui-route-btn > div > div:first-child, 
+    body #page-student .ui-route-btn > svg:last-child {
+        display: none !important;
+    }
+    
+    body #page-student #active-route-label {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: var(--text-primary) !important;
+    }
+
+    body #page-student .student-map-overlay-bottom {
+        bottom: 16px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        z-index: 1000 !important;
+    }
+
+    body #page-student .student-map-overlay-bottom .card {
+        padding: 8px 16px !important;
+        border-radius: var(--radius-pill) !important;
+        background: var(--primary) !important;
+        color: white !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3) !important;
+        border: none !important;
+    }
+
+    /* Hide everything except Bus ID and Track button */
+    body #page-student .student-map-overlay-bottom .card > *,
+    body #page-student .student-map-overlay-bottom .card .brand-icon {
+        display: none !important;
+    }
+    
+    body #page-student .student-map-overlay-bottom .card > div:first-child {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    body #page-student #arrived-bus-id {
+        font-size: 15px !important;
+        color: white !important;
+        margin: 0 !important;
+        font-weight: 700 !important;
+    }
+
+    body #page-student #track-bus-btn {
+        display: flex !important;
+        width: auto !important;
+        height: 32px !important;
+        padding: 0 12px !important;
+        font-size: 11px !important;
+        background: white !important;
+        color: var(--primary) !important;
+        border-radius: 16px !important;
+        margin: 0 !important;
+    }
+
+    /* Hide cluttered blue card on mobile */
+    body #page-student .map-overlay-bottom-right {
+        display: none !important;
+    }
+
+    /* --- DRIVER DASHBOARD: Minimal Floating Controls --- */
+    body #page-driver .dash-left {
+        position: absolute !important;
+        bottom: 16px !important;
+        left: 16px !important;
+        right: 16px !important;
+        width: auto !important;
+        z-index: 1000 !important;
+        border-radius: 20px !important;
+        padding: 16px !important;
+        background: white !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Hide some info to keep map visible */
+    body #page-driver #driver-ops-panel h2 { display: none !important; }
+    body #page-driver .dash-right > div[style*="bottom: 24px"] { display: none !important; }
+
+    /* --- ADMIN DASHBOARD: Vertical Stack Optimization --- */
+    body #page-admin .main-content {
+        overflow-y: auto !important;
+        background: var(--neutral) !important;
+        position: relative !important;
+    }
+    
+    body #page-admin .main-content > div[style*="padding: 16px"] {
+        padding: 16px !important;
+        margin-top: 80px !important; /* Increased to avoid topbar overlap */
+    }
+
+    /* Force centering for non-map pages on mobile */
+    .content-page .main-content {
+        padding-top: 0 !important; /* Managed by sticky topbar now */
+        overflow-y: auto !important;
+        height: calc(100vh - 64px) !important;
+    }
+
+    .content-container {
+        display: block !important;
+        width: 100% !important;
+        padding: 24px 16px !important;
+    }
+
+    /* Responsive Grid for Profile/Settings */
+    .stats-grid, .settings-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        width: 100% !important;
+    }
+
+    .stats-grid > div, .settings-grid > div {
+        width: 100% !important;
+    }
+
+    /* Admin Profile Banner Fix */
+    .content-page .profile-banner {
+        margin-bottom: 60px !important;
+        height: 140px !important;
+    }
+    .content-page .profile-header-info {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 12px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        bottom: -50px !important;
+    }
+    .content-page .profile-avatar-large {
+        position: relative !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        margin: 0 auto !important;
+    }
+    .content-page .edit-profile-btn {
+        position: relative !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        margin-top: 16px !important;
+    }
+
+    /* Universal UI Controls Adjustment */
+    body #app .dash-right > div[style*="top: 24px"],
+    body #app #recenter-btn {
+        top: 140px !important;
+        right: 16px !important;
+        z-index: 100 !important;
+    }
+
+    .collapsed-sidebar-btn { 
+        display: none !important; /* Use topbar icon instead */
+    }
+
+    /* Remove all map tooltips, popups and permanent labels for maximum map visibility */
+    .leaflet-tooltip-pane, 
+    .leaflet-popup-pane,
+    .leaflet-marker-icon span,
+    .leaflet-marker-icon div[style*="background:white"] {
+        display: none !important;
+    }
+
+    /* ==========================================================================
+       ADMIN DASHBOARD MOBILE OPTIMIZATIONS
+       ========================================================================== */
+    body #page-admin .topbar h1 {
+        font-size: 16px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    body #page-admin .main-content > div {
+        padding: 16px !important;
+        gap: 16px !important;
+    }
+
+    body #page-admin .dash-cols {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    body #page-admin .dash-cols > div {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    body #page-admin #live-alerts-widget {
+        padding: 16px !important;
+    }
+
+    body #page-admin #live-alerts-widget h3 {
+        font-size: 12px !important;
+    }
+
+    body #page-admin .card {
+        padding: 16px !important;
+    }
+
+    body #page-admin .fleet-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    /* Table Responsiveness */
+    body #page-admin .card > table {
+        display: block !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    body #page-admin .card > table th,
+    body #page-admin .card > table td {
+        padding: 12px 16px !important;
+        font-size: 13px !important;
+    }
+
+    body #page-admin .card > table th:nth-child(4),
+    body #page-admin .card > table td:nth-child(4),
+    body #page-admin .card > table th:nth-child(5),
+    body #page-admin .card > table td:nth-child(5) {
+        display: none !important; /* Hide non-critical columns on tiny screens */
+    }
+
+    /* ==========================================================================
+       DRIVER DASHBOARD MOBILE OPTIMIZATIONS
+       ========================================================================== */
+    body #page-driver .dash-cols {
+        position: relative !important;
+        height: calc(100vh - 64px) !important;
+        overflow: hidden !important;
+    }
+
+    body #page-driver .dash-right {
+        position: absolute !important;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 1999;
-        display: none;
-        backdrop-filter: blur(2px);
-    }
-    .sidebar-overlay.active { display: block; }
-    
-    .sidebar.collapsed { width: 240px; opacity: 1; pointer-events: auto; transform: translateX(0); left: -240px; }
-    /* In mobile, we don't 'collapse' to 0 width, we just slide out of view */
-
-    /* Dashboard Grid Stacking */
-    .dash-cols { flex-direction: column; overflow-y: auto; }
-    
-    .dash-left { 
-        width: 100%; 
-        height: auto; 
-        order: 2; 
-        padding: 20px;
-        border-right: none;
-        border-top: 1px solid var(--border-refined);
-    }
-    .dash-right { 
-        width: 100%; 
-        height: 40vh; /* Map height on mobile */
-        min-height: 300px;
-        order: 1; 
-        flex: none;
+        z-index: 1 !important;
     }
 
-    .main-content { overflow-y: auto; }
-    .topbar { padding: 0 16px; gap: 8px; }
-    .topbar-nav { display: none; } /* Navigation is in the sidebar for mobile */
-    .topbar-right svg { display: none; } /* Hide extra icons on small screens */
+    /* Turn Ops Panel into a Bottom Sheet */
+    body #page-driver #driver-ops-panel {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 60vh !important;
+        background: var(--white) !important;
+        z-index: 1000 !important;
+        border-radius: 24px 24px 0 0 !important;
+        box-shadow: 0 -8px 24px rgba(0,0,0,0.1) !important;
+        padding: 20px !important;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow-y: auto !important;
+    }
 
-    /* Map Overlays for Mobile */
-    .map-overlay-center { top: 12px; width: 90%; }
-    .map-overlay-bottom-right { bottom: auto; top: 12px; right: 12px; }
-    .next-arrival-card { width: 140px; padding: 12px; border-radius: var(--radius-lg); }
-    .next-arrival-card h2 { font-size: 24px; }
-    .next-arrival-card h2 span { font-size: 12px; }
-    .next-arrival-card .label { font-size: 8px !important; }
-    
-    /* Layout Overrides for Map Position */
-    .map-overlay-bottom-right { display: none; } /* Hide arrival card on very small if overlapping */
-    
-    /* Stats Grid */
-    .stats-grid { grid-template-columns: 1fr; }
-    
-    /* Admin Specific Fixes */
-    .topbar-right .input-group { width: 100% !important; max-width: 150px; }
-    .topbar-right .input-group input { font-size: 11px; padding-left: 32px; }
-    .topbar-right .input-group svg { left: 8px; width: 14px; height: 14px; }
-    
-    .dash-cols > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
-    .stats-grid, div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
-    
-    /* Inputs Fixes */
-    .input-icon.right { display: none; } /* Hide 'Forgot?' overlap or reposition */
-    .form-input { padding-right: 16px; }
+    body #page-driver #driver-ops-panel.collapsed {
+        transform: translateY(calc(60vh - 80px)) !important;
+    }
 
-    .collapsed-sidebar-btn { opacity: 1; pointer-events: auto; top: 16px; left: 16px; }
+    body #page-driver .ops-toggle {
+        display: none !important; /* Managed by touch/swipe or visible header */
+    }
+
+    /* Add a handle for the bottom sheet */
+    body #page-driver #driver-ops-panel::before {
+        content: "" !important;
+        display: block !important;
+        width: 40px !important;
+        height: 4px !important;
+        background: var(--border) !important;
+        border-radius: 2px !important;
+        margin: 0 auto 16px !important;
+    }
+
+    body #page-driver #driver-ops-panel h2 {
+        font-size: 18px !important;
+        margin-bottom: 16px !important;
+    }
+
+    body #page-driver .btn-action-lg {
+        height: 60px !important;
+        font-size: 14px !important;
+    }
+
+    /* Floating map overlays for driver */
+    body #page-driver .driver-next-stop-overlay {
+        bottom: auto !important;
+        top: 16px !important;
+        width: 90% !important;
+        z-index: 500 !important;
+    }
+
+    body #page-driver .driver-next-stop-overlay .card {
+        padding: 10px 20px !important;
+    }
+
+    body #page-driver .driver-next-stop-overlay h2 {
+        font-size: 24px !important;
+    }
+
+    body #page-driver .driver-stats-row {
+        display: none !important; /* Hide secondary stats to clear map view */
+    }
 }
 
 /* Specific fix for inputs with 'Forgot?' overlap on mobile */

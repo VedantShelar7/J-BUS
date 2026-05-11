@@ -9,11 +9,12 @@ const state = {
 };
 
 // Mock API Layer
+const API_BASE = (window.location.protocol === 'file:') ? 'http://127.0.0.1:5001' : window.location.protocol + '//' + (window.location.hostname || '127.0.0.1') + ':5001';
 const MockAPI = {
     login: async (email, password, role) => {
         try {
             const trimmedEmail = email.trim().toLowerCase();
-            const res = await fetch('/api/auth/login', {
+            const res = await fetch(API_BASE + '/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: trimmedEmail, password, role })
@@ -21,13 +22,14 @@ const MockAPI = {
             return await res.json();
         } catch (e) {
             console.error('Login fetch error:', e);
+            alert('Fetch Error: ' + e.message + '\nAre you sure the backend server (port 5001) is running?');
             return { success: false, message: 'Server connection failed.' };
         }
     },
     register: async (userData) => {
         try {
             const trimmedEmail = userData.email.trim().toLowerCase();
-            const res = await fetch('/api/auth/register', {
+            const res = await fetch(API_BASE + '/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...userData, email: trimmedEmail })
@@ -40,7 +42,7 @@ const MockAPI = {
     },
     getRoutes: async () => {
         try {
-            const res = await fetch('/api/routes');
+            const res = await fetch(API_BASE + '/api/routes');
             return await res.json();
         } catch (e) {
             console.error('getRoutes error:', e);
@@ -49,7 +51,7 @@ const MockAPI = {
     },
     getRouteById: async (id) => {
         try {
-            const res = await fetch(`/api/routes/${id}`);
+            const res = await fetch(API_BASE + `/api/routes/${id}`);
             return await res.json();
         } catch (e) {
             console.error('getRouteById error:', e);
@@ -58,7 +60,7 @@ const MockAPI = {
     },
     getBuses: async () => {
         try {
-            const res = await fetch('/api/buses');
+            const res = await fetch(API_BASE + '/api/buses');
             return await res.json();
         } catch (e) {
             console.error('getBuses error:', e);
@@ -67,7 +69,7 @@ const MockAPI = {
     },
     getBusById: async (id) => {
         try {
-            const res = await fetch(`/api/buses/${id}`);
+            const res = await fetch(API_BASE + `/api/buses/${id}`);
             return await res.json();
         } catch (e) {
             console.error('getBusById error:', e);
@@ -81,7 +83,7 @@ const MockAPI = {
             if (assignedRoute !== null) body.assignedRoute = assignedRoute;
             if (assignedDriver !== null) body.assignedDriver = assignedDriver;
             if (driverPhone !== null) body.driverPhone = driverPhone;
-            const res = await fetch(`/api/buses/${busId}/location`, {
+            const res = await fetch(API_BASE + `/api/buses/${busId}/location`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -94,7 +96,7 @@ const MockAPI = {
     },
     sendEmergencyAlert: async (alertData) => {
         try {
-            const res = await fetch('/api/alerts', {
+            const res = await fetch(API_BASE + '/api/alerts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(alertData)
@@ -107,7 +109,7 @@ const MockAPI = {
     },
     getAlerts: async () => {
         try {
-            const res = await fetch('/api/alerts');
+            const res = await fetch(API_BASE + '/api/alerts');
             return await res.json();
         } catch (e) {
             console.error('getAlerts error:', e);
@@ -116,11 +118,20 @@ const MockAPI = {
     },
     getAdminStats: async () => {
         try {
-            const res = await fetch('/api/admin/dashboard');
+            const res = await fetch(API_BASE + '/api/admin/dashboard');
             return await res.json();
         } catch (e) {
             console.error('getAdminStats error:', e);
             return { success: false, data: null };
+        }
+    },
+    getUsers: async () => {
+        try {
+            const res = await fetch(API_BASE + '/api/users');
+            return await res.json();
+        } catch (e) {
+            console.error('getUsers error:', e);
+            return { success: false, data: [] };
         }
     }
 };

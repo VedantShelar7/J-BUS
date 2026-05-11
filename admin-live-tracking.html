@@ -215,39 +215,11 @@
     }
 
     const fleetListEl = document.getElementById('fleet-list');
-    const topViewBusSVG = `<svg viewBox="-7 -17 14 34" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="#F5A623"/>
-  <rect x="-7" y="-17" width="14" height="6" rx="3" fill="#E8960A"/>
-  <rect x="-7" y="11" width="14" height="6" rx="3" fill="#D4820A"/>
-  <rect x="-6" y="-11" width="12" height="7" rx="2" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="1" y="-10" width="4" height="5" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="-2" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="-1" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-6" y="6" width="12" height="6" rx="1" fill="#C8EDFF" stroke="#0077AA" stroke-width="0.8"/>
-  <rect x="-5" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-1" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="3" y="7" width="3" height="4" rx="1" fill="#A8DFFF"/>
-  <rect x="-10" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="-14" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-10" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="7" y="8" width="3" height="6" rx="2" fill="#E8960A" stroke="#C87A00" stroke-width="0.5"/>
-  <rect x="-7" y="-17" width="14" height="34" rx="3" fill="none" stroke="#C87A00" stroke-width="1"/>
-  <rect x="-5" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
-  <rect x="1" y="-17" width="4" height="2" rx="1" fill="#FFFDE0"/>
-  <rect x="-5" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
-  <rect x="1" y="15" width="4" height="2" rx="1" fill="#FF5555"/>
-  <rect x="-12" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
-  <rect x="10" y="-12" width="2" height="5" rx="1" fill="#E8960A"/>
-</svg>`;
-
-    const busIcon = (zoom, color = '#F5A623') => L.divIcon({
-        className: '',
-        html: `<div style="width:36px;height:60px;transform-origin:center center; transition: transform 0.5s ease;">${topViewBusSVG.replace('#F5A623', color)}</div>`,
-        iconSize: [36, 60],
-        iconAnchor: [18, 30]
+    const busIcon = (zoom, color = '#3B82F6') => L.divIcon({
+        className: 'custom-bus-marker',
+        html: `<div style="width:20px;height:20px;background:${color};border:3px solid white;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3); transition: transform 0.5s ease;"></div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
     });
 
     function getDist(lat1, lon1, lat2, lon2) {
@@ -323,6 +295,7 @@
     const routePolylines = {};
     const prevLocs = {};
     const currentAssignedRouteId = {};
+    const osrmCache = {};
 
     const activeLayers = {}; // routeId -> boolean
 
@@ -405,6 +378,35 @@
         const onTimeEl = document.getElementById('on-time-perc');
         if (speedEl) speedEl.innerText = avgSpd;
         if (onTimeEl) onTimeEl.innerText = (onTime > 98 ? 98 : onTime) + '%';
+    function showLoader(show) {
+        let overlay = document.getElementById('osrm-loader');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'osrm-loader';
+            overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;font-weight:600;font-family:Inter;flex-direction:column;gap:12px;';
+            overlay.innerHTML = `<div style="width:40px;height:40px;border:4px solid var(--border);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;"></div><div>Fetching Real Road Data From OSRM...</div><style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>`;
+            const target = document.querySelector('.dash-right');
+            if (target) target.appendChild(overlay);
+        }
+        overlay.style.display = show ? 'flex' : 'none';
+    }
+
+    async function getRoadRoute(routeId, stops) {
+        if (osrmCache[routeId]) return osrmCache[routeId];
+        try {
+            const coords = stops.map(s => `${s.lng},${s.lat}`).join(';');
+            const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.routes && data.routes[0]) {
+                const pts = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+                osrmCache[routeId] = pts;
+                return pts;
+            }
+        } catch (e) {
+            console.error('OSRM Fetch Failed', e);
+        }
+        return stops.map(s => [s.lat, s.lng]);
     }
 
     function renderLiveMap(buses) {
@@ -416,7 +418,7 @@
                 return;
             }
 
-            MockAPI.getRouteById(bus.assignedRoute).then(rRes => {
+            MockAPI.getRouteById(bus.assignedRoute).then(async rRes => {
                 const route = rRes.data;
                 if (!route || !route.stops.length) return;
 
@@ -427,12 +429,17 @@
                     if (routePolylines[bus.busId]) {
                         map.removeLayer(routePolylines[bus.busId]);
                     }
-                    const latlngs = route.stops.map(s => [s.lat, s.lng]);
-                    routePolylines[bus.busId] = L.polyline(latlngs, {
+                    
+                    showLoader(true);
+                    const roadPoints = await getRoadRoute(route.id, route.stops);
+                    setTimeout(() => showLoader(false), 2000);
+
+                    routePolylines[bus.busId] = L.polyline(roadPoints, {
                         color: routeColor,
-                        weight: 3,
-                        opacity: 0.6,
-                        dashArray: '6,6'
+                        weight: 4,
+                        opacity: 0.8,
+                        lineJoin: 'round',
+                        lineCap: 'round'
                     });
                     // Only add if layer is active
                     if(activeLayers[bus.assignedRoute] !== false) {
